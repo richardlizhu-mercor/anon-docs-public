@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Identity Resolution — Overview</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{
+    --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-100:#e0e7ff; --indigo-50:#eef2ff;
+    --slate-900:#0f172a; --slate-700:#334155; --slate-600:#475569; --slate-500:#64748b;
+    --slate-300:#cbd5e1; --slate-200:#e2e8f0; --slate-100:#f1f5f9; --slate-50:#f8fafc; --white:#fff;
+    --amber-50:#fffbeb; --amber-700:#b45309;
+    --green-50:#f0fdf4; --green-600:#16a34a; --green-700:#15803d;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; font-family:var(--font); color:var(--slate-900); background:var(--slate-50);
+    line-height:1.7; font-weight:400; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:760px; margin:0 auto; padding:64px 28px 120px;}
+  .eyebrow{font-size:.78rem; letter-spacing:.09em; text-transform:uppercase; color:var(--indigo-600); font-weight:600;}
+  h1{font-size:2.4rem; font-weight:600; line-height:1.15; margin:.35em 0 .35em; letter-spacing:-.02em;}
+  .sub{font-size:1.2rem; color:var(--slate-600); font-weight:300; line-height:1.55;}
+  .meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:24px;}
+  .pill{font-size:.76rem; padding:4px 12px; border-radius:9999px; background:var(--white); border:1px solid var(--slate-200); color:var(--slate-600);}
+  .pill.accent{background:var(--indigo-50); border-color:var(--indigo-100); color:var(--indigo-700); font-weight:500;}
+  h2{font-size:1.5rem; font-weight:600; margin:2.6em 0 .5em; letter-spacing:-.01em;}
+  p{margin:.85em 0; color:var(--slate-700); font-size:1.05rem;}
+  strong{font-weight:600; color:var(--slate-900);}
+  ul{color:var(--slate-700); padding-left:1.25em; font-size:1.05rem;}
+  li{margin:.5em 0;}
+  code{font-family:var(--mono); font-size:.85em; background:var(--indigo-50); color:var(--indigo-700); padding:1.5px 6px; border-radius:5px;}
+  a{color:var(--indigo-700);}
+  .callout{border-radius:14px; padding:20px 24px; margin:24px 0; font-size:1.05rem;}
+  .callout .lbl{font-weight:600; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:6px;}
+  .callout.key{background:var(--indigo-50); border:1px solid var(--indigo-100);}
+  .callout.key .lbl{color:var(--indigo-700);}
+  .callout.warn{background:var(--amber-50); border:1px solid #fde68a;}
+  .callout.warn .lbl{color:var(--amber-700);}
+  .callout.key p, .callout.warn p{margin:.4em 0;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0;}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+  .card{background:var(--white); border:1px solid var(--slate-200); border-radius:14px; padding:22px 24px; box-shadow:0 1px 2px rgba(15,23,42,.04);}
+  .card h3{font-size:1.02rem; font-weight:600; margin:0 0 .5em; letter-spacing:.01em;}
+  .card.before h3{color:var(--slate-500);}
+  .card.after h3{color:var(--indigo-700);}
+  .card p{font-size:.98rem; margin:.5em 0;}
+  .fig{background:var(--white); border:1px solid var(--slate-200); border-radius:14px; padding:26px; margin:26px 0; overflow-x:auto;}
+  .fig .cap{font-size:.85rem; color:var(--slate-500); margin-top:16px; text-align:center;}
+  .mermaid{display:flex; justify-content:center;}
+  /* results bars */
+  .result{background:var(--white); border:1px solid var(--slate-200); border-radius:14px; padding:22px 24px;}
+  .result h3{font-size:1rem; margin:0 0 14px; font-weight:600;}
+  .barrow{display:flex; align-items:center; gap:12px; margin:10px 0; font-size:.9rem;}
+  .barrow .who{width:118px; color:var(--slate-600); flex:none;}
+  .track{flex:1; background:var(--slate-100); border-radius:8px; height:26px; position:relative; overflow:hidden;}
+  .bar{height:100%; border-radius:8px; display:flex; align-items:center; justify-content:flex-end; padding-right:9px; color:#fff; font-size:.8rem; font-weight:600; font-variant-numeric:tabular-nums;}
+  .bar.old{background:var(--slate-400,#94a3b8);}
+  .bar.new{background:var(--indigo-600);}
+  .trend{font-size:.85rem; margin-top:12px; font-weight:500;}
+  .trend .up{color:var(--green-700);} .trend .down{color:var(--amber-700);}
+  .fine{font-size:.82rem; color:var(--slate-500);}
+  footer{color:var(--slate-500); font-size:.85rem; margin-top:64px; padding-top:24px; border-top:1px solid var(--slate-200);}
+  footer a{font-weight:500;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="eyebrow">Data Acquisition · Anonymization</span>
+    <h1>Identity Resolution, rebuilt — a plain-language overview</h1>
+    <p class="sub">How we make sure one real person becomes one consistent fake across an entire dataset — and why the
+    new engine is both safer and more accurate as datasets grow.</p>
+    <div class="meta">
+      <span class="pill accent">High-level overview</span>
+      <span class="pill">Anonymization · Stage 2</span>
+      <span class="pill">Updated July 2026</span>
+    </div>
+
+    <div class="callout key">
+      <span class="lbl">In one paragraph</span>
+      <p style="margin-top:2px">We anonymize customer data by replacing every real name, email, and identifier with a
+      realistic fake. <strong>Identity Resolution</strong> is the step that figures out which of those values refer to
+      the <em>same</em> real person or company, so each one gets a single, consistent fake everywhere. We replaced a
+      hand-tuned, one-size-fits-all method with a <strong>trained model that judges each pair on its own merits and
+      learns its own settings</strong>. The payoff: far fewer privacy-risky mistakes, and — unlike the old system — it
+      gets <strong>more</strong> accurate as datasets get bigger.</p>
+    </div>
+
+    <h2>What it does</h2>
+    <p>
+      Picture a data export where the same employee shows up as <code>John Doe</code>, <code>j.doe@acme.com</code>,
+      <code>jdoe</code>, and <code>@johnd</code>. If we anonymized each one independently, John would turn into four
+      different fake people and the data would stop making sense. Identity Resolution groups those four back into one
+      person, so they receive <strong>one fake identity — consistently, everywhere the data references them</strong>.
+      It does the same for companies, phone numbers, addresses, and every other kind of sensitive value.
+    </p>
+
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  A["Raw customer data"] --> B["Find the sensitive values"]
+  B --> C["Identity Resolution<br/><span style='font-size:11px'>group values that are the same real thing</span>"]
+  C --> D["Generate realistic fakes"]
+  D --> E["Swap real → fake"]
+      </div>
+      <div class="cap">Where Identity Resolution sits in the anonymization pipeline.</div>
+    </div>
+
+    <div class="callout warn">
+      <span class="lbl">The one trade-off that governs everything</span>
+      <p style="margin-top:2px">One kind of mistake is far worse than the other. <strong>Merging two different people
+      means they share a fake identity — a privacy leak.</strong> Splitting one person into two fakes is only a
+      cosmetic flaw. So the system is deliberately cautious about merging: when in doubt, keep them apart.</p>
+    </div>
+
+    <h2>What changed</h2>
+    <div class="grid2">
+      <div class="card before">
+        <h3>Before</h3>
+        <p>We scored how <em>similar</em> two values looked using a fixed recipe of text-matching rules, poured
+        everything into one big similarity graph, and split it into groups with a single algorithm whose knobs we tuned
+        <strong>by hand</strong>.</p>
+        <p>It worked — but the knobs were educated guesses, and it actually got <strong>less</strong> accurate as
+        datasets grew larger.</p>
+      </div>
+      <div class="card after">
+        <h3>After</h3>
+        <p>Now a <strong>trained model looks at each candidate pair</strong> and answers one question — "same entity, or
+        not?" — weighing many signals: not just how the text looks, but <strong>who appears alongside whom</strong> in
+        the data.</p>
+        <p>It <strong>learns its own thresholds</strong> from labeled examples instead of us hand-picking them, then
+        groups the confirmed matches carefully, with hard rules that block obvious errors (e.g., two people with
+        different last names never merge).</p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <div class="mermaid">
+flowchart TB
+  subgraph OLD["Before — one big cut"]
+    o1["Score everything by look-alike rules"] --> o2["Split the whole graph with one hand-tuned algorithm"]
+  end
+  subgraph NEW["After — decide, then group"]
+    n1["A trained model judges each pair:<br/>same entity or not?"] --> n2["Group the confirmed matches carefully,<br/>with guardrails against bad merges"]
+  end
+  OLD -.->|"same goal, smarter decision"| NEW
+      </div>
+      <div class="cap">The core shift: from one global, hand-tuned split to a learned, pair-by-pair decision.</div>
+    </div>
+
+    <h2>Why it's better</h2>
+    <p>
+      On our benchmark datasets, as the data grew roughly <strong>6×</strong>, the two engines moved in
+      <em>opposite</em> directions. Overall accuracy is shown below (higher is better):
+    </p>
+
+    <div class="result">
+      <h3>Accuracy as the dataset grows (small → large)</h3>
+      <div class="barrow"><span class="who">Old engine</span>
+        <div class="track"><div class="bar old" style="width:75%">75%</div></div>
+        <div class="track"><div class="bar old" style="width:71%">71%</div></div>
+      </div>
+      <div class="barrow"><span class="who">New engine</span>
+        <div class="track"><div class="bar new" style="width:68%">68%</div></div>
+        <div class="track"><div class="bar new" style="width:84%">84%</div></div>
+      </div>
+      <div class="trend">Old engine <span class="down">slips 75% → 71%</span> &nbsp;·&nbsp; New engine <span class="up">climbs 68% → 84%</span> as data scales up.</div>
+    </div>
+
+    <div class="callout key" style="margin-top:22px">
+      <span class="lbl">And it makes far fewer of the dangerous mistakes</span>
+      <p style="margin-top:2px">Of the merges it actually makes, the new engine is right <strong>96–97%</strong> of the
+      time, versus <strong>75–86%</strong> before. Because a wrong merge is the privacy-risky failure, that jump matters
+      more than the headline accuracy number: it means roughly <strong>3–4× fewer</strong> wrong merges.</p>
+    </div>
+    <p class="fine">Measured on internal, synthetic benchmark datasets; numbers are directional, not a production guarantee.</p>
+
+    <h2>Why it improves with scale</h2>
+    <p>
+      The old engine leaned on how text <em>looks</em>, so as a dataset grows and more look-alike names appear, it makes
+      more accidental merges — accuracy drifts down. The new engine also uses <strong>context</strong> — who shows up
+      together in the same records — and it tunes itself to be cautious. More data gives it more context to work with,
+      so it finds genuine matches <em>without</em> loosening its guard. That's why it gets better, not worse, at scale.
+    </p>
+
+    <h2>Where it's headed</h2>
+    <ul>
+      <li><strong>Connect the dots across documents too</strong>, not just spreadsheet-style data — so a person mentioned in an email and in a CRM resolve to the same identity.</li>
+      <li><strong>Use richer "who worked with whom" signals</strong> from across services to sharpen the hardest calls.</li>
+      <li><strong>Upgrade the underlying model</strong> as we collect more labeled examples — the current design is built to swap in a stronger model without rework.</li>
+    </ul>
+
+    <footer>
+      A plain-language summary for a general audience.
+      For the engineering deep-dive — the stage-by-stage pipeline, the model and feature details, calibration, and the
+      full old-vs-new comparison — see the companion doc,
+      <a href="./ir-architecture-evolution.html">“Identity Resolution: Architecture Evolution.”</a>
+    </footer>
+  </div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad:true, theme:'base',
+    themeVariables:{
+      primaryColor:'#eef2ff', primaryBorderColor:'#4f46e5', primaryTextColor:'#0f172a',
+      lineColor:'#94a3b8', secondaryColor:'#f1f5f9', tertiaryColor:'#ffffff',
+      fontFamily:'ui-sans-serif, system-ui, sans-serif', fontSize:'14px'
+    },
+    flowchart:{ curve:'basis', htmlLabels:true, padding:16 }
+  });
+</script>
+</body>
+</html>

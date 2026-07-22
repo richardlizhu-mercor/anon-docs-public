@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Identity Resolution — Architecture Evolution</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{
+    --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-800:#3730a3;
+    --indigo-100:#e0e7ff; --indigo-50:#eef2ff;
+    --slate-900:#0f172a; --slate-700:#334155; --slate-600:#475569;
+    --slate-500:#64748b; --slate-300:#cbd5e1; --slate-200:#e2e8f0;
+    --slate-100:#f1f5f9; --slate-50:#f8fafc; --white:#fff;
+    --amber-50:#fffbeb; --amber-500:#f59e0b; --amber-700:#b45309;
+    --green-50:#f0fdf4; --green-600:#16a34a; --green-700:#15803d;
+    --red-50:#fef2f2; --red-600:#dc2626;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; font-family:var(--font); color:var(--slate-900);
+    background:var(--slate-50); line-height:1.65; font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+  .layout{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:266px 1fr; gap:0;}
+  nav.toc{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:32px 20px 32px 24px; border-right:1px solid var(--slate-200);
+    background:var(--white); font-size:.86rem;
+  }
+  nav.toc .brand{font-weight:600; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:var(--indigo-600); margin-bottom:18px;}
+  nav.toc a{display:block; color:var(--slate-600); text-decoration:none; padding:5px 10px; border-radius:6px; margin:1px 0; transition:all 120ms ease;}
+  nav.toc a:hover{background:var(--indigo-50); color:var(--indigo-700);}
+  nav.toc a.sub{padding-left:22px; font-size:.82rem; color:var(--slate-500);}
+  main{padding:48px 56px 120px; background:var(--slate-50); min-width:0;}
+  header.doc{margin-bottom:40px;}
+  header.doc .eyebrow{font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:var(--indigo-600); font-weight:600;}
+  header.doc h1{font-size:2.3rem; font-weight:600; line-height:1.15; margin:.35em 0 .3em; letter-spacing:-.02em;}
+  header.doc .sub{font-size:1.12rem; color:var(--slate-600); font-weight:300; max-width:72ch;}
+  .meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px;}
+  .pill{font-size:.76rem; padding:4px 12px; border-radius:9999px; background:var(--white); border:1px solid var(--slate-200); color:var(--slate-600);}
+  .pill.accent{background:var(--indigo-50); border-color:var(--indigo-100); color:var(--indigo-700); font-weight:500;}
+  .pill.mono{font-family:var(--mono); font-size:.72rem;}
+  h2{font-size:1.55rem; font-weight:600; margin:2.4em 0 .6em; letter-spacing:-.01em; padding-top:12px;}
+  h3{font-size:1.15rem; font-weight:600; margin:1.9em 0 .5em; color:var(--slate-900);}
+  h4{font-size:.98rem; font-weight:600; margin:1.4em 0 .3em; color:var(--slate-700);}
+  p{margin:.7em 0; color:var(--slate-700);}
+  strong{font-weight:600; color:var(--slate-900);}
+  a{color:var(--indigo-700);}
+  code{font-family:var(--mono); font-size:.85em; background:var(--indigo-50); color:var(--indigo-800); padding:1.5px 6px; border-radius:5px;}
+  ul,ol{color:var(--slate-700); padding-left:1.3em;}
+  li{margin:.35em 0;}
+  hr{border:none; border-top:1px solid var(--slate-200); margin:2.6em 0;}
+  .lead{font-size:1.05rem; color:var(--slate-600);}
+  .card{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:24px 26px; box-shadow:0 1px 2px rgba(15,23,42,.04); margin:18px 0;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr;}}
+  .callout{border-radius:12px; padding:16px 20px; margin:18px 0; font-size:.95rem;}
+  .callout .lbl{font-weight:600; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:4px;}
+  .callout.key{background:var(--indigo-50); border:1px solid var(--indigo-100);}
+  .callout.key .lbl{color:var(--indigo-700);}
+  .callout.warn{background:var(--amber-50); border:1px solid #fde68a;}
+  .callout.warn .lbl{color:var(--amber-700);}
+  .callout.win{background:var(--green-50); border:1px solid #bbf7d0;}
+  .callout.win .lbl{color:var(--green-700);}
+  table{border-collapse:collapse; width:100%; margin:18px 0; font-size:.9rem; background:var(--white); border-radius:12px; overflow:hidden; border:1px solid var(--slate-200);}
+  th{background:var(--slate-100); text-align:left; font-weight:600; color:var(--slate-700); padding:11px 14px; font-size:.82rem; letter-spacing:.02em;}
+  td{padding:11px 14px; border-top:1px solid var(--slate-200); color:var(--slate-700); vertical-align:top;}
+  tr:hover td{background:var(--slate-50);}
+  td.old{color:var(--slate-600);}
+  td.new{color:var(--indigo-800); font-weight:500;}
+  .tag{display:inline-block; font-size:.72rem; font-weight:600; padding:2px 9px; border-radius:9999px;}
+  .tag.old{background:var(--slate-100); color:var(--slate-600);}
+  .tag.new{background:var(--indigo-100); color:var(--indigo-800);}
+  .tag.good{background:var(--green-50); color:var(--green-700);}
+  .tag.bad{background:var(--red-50); color:var(--red-600);}
+  .fig{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:24px; margin:22px 0; text-align:center; overflow-x:auto;}
+  .fig .cap{font-size:.82rem; color:var(--slate-500); margin-top:14px; text-align:center;}
+  .mermaid{display:flex; justify-content:center;}
+  .chips{display:flex; flex-wrap:wrap; gap:7px; margin:14px 0;}
+  .chip{font-family:var(--mono); font-size:.76rem; padding:4px 10px; border-radius:8px; background:var(--slate-100); color:var(--slate-700); border:1px solid var(--slate-200);}
+  .chip b{color:var(--indigo-800); font-weight:600;}
+  .chip.eag{background:var(--indigo-50); color:var(--indigo-800); border-color:var(--indigo-100); font-weight:600;}
+  .num{font-variant-numeric:tabular-nums;}
+  .statgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0;}
+  @media(max-width:900px){.statgrid{grid-template-columns:repeat(2,1fr);}}
+  .stat{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:16px;}
+  .stat .v{font-size:1.5rem; font-weight:300; color:var(--indigo-700); font-variant-numeric:tabular-nums;}
+  .stat .k{font-size:.78rem; color:var(--slate-500); margin-top:2px;}
+  footer{color:var(--slate-500); font-size:.82rem; margin-top:60px; padding-top:24px; border-top:1px solid var(--slate-200);}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc">
+    <div class="brand">Data Acq · IR v2</div>
+    <a href="#context">1 · Where IR sits</a>
+    <a href="#old">2 · Today's prod engine</a>
+    <a href="#new">3 · The rebuild</a>
+    <a href="#new-stages" class="sub">S0–S8 stage kernel</a>
+    <a href="#new-encoder" class="sub">Qwen LoRA encoder</a>
+    <a href="#new-block" class="sub">Candidate blocking</a>
+    <a href="#new-gbdt" class="sub">259-feature GBDT</a>
+    <a href="#new-calib" class="sub">Calibration (τ, γ)</a>
+    <a href="#new-cluster" class="sub">WCC → Leiden → CL/ML</a>
+    <a href="#new-eag" class="sub">Co-occurrence &amp; the EAG</a>
+    <a href="#new-temporal" class="sub">Temporal fan-out</a>
+    <a href="#why">4 · Why "pairwise"</a>
+    <a href="#compare">5 · Side-by-side</a>
+    <a href="#results">6 · What we learned</a>
+    <a href="#roadmap">7 · Roadmap</a>
+    <a href="#appendix">Appendix</a>
+  </nav>
+
+  <main>
+    <header class="doc">
+      <span class="eyebrow">Data Acquisition · Anonymization · Identity Resolution</span>
+      <h1>Identity Resolution: from a single Leiden pass to a learned pairwise engine</h1>
+      <p class="sub">Stage&nbsp;2 of the anonymization pipeline used to be one big activity that scored values by
+      cosine similarity and cut the whole graph with a hand-tuned Leiden pass. We rebuilt it. The new engine
+      (<code>feat/ir-eag-free-engine</code>) runs a per-type Temporal fan-out around a Qwen&nbsp;LoRA encoder, a
+      259-feature LightGBM pairwise scorer, and per-component Leiden at a resolution the model learns instead of one we
+      guess.</p>
+      <div class="meta">
+        <span class="pill accent">Status: Draft</span>
+        <span class="pill">apps/server/data-acq</span>
+        <span class="pill mono">branch: feat/ir-eag-free-engine</span>
+        <span class="pill">Stage 2 · Identity Resolution</span>
+        <span class="pill">Updated 2026-07-06</span>
+      </div>
+    </header>
+
+    <div class="callout key">
+      <span class="lbl">The short version</span>
+      Today's prod engine is one ~2,500-line Temporal activity. It embeds values with MiniLM, scores candidate edges
+      with a hand-tuned weighted-signal combiner, and runs one global Leiden per type at resolutions we picked by hand.
+      The rebuild keeps that goal but moves the decision into a model. A LightGBM classifier now scores each candidate
+      pair over a 259-feature bank, fed by per-type Qwen&nbsp;LoRA embeddings from a Modal GPU and by
+      FAISS/co-occurrence/token blocking, and returns a calibrated <code>P(merge)</code>. We keep the edges above a
+      learned per-type τ, break them into connected components, and run Leiden per component at a learned γ, with hard
+      CANNOT-LINK and MUST-LINK rules on top. On synthetic benchmarks the new engine gets <em>better</em> as data
+      scales (F1 0.68→0.84 from 2K to 13K) while today's engine gets <em>worse</em> (0.75→0.71), and it merges far more
+      precisely (P≈0.96 vs 0.75). Shipped bundle <code>pm_qwen_gbdt_v2</code>, CV&nbsp;F1max&nbsp;<strong>0.9332</strong>.
+    </div>
+
+    <div class="statgrid">
+      <div class="stat"><div class="v">2,526→1,274</div><div class="k">IR activity LOC (monolith → thin shims)</div></div>
+      <div class="stat"><div class="v">67→9</div><div class="k">IRConfig fields</div></div>
+      <div class="stat"><div class="v">19→259</div><div class="k">pairwise features</div></div>
+      <div class="stat"><div class="v">149 files</div><div class="k">+20,459 / −11,733 in the IR module</div></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="context">1 · Where Identity Resolution sits</h2>
+    <p>
+      The anonymization pipeline takes raw SaaS data (GitHub, Slack, Linear, QuickBooks, and so on) and produces a
+      realistic synthetic copy. Every piece of PII or BII gets swapped for a fake, but the shape of the data survives:
+      referential integrity, formats, and structure all stay intact. There are four stages, and IR is the second.
+    </p>
+
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  A["Raw SaaS data<br/><span style='font-size:11px'>GitHub · Slack · Linear · …</span>"] --> B["1 · PII Detection<br/><span style='font-size:11px'>tag spans → UUIDs (tokenize)</span>"]
+  B --> C["2 · Identity Resolution<br/><span style='font-size:11px'>cluster values → entities</span>"]
+  C --> D["3 · Fake Generation<br/><span style='font-size:11px'>format-preserving synthetics</span>"]
+  D --> E["4 · Replacement<br/><span style='font-size:11px'>UUID → fake</span>"]
+      </div>
+      <div class="cap">Figure 1 — The four-stage anonymization pipeline. This doc covers Stage 2.</div>
+    </div>
+
+    <h3>Why IR matters</h3>
+    <p>
+      Detection hands us thousands of raw values, and a lot of them are the same person wearing different clothes:
+      <code>John Doe</code>, <code>jdoe@company.com</code>, <code>j.doe</code>, <code>jsd_77</code>. Fake each one
+      independently and John turns into four strangers, so the data stops hanging together. IR groups those values into
+      one identity, and that identity gets a single fake everywhere it shows up.
+    </p>
+
+    <div class="callout warn">
+      <span class="lbl">Why we lean toward precision</span>
+      The two failure modes aren't equal. Merge two different people and they share a fake identity, which is a privacy
+      leak, and it corrupts two workflows rather than two rows. Split one person into two fakes and you've got a
+      cosmetic problem. So the engine stays conservative about merging. That bias is also why the clustering step, not
+      the pairwise scorer, is where things get hard.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="old">2 · Today's production engine — <span style="font-family:var(--mono);font-size:1.1rem">origin/main</span></h2>
+    <p class="lead">One activity: cosine similarity fused into a graph, then a single global Leiden cut. This is the engine the rebuild replaces.</p>
+    <p>
+      On <code>origin/main</code>, IR is a single ~2,526-line Temporal activity behind one
+      <code>IdentityResolutionWorkflow</code>. It classifies every value with an LLM, embeds them on the CPU worker,
+      scores candidate edges with a hand-tuned combiner of five similarity signals, and then partitions the resulting
+      graph with one global Leiden run per cluster type. The diagram below is the current-prod pipeline in full; the
+      shaded box is where IR proper lives, between detection upstream and the faker downstream.
+    </p>
+
+    <div class="fig">
+      <div class="mermaid">
+flowchart TD
+  IN["Raw PII from service tables + UUID mappings<br/><span style='font-size:11px'>from Stage 1 · PII detection / tokenize</span>"]
+  subgraph IR["🔷 Identity Resolution — Stage 2 (current prod)"]
+    direction TB
+    P0["Phase 0 · Classification<br/><span style='font-size:11px'>LLM (Gemini / Bedrock) · ~30 cluster types × ~70 attribute types</span>"]
+    P1["Phase 1 · Preprocessing<br/><span style='font-size:11px'>whitelist → noise filter → split → dedup + co-occurrence index</span>"]
+    P15["Phase 1.5 · Partitioning<br/><span style='font-size:11px'>split by cluster type: Identity, Phone, Org, Brand, Street, …</span>"]
+    UM["Users-table matcher<br/><span style='font-size:11px'>confirmed edges w=1.0</span>"]
+    S1["Cosine similarity<br/><span style='font-size:11px'>MiniLM-L6-v2 + FAISS ANN</span>"]
+    S2["Edit distance<br/><span style='font-size:11px'>normalized Levenshtein</span>"]
+    S3["Token overlap<br/><span style='font-size:11px'>Jaccard</span>"]
+    S4["Substring containment<br/><span style='font-size:11px'>len(short)/len(long)</span>"]
+    S5["Co-occurrence<br/><span style='font-size:11px'>row-level evidence</span>"]
+    COMB["Per-type weighted combination<br/><span style='font-size:11px'>+ boosts / penalties + over-merge guards</span>"]
+    THR["Per-type threshold"]
+    P3["Phase 3 · Leiden clustering<br/><span style='font-size:11px'>CPMVertexPartition · per-type resolution + auto-tune</span>"]
+    DEC["Post-Leiden deconfliction (Identity only)<br/><span style='font-size:11px'>last-name conflict splitting</span>"]
+    OUTP["Output · clusters.json (+ .gexf graph export)"]
+    P0 --> P1 --> P15
+    P15 --> UM & S1 & S2 & S3 & S4 & S5
+    UM & S1 & S2 & S3 & S4 & S5 --> COMB
+    COMB --> THR --> P3 --> DEC --> OUTP
+  end
+  IN --> P0
+  OUTP --> FK["Stage 3 · Faker<br/><span style='font-size:11px'>consumes clusters.json</span>"]
+  style IR fill:#eef2ff,stroke:#4f46e5,stroke-width:2px
+      </div>
+      <div class="cap">Figure 2 — The current-prod IR pipeline (the "Multi-Signal Leiden" engine). Shaded box = the IR stage; input comes from detection, output feeds the faker.</div>
+    </div>
+
+    <h3 id="old-limits">Where it strains</h3>
+    <div class="grid2">
+      <div class="card">
+        <h4 style="color:var(--green-700)">What it gets right</h4>
+        <ul>
+          <li>It's type-aware, so each PII type gets similarity rules that suit it.</li>
+          <li>Leiden's modularity objective shrugs off some noisy edges. That's why it replaced connected-components in the first place.</li>
+          <li>The resolution knob is interpretable, and the over-merge guards give hard privacy floors.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--amber-700)">Where it hurts</h4>
+        <ul>
+          <li>The scorer doesn't learn anything. It's a fixed weighted sum, so it can't figure out that two same-attribute look-alikes with high cosine are usually <em>different</em> people.</li>
+          <li>Almost everything is tuned by hand (five weights, per-type thresholds, per-type resolutions) on roughly one company's data. Precision actually drops as the corpus grows.</li>
+          <li>The global auto-tuner raises resolution to break up one runaway cluster and shatters good clusters elsewhere as a side effect.</li>
+          <li>MiniLM is a generic embedder, not tuned for PII strings, and it runs on the CPU worker.</li>
+          <li>It's one opaque box. Any failure re-runs the whole thing, and the 201&nbsp;MB <code>clusters.json</code> is a single-cell serialization we regret.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="new">3 · The rebuild — <span style="font-family:var(--mono);font-size:1.05rem">feat/ir-eag-free-engine</span></h2>
+    <p class="lead">A learned pairwise merge decision, wrapped in a per-type Temporal fan-out.</p>
+    <p>
+      This is a ground-up rewrite: 149 files, +20,459 / −11,733 in the IR module, 68 commits. What actually changed is
+      <em>what makes the merge decision</em>. Instead of folding signals into edge weights and letting a global
+      algorithm carve the graph, the engine now asks a trained model a direct, symmetric question for every candidate
+      pair, "are these the same entity?", and only clusters once it has those answers.
+    </p>
+
+    <div class="callout key">
+      <span class="lbl">Leiden isn't gone, it's demoted</span>
+      "Leiden = old, learned-pairwise = new" is a handy shorthand, but the truth is a bit narrower. What's gone is the
+      <em>global, hand-tuned</em> Leiden. Leiden itself survives, now running <em>per component</em> at a
+      <em>learned</em> resolution γ, downstream of the pairwise scorer over edges the GBDT already thresholded. It's one
+      step in the clustering tail rather than the thing that makes the call. (An earlier round of experiments tried
+      average-linkage agglomerative clustering with a fine-tuned bge encoder; the version that shipped uses
+      Qwen&nbsp;LoRA plus per-component Leiden.)
+    </div>
+
+    <h3 id="new-stages">The S0–S8 stage kernel</h3>
+    <p>
+      We broke the monolith into a typed stage kernel, and each cluster type runs through it on its own. There's no
+      <code>S2</code> file: encode moved out to the GPU service, so the stages read S0 through S8 but only eight of
+      them actually exist.
+    </p>
+    <div class="fig">
+      <div class="mermaid">
+flowchart TD
+  S0["S0 · ingest + classify + co-occurrence<br/><span style='font-size:11px'>masked parquet → classified node pool + raw_cooccurrence</span>"]
+  S1["S1 · route into per-type buckets<br/><span style='font-size:11px'>5 LoRA-clusterable · 8 normalizer · 44 singleton/no-embed</span>"]
+  EN["encode (Modal GPU)<br/><span style='font-size:11px'>Qwen3-0.6B + per-type LoRA → (n,1024) fp16 .npy</span>"]
+  S3["S3 · block (candidate gen)<br/><span style='font-size:11px'>FAISS(k=200) ∪ co-occurrence ∪ token/cross-attr</span>"]
+  S4["S4 · score<br/><span style='font-size:11px'>259-feature GBDT → calibrated P(merge), keep p≥band_low</span>"]
+  S5["S5 · reduce at τ<br/><span style='font-size:11px'>keep p≥τ_type · canonicalize · dedup</span>"]
+  S6["S6 · WCC components<br/><span style='font-size:11px'>union-find over τ-cleared edges</span>"]
+  S7["S7 · per-component Leiden/CPM(γ)<br/><span style='font-size:11px'>+ CANNOT-LINK (final split) + MUST-LINK</span>"]
+  S8["S8 · build + singleton-fill<br/><span style='font-size:11px'>→ columnar clusters.parquet</span>"]
+  S0 --> S1 --> EN --> S3 --> S4 --> S5 --> S6 --> S7 --> S8
+  EAG[("Enterprise Activity Graph signal<br/><span style='font-size:11px'>(service,table,row) self-join</span>")] -. "co-occurrence arm + ~43 features" .-> S3
+      </div>
+      <div class="cap">Figure 3 — The per-cluster-type stage kernel. Each stage is its own durable Temporal activity.</div>
+    </div>
+
+    <h3 id="new-encoder">The encoder — Qwen LoRA on a Modal GPU</h3>
+    <p>
+      The old in-process MiniLM (384-d) is out. In its place is a shared <code>Qwen/Qwen3-Embedding-0.6B</code> base
+      with <strong>5 frozen per-type LoRA adapters</strong> (Identity, Org, Brand, Product, Street) producing
+      L2-normalized <strong>1024-d</strong> fp16 vectors, served on a <strong>warm Modal GPU</strong> (a10g). Each value
+      is formatted as <code>"{cluster_type} {attribute_type}: {preprocessed_value}"</code>. There's deliberately no
+      CPU/bge fallback: if the encoder is down, the run stops rather than quietly embedding with a different model than
+      the one the adapters were trained on.
+    </p>
+    <div class="callout key">
+      <span class="lbl">Why bother with the GPU rebuild</span>
+      MiniLM is a generic sentence embedder that was never tuned for alias matching. The per-type Qwen&nbsp;LoRA path
+      measured <strong>recall@50 of 0.9487 against bge's 0.8003</strong> in the lab, and it moves the dominant encode
+      cost (roughly 87% of encode+FAISS at Identity's ~197K nodes) off the CPU worker onto a GPU. FAISS became
+      dim-agnostic along the way, reading <code>shape[1]</code>, so the 1024-d array works without a hardcoded-dim
+      crash.
+    </div>
+
+    <h3 id="new-block">Candidate blocking — three arms, three columns</h3>
+    <p>
+      Scoring all O(n²) pairs is a non-starter, so blocking (S3) cuts it down to candidates using three arms, unioned
+      in one global index space and kept as three separate columns (we never max-merge them, because the GBDT wants to
+      read them apart):
+    </p>
+    <ul>
+      <li><strong>FAISS kNN</strong>, <code>k=200</code>, streamed in 4,096-row batches (that's the "444&nbsp;MB streamed" invariant), IVF index above 5,000 nodes. Top-30 neighbour cosines get harvested inline so the embedding features don't need a second index scan.</li>
+      <li><strong>Co-occurrence</strong>: any pair sharing a <code>(service, table, row)</code> record becomes a candidate, even when the strings look nothing alike.</li>
+      <li><strong>Token / cross-attribute</strong>: Identity token blocks plus name↔abbreviation pairs for 7 types, with caps on hot tokens and fan-out.</li>
+    </ul>
+
+    <h3 id="new-gbdt">The 259-feature GBDT pairwise scorer</h3>
+    <p>
+      This is where the decision lives. A <strong>LightGBM</strong> model reads a <strong>259-column feature vector per
+      candidate pair</strong> and returns a calibrated <code>P(merge)</code>. Every feature is symmetric in the two
+      values, which is what keeps the decision <strong>order-invariant</strong>. The old 19 production features are
+      still in there, re-homed byte-for-byte into their families. One vectorized <code>compute_features()</code> runs
+      at both training and serving time, so there's no train/serve skew to chase.
+    </p>
+    <div class="chips">
+      <span class="chip">string <b>46</b></span><span class="chip">phonetic <b>12</b></span><span class="chip">affix <b>14</b></span>
+      <span class="chip">email <b>24</b></span><span class="chip">corpus <b>26</b></span>
+      <span class="chip eag">cooc <b>25</b> ◂ EAG</span><span class="chip eag">graph <b>18</b> ◂ EAG</span>
+      <span class="chip">embedding <b>41</b></span><span class="chip">coherence <b>22</b></span><span class="chip">type_schema <b>31</b></span>
+      <span class="chip" style="background:var(--indigo-100);color:var(--indigo-800);border-color:var(--indigo-100)">= 259 total</span>
+    </div>
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  P["candidate pair<br/>(a, b)"] --> F["259 symmetric features<br/><span style='font-size:11px'>10 families · vectorized · train==serve</span>"]
+  F --> B["LightGBM raw Booster<br/><span style='font-size:11px'>400 trees · deterministic</span>"]
+  B --> C["1-D calibrator<br/><span style='font-size:11px'>isotonic / Platt</span>"]
+  C --> PM["calibrated P(merge)<br/><span style='font-size:11px'>order-invariant</span>"]
+  EAG[("(service,table,row)<br/>self-join")] -. "cooc + graph<br/>~43 feats" .-> F
+      </div>
+      <div class="cap">Figure 4 — The learned pairwise decision: 259 features → Booster → calibrator → calibrated P(merge).</div>
+    </div>
+    <p>
+      Why a raw Booster with a <em>separate</em> calibrator instead of a scikit wrapper? The base fit has to stream over
+      parquet blocks, because the pooled <code>(N, 259)</code> matrix won't fit in memory at Identity scale, and keeping
+      the tiny 1-D sklearn calibrator apart from the LightGBM C-model shrinks the pickle surface. The loader stamps and
+      checks four library versions on load so a cross-version pickle can't mis-load silently.
+    </p>
+
+    <h3 id="new-calib">Learned calibration — per-type τ and γ</h3>
+    <p>
+      This was the deepest change, and the source of the nastiest bugs. The old constants were tuned to a dead cosine
+      distribution, which makes them meaningless on a calibrated GBDT probability. The new engine re-derives its
+      operating point directly on the calibrated P-scale, using a "train-through-serving" harness that runs synthetic
+      fixtures through the exact same serving code prod uses:
+    </p>
+    <ul>
+      <li><strong>τ, the merge threshold</strong>. A starvation-aware selector: hold the 0.95-precision floor unless it can only be met at recall below 0.10, in which case fall back to F1-max. The same rule lands Identity at τ≈0.55 (its chaining would otherwise flood Leiden) and pushes low-signal attribute types to F1-max, with nothing tuned by hand.</li>
+      <li><strong>γ, the Leiden resolution</strong>. A label-driven crossover: γ sits between the 90th percentile of negative weights and the 10th percentile of positive ones, capped just under the positive floor so it can't degenerate.</li>
+    </ul>
+    <div class="callout warn">
+      <span class="lbl">The bug this fixed: "measured but never served"</span>
+      For weeks, training stamped τ and γ into the bundle and serving ignored them. It cut every type at a flat config τ
+      and ran Leiden at empty hand-tuned resolutions, so the calibrated operating point was measured but never actually
+      used. <code>merge_threshold()</code> was dead code. Two calibrator bugs were hiding behind that: a degenerate
+      <strong>γ=1.0</strong> that produced zero clusters, and a starving <strong>τ=0.98</strong> that produced zero
+      edges. Together they were the merge-blocker; fixing all three took offline F1 from <span class="num">0.000 to
+      0.734</span>. There's no default τ/γ table anymore. Resolution goes operator-override → bundle → fail-loud for τ,
+      or singleton for γ.
+    </div>
+
+    <h3 id="new-cluster">The clustering tail — WCC → per-component Leiden → constraints</h3>
+    <p>
+      Edges above τ get broken into <strong>weakly-connected components</strong>. A P≥τ edge can't cross a component, so
+      this split loses nothing, and each component clusters on its own:
+    </p>
+    <ul>
+      <li><strong>Per-component Leiden/CPM at the learned γ</strong>, fixed 10 iterations, seed 42, byte-deterministic. A component over 50K edges fails loud with <code>HubLeakError</code> rather than silently degrading.</li>
+      <li><strong>CANNOT-LINK runs as a pure final split</strong>. Five predicates (org-suffix-only overlap, street house-number, first-name homonyms, email-domain-vs-org, cross-role-same-container) apply <em>after</em> Leiden, so the constrained result is always a subset of the unconstrained one.</li>
+      <li><strong>MUST-LINK</strong> is exact-normalized equality plus ghost "certain" pins for extend mode. Co-occurrence is never a MUST-LINK; it's soft evidence, and the GBDT plus CANNOT-LINK make the actual call.</li>
+    </ul>
+    <p>
+      Components only materialize the ~2.8% of nodes that carry a surviving edge. The ~97% edge-isolated majority gets
+      refilled as singletons at S8, so every value still reaches the faker.
+    </p>
+
+    <h3 id="new-eag">Co-occurrence &amp; the Enterprise Activity Graph</h3>
+    <p>
+      Co-occurrence is the evidence the encoder can't see. Two people named "J.&nbsp;Smith" look identical but never
+      share a row; a person's name and their email look nothing alike but sit in the same
+      <code>(service, table, row)</code>. The new engine rebuilds co-occurrence from the deduped nodes'
+      service-qualified <code>source_records</code> self-join. The old stored array turned out to overlap the true
+      shared-row topology by under 2%. A structural role gate drops cross-person edges at the source, so a
+      sender and a recipient in one email row don't get linked. Co-occurrence then shows up in three places: a
+      candidate arm, a Leiden edge weight, and about 43 of the 259 features (the <code>cooc</code> and
+      <code>graph</code> families).
+    </p>
+    <div class="callout key">
+      <span class="lbl">Two different things are both abbreviated "EAG"</span>
+      <ul style="margin:.4em 0">
+        <li><strong>Enterprise Activity Graph</strong> (design doc v0.1) is the north-star: a persistent typed graph
+        (<code>G_obs → resolved → G_anon</code>) of cross-service activity. IR is "Stage 1" of it, and its role for IR
+        is explicitly <em>"drop-in features, not a replacement"</em>. It hands IR pair features (co-occurrence,
+        <code>rare_context_overlap</code>, structural anchor edges) through an "EAG Features for IR Consumption"
+        contract. That's the sense in which the GBDT reads "features from the EAG."</li>
+        <li><strong>Embedding-Anchor-Graph</strong> is the <em>old</em> live-LLM-judge path built on a
+        <code>G_obs</code> neighborhood. The branch is called <code>eag-free</code> because it deletes that dependency.
+        The shipped engine builds its own activity-graph signal straight from the masked data's
+        <code>(service,table,row)</code> self-join, with no separately-built graph and no live LLM judge.</li>
+      </ul>
+      So the engine today captures the activity-graph idea as the <code>cooc</code> and <code>graph</code> feature
+      families over structured data. The fuller typed EAG, with <code>AUTHORED_BY</code>/<code>SENT_TO</code>/
+      <code>IN_CONTEXT</code> edges and cross-modal documents, is future work (<strong>DACQ-2809</strong>).
+    </div>
+
+    <h3 id="new-temporal">Temporal fan-out orchestration</h3>
+    <p>
+      The whole thing runs as <code>IRFanoutWorkflow</code>. It routes once, then fans out one durable unit per cluster
+      type (the full encode→block→score→reduce→wcc→cluster chain) across a sliding window of 4 on a dedicated
+      worker/queue at 64 concurrency, largest type first so Identity (~77% of encode work) starts early. It
+      continue-as-news when history pressure builds, then builds once at the end. Every activity boundary carries only
+      S3 keys and scalars, never an ndarray or an edge blob, so workflow history stays flat no matter how much data
+      moves. Encode is a durable start→poll→cancel triad, because Modal spawns aren't idempotent.
+    </p>
+
+    <!-- ============================================================ -->
+    <h2 id="why">4 · Why the framing is "pairwise &amp; order-invariant"</h2>
+    <p>
+      The real change is the unit of decision. The old engine decided globally: it partitioned the whole graph at once,
+      and any two nodes' fate hung on the entire edge structure around them. The new engine decides locally, one
+      symmetric pair at a time, then composes those decisions with lossless components and per-component Leiden.
+    </p>
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  subgraph OLD["OLD · global graph partition"]
+    direction TB
+    g1((a)) --- g2((b))
+    g2 --- g3((c))
+    g1 --- g3
+    n1["one global Leiden cut<br/>over hand-tuned cosine edges"]
+  end
+  subgraph NEW["NEW · learned per-pair decision, then cluster"]
+    direction TB
+    q1["(a,b) → P=0.94 ✓"]
+    q2["(a,c) → P=0.88 ✓"]
+    q3["(c,d) → P=0.11 ✗"]
+    n2["symmetric P(merge) per pair →<br/>WCC → per-component Leiden(learned γ)"]
+  end
+  OLD -.->|"same goal,<br/>different decision unit"| NEW
+      </div>
+      <div class="cap">Figure 5 — Global graph partition vs. a learned pairwise decision composed into per-component clustering.</div>
+    </div>
+    <p>Deciding per symmetric pair gets us three things that matter for a privacy-critical, auditable pipeline. It's
+      deterministic: fixed seeds and single-threaded kernels mean the same input always yields the same clusters. It's
+      auditable, since every merge traces back to one pair, one 259-vector, one probability. And it's learnable,
+      because a symmetric pair is a clean supervised example, so the rule gets trained and calibrated instead of
+      hand-tuned.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="compare">5 · Side-by-side</h2>
+    <table>
+      <tr>
+        <th style="width:200px">Dimension</th>
+        <th>Today's prod — <code>origin/main</code> <span class="tag old">monolith</span></th>
+        <th>Rebuild — <code>feat/ir-eag-free-engine</code> <span class="tag new">shipped v2</span></th>
+      </tr>
+      <tr><td><strong>Decision unit</strong></td><td class="old">Global graph partition</td><td class="new">Learned, order-invariant per-pair merge decision</td></tr>
+      <tr><td><strong>Orchestration</strong></td><td class="old">1 activity (~2,526 LOC), 1 workflow</td><td class="new">13-activity per-type Temporal fan-out, dedicated worker</td></tr>
+      <tr><td><strong>Encoder</strong></td><td class="old">all-MiniLM-L6-v2 (384-d), in-process CPU</td><td class="new">Qwen3-0.6B + 5 LoRA adapters (1024-d), Modal GPU</td></tr>
+      <tr><td><strong>Candidate gen</strong></td><td class="old">unbounded edge cross-products</td><td class="new">FAISS(k=200) ∪ co-occurrence ∪ token, streamed</td></tr>
+      <tr><td><strong>Scorer</strong></td><td class="old">hand-tuned weighted cosine (5 signals)</td><td class="new">LightGBM over 259 features + 1-D calibrator</td></tr>
+      <tr><td><strong>Feature count</strong></td><td class="old">5 (default) / 19 (opt-in learned)</td><td class="new">259 across 10 families, train==serve</td></tr>
+      <tr><td><strong>Threshold / resolution</strong></td><td class="old">hand-tuned per-type τ &amp; γ tables</td><td class="new">learned per-type τ (starvation-aware) + γ (crossover)</td></tr>
+      <tr><td><strong>Clustering</strong></td><td class="old">one global Leiden + auto-tune</td><td class="new">WCC → per-component Leiden(learned γ) + CL/ML</td></tr>
+      <tr><td><strong>Co-occurrence / EAG</strong></td><td class="old">one edge signal, stored array (&lt;2% accurate)</td><td class="new">rebuilt self-join, candidate arm + ~43 features</td></tr>
+      <tr><td><strong>Output artifact</strong></td><td class="old"><code>clusters.json</code> (201 MB monolith)</td><td class="new">columnar <code>clusters.parquet</code> (tidy, streamable)</td></tr>
+      <tr><td><strong>On encoder outage</strong></td><td class="old">implicit degrade</td><td class="new">fail-loud (no CPU/bge fallback)</td></tr>
+    </table>
+
+    <!-- ============================================================ -->
+    <h2 id="results">6 · What we learned (offline benchmarks)</h2>
+    <p>
+      Both engines are scored by the same metric code. A dual-path reader normalizes <code>clusters.json</code> and
+      <code>clusters.parquet</code> to one schema, so the F1 gap is a pipeline gap, not a metric gap. Two synthetic
+      fixtures, and the numbers are directional rather than production SLAs.
+    </p>
+
+    <h3>The headline: it gets better with scale</h3>
+    <table>
+      <tr><th>Fixture</th><th>Engine</th><th>F1 (cov-adj)</th><th>Precision</th><th>Recall</th><th>Coverage</th></tr>
+      <tr><td>run-4011827 (2K)</td><td class="old">main</td><td class="num">0.7500</td><td class="num">0.8587</td><td class="num">0.6657</td><td class="num">0.9775</td></tr>
+      <tr><td>run-4011827 (2K)</td><td class="new">HEAD</td><td class="num">0.6791</td><td class="num">0.9700</td><td class="num">0.5225</td><td class="num">0.9602</td></tr>
+      <tr><td>run-4061225 (13K)</td><td class="old">main</td><td class="num">0.7101</td><td class="num">0.7518</td><td class="num">0.6729</td><td class="num">0.9947</td></tr>
+      <tr><td>run-4061225 (13K)</td><td class="new">HEAD</td><td class="num">0.8367 <span class="tag good">win</span></td><td class="num">0.9621</td><td class="num">0.7402</td><td class="num">0.9824</td></tr>
+    </table>
+    <div class="callout win">
+      <span class="lbl">The trend flip</span>
+      HEAD F1 climbs with scale (0.68→0.84) while main slides (0.75→0.71), and HEAD is far more precise at both sizes
+      (0.96–0.97 against 0.75–0.86, so fewer wrong merges). At 2K, HEAD's recall is the binding constraint; it just
+      emits fewer merges. At 13K, more data per identity lets the learned scorer, the calibrated τ/γ, and CANNOT-LINK
+      find genuine merges while precision holds. That's the opposite of the global cosine engine, whose precision decays
+      as more surface forms create accidental over-merges. Shipped bundle <code>pm_qwen_gbdt_v2</code>,
+      <strong>259 features</strong>, CV&nbsp;F1max&nbsp;<strong>0.9332</strong>.
+    </div>
+
+    <h3>The lesson that stuck: run it, don't just read it</h3>
+    <p>
+      Eight bugs only turned up when we ran the pipeline end-to-end. Static review caught none of them. Three of the
+      eight formed a single merge-blocker that produced zero clusters until we fixed all three:
+    </p>
+    <div class="grid3">
+      <div class="card"><h4>Orphaned calibration</h4><p style="font-size:.9rem">Training stamped τ/γ; serving never read them, so Leiden ran empty hand-tuned constants.</p></div>
+      <div class="card"><h4>Degenerate γ = 1.0</h4><p style="font-size:.9rem">γ set to P90-of-positives piled up at ≈1.0, so CPM merged nothing and produced 0 clusters.</p></div>
+      <div class="card"><h4>Starving τ = 0.98</h4><p style="font-size:.9rem">A precision-floor τ dominated for low-signal types, pinning recall near 0.</p></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--slate-500)">
+      The other five: an eval child-workflow self-collision, an eval parquet-read crash, a 0-candidate crash, an
+      uncalibrated-type fail-loud gap, and an over-strict faker cross-identity collision guard (the "heer" crash).
+    </p>
+
+    <!-- ============================================================ -->
+    <h2 id="roadmap">7 · Where this is going</h2>
+    <div class="grid2">
+      <div class="card">
+        <h4>Cross-modal IR (DACQ-2809)</h4>
+        <p>Resolve structured columns and free-text documents in one IR run. The <code>source_records</code> triple is
+        already modality-agnostic (source, container, co-mention group), so adding a modality is a caller-side list
+        append, not a contract migration.</p>
+      </div>
+      <div class="card">
+        <h4>The fuller Enterprise Activity Graph</h4>
+        <p>Promote the pragmatic co-occurrence signal to the typed <code>G_obs</code> with
+        <code>AUTHORED_BY</code>/<code>SENT_TO</code>/<code>IN_CONTEXT</code> edges, and feed
+        <code>rare_context_overlap</code> in as another pair feature. Drop-in features, not a replacement.</p>
+      </div>
+      <div class="card">
+        <h4>GBDT → MLP as data grows</h4>
+        <p>LightGBM is the right tool while labels are scarce. As labeled merge pairs pile up, an MLP over the same (or
+        a richer) feature space should scale better with data and could eventually share the encoder representation for
+        a more end-to-end decision. The scorer is a clean duck-typed interface, so swapping the model stays contained.</p>
+      </div>
+      <div class="card">
+        <h4>Real-data validation</h4>
+        <p>The head-to-head numbers are on synthetic fixtures, and ship validation is still a manual First-Quadrant
+        diff. More real, labeled data is what lets the learned operating point default-on more widely.</p>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="appendix">Appendix</h2>
+
+    <h3>Taxonomy routing (57 cluster types)</h3>
+    <div class="grid3">
+      <div class="card"><h4>5 · LoRA-clusterable</h4><p style="font-size:.9rem">Identity, Org, Brand, Product, Street — encoder + FAISS + GBDT + Leiden.</p></div>
+      <div class="card"><h4>8 · normalizer</h4><p style="font-size:.9rem">Phone, City, State, Country, Postal Code, Coordinates, DOB, Age — deterministic canonical-key equality, no encoder.</p></div>
+      <div class="card"><h4>44 · singleton / no-embed</h4><p style="font-size:.9rem">Gov IDs, financial, health, credentials, network, Web, and the rest — each value its own entity; skips encoder/FAISS/GBDT.</p></div>
+    </div>
+
+    <h3>Config &amp; activation</h3>
+    <table>
+      <tr><th>Field / env</th><th>Meaning</th></tr>
+      <tr><td><code>model.gbdt_bundle</code> / <code>IR_LEARNED_MODEL_PATH</code></td><td>joblib bundle (Booster + calibrator + manifest); <code>s3://…</code> localized at runtime</td></tr>
+      <tr><td><code>model.encoder_checkpoint</code> / <code>IR_ENCODER_CHECKPOINT</code></td><td>Qwen LoRA adapter set</td></tr>
+      <tr><td><code>decision.band_low</code></td><td>S4 survivor floor (default 0.1); note there's no default τ</td></tr>
+      <tr><td><code>blocking_faiss_k</code></td><td>FAISS kNN width (200)</td></tr>
+      <tr><td><code>learned_merge_threshold</code> / <code>leiden_resolutions</code></td><td>optional per-type τ / γ operator overrides (else read from the bundle, else fail-loud / singleton)</td></tr>
+    </table>
+
+    <h3>Model artifacts (S3, pickle-RCE trust boundary)</h3>
+    <p>Loadable only from the curated <code>_models/identity-resolution/</code> prefix:</p>
+    <ul>
+      <li><strong>Pairwise bundle</strong>: <code>_models/identity-resolution/pairwise/pm_qwen_gbdt_v2.joblib</code> — raw LightGBM Booster + 1-D calibrator + manifest (<code>global_T</code>, <code>tau_type</code>, <code>gamma_type</code>, feature-bank hash, lib versions).</li>
+      <li><strong>Qwen LoRA adapters</strong>: <code>_models/identity-resolution/encoder/qwen_lora/0.6B/&lt;type&gt;/</code>.</li>
+    </ul>
+
+    <h3>Key files</h3>
+    <table>
+      <tr><th>Concern</th><th>Location (branch <code>feat/ir-eag-free-engine</code>)</th></tr>
+      <tr><td>Stage kernel</td><td><code>identity_resolution/stages/s0…s8_*.py</code></td></tr>
+      <tr><td>Encoder / FAISS (Modal)</td><td><code>identity_resolution/encoder/{qwen_modal,routing,surfaces,faiss_index}.py</code></td></tr>
+      <tr><td>Feature bank (259, 10 families)</td><td><code>identity_resolution/features/{calculator,names}.py</code>, <code>families/</code></td></tr>
+      <tr><td>GBDT scorer + model store</td><td><code>identity_resolution/scorer/{gbdt,model_store}.py</code></td></tr>
+      <tr><td>Training / calibration</td><td><code>identity_resolution/training/{calibrator,trainer,bundle}.py</code></td></tr>
+      <tr><td>Clustering engines</td><td><code>identity_resolution/engines/{leiden,cannot_link,constraints}.py</code></td></tr>
+      <tr><td>Temporal fan-out</td><td><code>identity_resolution/orchestration/{workflows,activities}.py</code></td></tr>
+      <tr><td>Co-occurrence</td><td><code>identity_resolution/preprocess/cooccurrence.py</code>, <code>features/families/cooc.py</code></td></tr>
+    </table>
+
+    <h3>Glossary</h3>
+    <ul>
+      <li><strong>Enterprise Activity Graph (EAG)</strong> — north-star typed activity graph (G_obs → resolved → G_anon); IR is its Stage 1; supplies drop-in pair features.</li>
+      <li><strong>Embedding-Anchor-Graph (EAG)</strong> — the old live-LLM-judge path the <code>eag-free</code> branch deletes. Same acronym, different thing.</li>
+      <li><strong>Order-invariant</strong> — <code>P(merge | a, b) = P(merge | b, a)</code>; every feature is symmetric.</li>
+      <li><strong>τ / γ</strong> — the learned per-type merge threshold (on calibrated P) and Leiden CPM resolution.</li>
+      <li><strong>WCC</strong> — weakly-connected components; the lossless shard primitive that lets Leiden run per-component.</li>
+      <li><strong>train-through-serving</strong> — training runs fixtures through the same serving code prod uses, so there's no train/serve skew.</li>
+    </ul>
+
+    <footer>
+      Draft · Identity Resolution architecture evolution · Data Acquisition · Anonymization pipeline Stage 2.<br/>
+      Draws on the <code>feat/ir-eag-free-engine</code> onboarding research (S0–S8 stage kernel, Qwen encoder,
+      259-feature GBDT, calibration, Temporal fan-out), the "Identity Resolution &amp; Faker Pipeline" and "IR v2:
+      Archetypical Clusters" design docs, the "EAG Design Doc v0.1", and the encoder/feature experiment. Benchmark
+      numbers are internal synthetic-fixture and directional.
+    </footer>
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad:true,
+    theme:'base',
+    themeVariables:{
+      primaryColor:'#eef2ff',
+      primaryBorderColor:'#4f46e5',
+      primaryTextColor:'#0f172a',
+      lineColor:'#94a3b8',
+      secondaryColor:'#f1f5f9',
+      tertiaryColor:'#ffffff',
+      fontFamily:'ui-sans-serif, system-ui, sans-serif',
+      fontSize:'14px'
+    },
+    flowchart:{ curve:'basis', htmlLabels:true, padding:14 }
+  });
+</script>
+</body>
+</html>

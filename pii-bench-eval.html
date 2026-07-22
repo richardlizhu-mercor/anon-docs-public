@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PII Tokenizer — pii-bench Re-run</title><style>
+:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--indigo-800:#3730a3;--indigo-100:#e0e7ff;--indigo-50:#eef2ff;
+--slate-900:#0f172a;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
+--slate-300:#cbd5e1;--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--white:#fff;
+--amber-50:#fffbeb;--amber-700:#b45309;--red-50:#fef2f2;--red-700:#b91c1c;--green-50:#f0fdf4;--green-700:#15803d;--green-100:#dcfce7;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.6;-webkit-font-smoothing:antialiased;}
+main{max-width:1120px;margin:0 auto;padding:48px 40px 120px;}
+.eyebrow{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600;}
+h1{font-size:2.1rem;font-weight:600;line-height:1.14;margin:.35em 0 .3em;letter-spacing:-.02em;}
+.sub{font-size:1.05rem;color:var(--slate-600);font-weight:300;max-width:82ch;}
+.note{font-size:.86rem;color:var(--slate-500);max-width:92ch;margin:12px 0;}
+h2{font-size:1.35rem;font-weight:600;margin:2em 0 .5em;padding-top:12px;border-top:1px solid var(--slate-200);}
+h3{font-size:1.02rem;font-weight:600;margin:1.4em 0 .3em;color:var(--slate-700);}
+p{margin:.7em 0;color:var(--slate-700);}strong{font-weight:600;color:var(--slate-900);}em{color:var(--slate-600);}
+code{font-family:var(--mono);font-size:.84em;background:var(--indigo-50);color:var(--indigo-800);padding:1.5px 6px;border-radius:5px;}
+ul{color:var(--slate-700);padding-left:1.25em;}li{margin:.34em 0;}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:.83rem;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--slate-200);}
+th{background:var(--slate-100);text-align:left;font-weight:600;color:var(--slate-700);padding:9px 11px;font-size:.75rem;}
+td{padding:8px 11px;border-top:1px solid var(--slate-200);color:var(--slate-700);vertical-align:top;}
+.num{font-variant-numeric:tabular-nums;text-align:right;}
+tr.frontier td{background:var(--green-50);}tr.frontier td:first-child{font-weight:600;color:var(--green-700);}
+tr.cloud td{background:var(--red-50);}tr.cloud td:first-child{font-weight:600;color:var(--red-700);}
+.acc{font-weight:600;}
+.callout{border-radius:12px;padding:15px 19px;margin:18px 0;font-size:.94rem;}
+.callout .lbl{font-weight:600;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px;}
+.callout.key{background:var(--indigo-50);border:1px solid var(--indigo-100);}.callout.key .lbl{color:var(--indigo-700);}
+.callout.warn{background:var(--amber-50);border:1px solid #fde68a;}.callout.warn .lbl{color:var(--amber-700);}
+.legend{font-size:.8rem;color:var(--slate-500);margin:6px 0 0;}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin:0 3px 0 10px;border:1px solid var(--slate-300);}
+footer{color:var(--slate-500);font-size:.82rem;margin-top:48px;padding-top:20px;border-top:1px solid var(--slate-200);}
+</style></head><body><main>
+<span class="eyebrow">Data Acquisition · Tokenizer Redesign</span>
+<h1>PII Tokenizer — pii-bench Re-run (16-type)</h1>
+<p class="sub">Every detector from the <a href="tokenizer-options.html" target="_top">options bake-off</a>, re-run on the external
+<strong>pii-bench</strong> test split (Pritesh-2711/pii-bench) instead of anobench, scored to the
+16-type taxonomy — with <strong>measured</strong> runtimes this time, not compute-ratio estimates.
+Two stratified samples: <strong>1500</strong> (5 PII sources) and <strong>5000</strong> (all 10 sources).</p>
+<p class="note">Accuracy = char-level F1 under the 16-type taxonomy (harness <code>score_new_taxonomy.py</code>):
+<em>detection</em> (PII-or-not), <em>cluster</em> (Identity/Street/Institution/N-A), <em>fine</em> (exact type).
+Timing = measured on one Apple-Silicon Mac (MPS for torch models, CPU for spaCy/Presidio, google-genai API for Gemini),
+per-process via <code>/usr/bin/time -l</code>. pii-bench GT is coarser + noisier than anobench, so absolute F1
+is <strong>not</strong> comparable to the anobench doc — read the columns against each other, not against the old numbers.</p>
+
+<div class="callout key"><span class="lbl">The fine-tune's home-field edge doesn't transfer; Gemini's lead widens</span>
+On anobench (Mercor's own distribution) <strong>deberta_ft</strong> was the "best value" frontier point at 0.874 —
+it <em>beat</em> zero-shot gliner2. On pii-bench, an <strong>external</strong> corpus neither the fine-tune nor the
+Gemini prompt ever saw, that edge evaporates: the fine-tuned <code>deberta_ft</code> (0.620 clean-source
+detection, 5k) lands <strong>mid-pack — roughly on par with the zero-shot gliner family (gliner2
+0.619)</strong> and below the routed union (0.685). It doesn't collapse, but its in-distribution
+lead is gone — on anobench it <em>beat</em> gliner2; here it merely ties it. Meanwhile <strong>Gemini leads at
+0.769</strong> — ~0.084 over the best local, an order of magnitude wider than anobench's 0.009 gap. The read: fine-tuning buys in-distribution accuracy, but on an unseen
+distribution zero-shot detectors generalize at least as well, and the cloud LLM's margin grows. (deberta_ft here
+uses the training-matched sliding-window inference; qwen is scored on the full sample.)</div>
+
+<h2>Accuracy — both samples</h2>
+<p class="note">"clean" = detection F1 over the three trustworthy sources (nvidia_nemotron, gretel_finance,
+isotonic_pii_200k); "all" = all sampled sources. The two ai4privacy sources depress "all" for every model
+(including Gemini) via a scoping artifact — see the per-source section. Read <strong>clean</strong> as the
+headline; "all" is shown for completeness.</p>
+<table>
+<tr><th>Option</th><th>Type</th><th class="num">clean · 1.5k</th><th class="num">clean · 5k</th>
+<th class="num">all · 1.5k</th><th class="num">all · 5k</th>
+<th class="num">clu · 1.5k</th><th class="num">clu · 5k</th><th class="num">fine · 1.5k</th><th class="num">fine · 5k</th></tr>
+<tr class="cloud"><td>Gemini 2.5 Flash</td><td>cloud LLM</td><td class="num acc">0.778</td><td class="num acc">0.769</td><td class="num">0.668</td><td class="num">0.674</td><td class="num">0.640</td><td class="num">0.652</td><td class="num">0.527</td><td class="num">0.479</td></tr>
+<tr class="frontier"><td>routed (deberta_ft+gliner2)</td><td>fine-tuned local · oracle</td><td class="num acc">0.671</td><td class="num acc">0.685</td><td class="num">0.586</td><td class="num">0.612</td><td class="num">0.545</td><td class="num">0.566</td><td class="num">0.497</td><td class="num">0.516</td></tr>
+<tr class=""><td>local_union</td><td>oracle</td><td class="num acc">0.654</td><td class="num acc">0.667</td><td class="num">0.565</td><td class="num">0.582</td><td class="num">0.523</td><td class="num">0.536</td><td class="num">0.473</td><td class="num">0.482</td></tr>
+<tr class=""><td>qwen2.5-7B (4-bit)</td><td>OOB local · LLM</td><td class="num acc">0.659</td><td class="num acc">0.641</td><td class="num">0.573</td><td class="num">0.558</td><td class="num">0.541</td><td class="num">0.525</td><td class="num">0.504</td><td class="num">0.486</td></tr>
+<tr class=""><td>local_routed</td><td>oracle</td><td class="num acc">0.624</td><td class="num acc">0.636</td><td class="num">0.556</td><td class="num">0.575</td><td class="num">0.523</td><td class="num">0.535</td><td class="num">0.463</td><td class="num">0.476</td></tr>
+<tr class=""><td>gliner_know_large</td><td>OOB local</td><td class="num acc">0.641</td><td class="num acc">0.632</td><td class="num">0.559</td><td class="num">0.548</td><td class="num">0.536</td><td class="num">0.529</td><td class="num">0.489</td><td class="num">0.447</td></tr>
+<tr class="frontier"><td>deberta_ft</td><td>fine-tuned local</td><td class="num acc">0.610</td><td class="num acc">0.620</td><td class="num">0.548</td><td class="num">0.553</td><td class="num">0.514</td><td class="num">0.510</td><td class="num">0.446</td><td class="num">0.439</td></tr>
+<tr class=""><td>gliner2</td><td>OOB local</td><td class="num acc">0.630</td><td class="num acc">0.619</td><td class="num">0.546</td><td class="num">0.558</td><td class="num">0.508</td><td class="num">0.521</td><td class="num">0.467</td><td class="num">0.477</td></tr>
+<tr class=""><td>union_typed</td><td>oracle</td><td class="num acc">0.603</td><td class="num acc">0.610</td><td class="num">0.538</td><td class="num">0.561</td><td class="num">0.498</td><td class="num">0.523</td><td class="num">0.454</td><td class="num">0.475</td></tr>
+<tr class=""><td>gliner_know_base</td><td>OOB local</td><td class="num acc">0.604</td><td class="num acc">0.602</td><td class="num">0.532</td><td class="num">0.544</td><td class="num">0.517</td><td class="num">0.519</td><td class="num">0.471</td><td class="num">0.424</td></tr>
+<tr class=""><td>gliner_urchade</td><td>OOB local</td><td class="num acc">0.617</td><td class="num acc">0.596</td><td class="num">0.543</td><td class="num">0.501</td><td class="num">0.516</td><td class="num">0.476</td><td class="num">0.491</td><td class="num">0.455</td></tr>
+<tr class=""><td>openai_pf</td><td>OOB local</td><td class="num acc">0.559</td><td class="num acc">0.576</td><td class="num">0.480</td><td class="num">0.485</td><td class="num">0.440</td><td class="num">0.444</td><td class="num">0.310</td><td class="num">0.290</td></tr>
+<tr class=""><td>presidio</td><td>OOB local · CPU</td><td class="num acc">0.435</td><td class="num acc">0.451</td><td class="num">0.378</td><td class="num">0.421</td><td class="num">0.335</td><td class="num">0.373</td><td class="num">0.231</td><td class="num">0.199</td></tr>
+<tr class=""><td>deberta_ai4privacy</td><td>OOB local</td><td class="num acc">0.368</td><td class="num acc">0.387</td><td class="num">0.313</td><td class="num">0.347</td><td class="num">0.274</td><td class="num">0.308</td><td class="num">0.223</td><td class="num">0.249</td></tr>
+<tr class=""><td>spaCy (trf)</td><td>OOB local · CPU</td><td class="num acc">0.394</td><td class="num acc">0.374</td><td class="num">0.346</td><td class="num">0.431</td><td class="num">0.310</td><td class="num">0.396</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+</table>
+<p class="legend"><span class="sw" style="background:var(--green-50)"></span>frontier candidate
+<span class="sw" style="background:var(--red-50)"></span>cloud LLM
+<span class="sw" style="background:var(--white)"></span>other. clean/all = detection char-F1 (clean vs all sources);
+clu/fine = cluster / fine char-F1 (all sources). Rows ordered by clean-source detection.</p>
+
+<h2>Measured performance (5k sample)</h2>
+<table>
+<tr><th>Option</th><th>Device</th><th class="num">wall (s)</th><th class="num">CPU (s)</th>
+<th class="num">peak RSS (MB)</th><th class="num">infer docs/s</th><th class="num">infer chars/s</th></tr>
+<tr class="cloud"><td>Gemini 2.5 Flash</td><td>api</td><td class="num">364.0</td><td class="num">3.68</td><td class="num">156</td><td class="num">—</td><td class="num">—</td></tr>
+<tr class="frontier"><td>routed (deberta_ft+gliner2)</td><td>cpu</td><td class="num">0.2</td><td class="num">0.17</td><td class="num">38</td><td class="num">—</td><td class="num">—</td></tr>
+<tr class=""><td>local_union</td><td>cpu</td><td class="num">0.2</td><td class="num">0.17</td><td class="num">38</td><td class="num">—</td><td class="num">—</td></tr>
+<tr class=""><td>local_routed</td><td>cpu</td><td class="num">0.2</td><td class="num">0.17</td><td class="num">38</td><td class="num">—</td><td class="num">—</td></tr>
+<tr class=""><td>union_typed</td><td>cpu</td><td class="num">0.1</td><td class="num">0.08</td><td class="num">45</td><td class="num">—</td><td class="num">—</td></tr>
+<tr class=""><td>qwen2.5-7B (4-bit)</td><td>mps</td><td class="num">5535.5</td><td class="num">1327.77</td><td class="num">5777</td><td class="num">0.9</td><td class="num">332</td></tr>
+<tr class=""><td>gliner2</td><td>mps</td><td class="num">555.3</td><td class="num">840.17</td><td class="num">2975</td><td class="num">9.2</td><td class="num">3370</td></tr>
+<tr class="frontier"><td>deberta_ft</td><td>mps</td><td class="num">247.6</td><td class="num">94.54</td><td class="num">2243</td><td class="num">20.5</td><td class="num">7535</td></tr>
+<tr class=""><td>gliner_know_large</td><td>mps</td><td class="num">2605.1</td><td class="num">3525.01</td><td class="num">3981</td><td class="num">3.3</td><td class="num">1196</td></tr>
+<tr class=""><td>gliner_know_base</td><td>mps</td><td class="num">2605.1</td><td class="num">3525.01</td><td class="num">3981</td><td class="num">13.6</td><td class="num">4982</td></tr>
+<tr class=""><td>gliner_urchade</td><td>mps</td><td class="num">2605.1</td><td class="num">3525.01</td><td class="num">3981</td><td class="num">7.3</td><td class="num">2682</td></tr>
+<tr class=""><td>openai_pf</td><td>mps</td><td class="num">4174.1</td><td class="num">1928.04</td><td class="num">28417</td><td class="num">1.2</td><td class="num">441</td></tr>
+<tr class=""><td>spaCy (trf)</td><td>cpu</td><td class="num">240.1</td><td class="num">289.32</td><td class="num">3009</td><td class="num">26.9</td><td class="num">9888</td></tr>
+<tr class=""><td>presidio</td><td>cpu</td><td class="num">240.1</td><td class="num">289.32</td><td class="num">3009</td><td class="num">103.7</td><td class="num">38114</td></tr>
+<tr class=""><td>deberta_ai4privacy</td><td>mps</td><td class="num">131.1</td><td class="num">67.14</td><td class="num">2781</td><td class="num">39.5</td><td class="num">14538</td></tr>
+</table>
+<p class="legend">wall = full process (model-load + inference); CPU = user+sys seconds; infer docs/s and chars/s exclude
+model-load (from per-doc latency). On MPS the GPU has no exposed cycle counter, so device time ≈ wall−CPU.</p>
+
+<h2>Per-source detection F1 (5k) — where the GT noise lives</h2>
+<table><tr><th>Option</th><th class='num'>ai4privacy_300k</th><th class='num'>ai4privacy_400k</th><th class='num'>conll2003</th><th class='num'>few_nerd</th><th class='num'>finer_139</th><th class='num'>gretel_finance</th><th class='num'>isotonic_pii_200k</th><th class='num'>multinerd</th><th class='num'>nvidia_nemotron</th><th class='num'>wikiann</th></tr>
+<tr><td>deberta_ft</td><td class='num'>0.223</td><td class='num'>0.224</td><td class='num'>0.563</td><td class='num'>0.571</td><td class='num'>0.000</td><td class='num'>0.510</td><td class='num'>0.450</td><td class='num'>0.650</td><td class='num'>0.787</td><td class='num'>0.551</td></tr>
+<tr><td>routed (deberta_ft+gliner2)</td><td class='num'>0.220</td><td class='num'>0.214</td><td class='num'>0.766</td><td class='num'>0.709</td><td class='num'>0.000</td><td class='num'>0.569</td><td class='num'>0.600</td><td class='num'>0.772</td><td class='num'>0.848</td><td class='num'>0.772</td></tr>
+<tr><td>Gemini 2.5 Flash</td><td class='num'>0.236</td><td class='num'>0.245</td><td class='num'>0.832</td><td class='num'>0.734</td><td class='num'>0.000</td><td class='num'>0.674</td><td class='num'>0.696</td><td class='num'>0.903</td><td class='num'>0.889</td><td class='num'>0.754</td></tr>
+<tr><td>gliner2</td><td class='num'>0.217</td><td class='num'>0.255</td><td class='num'>0.725</td><td class='num'>0.635</td><td class='num'>0.000</td><td class='num'>0.540</td><td class='num'>0.620</td><td class='num'>0.670</td><td class='num'>0.708</td><td class='num'>0.737</td></tr>
+<tr><td>deberta_ai4privacy</td><td class='num'>0.117</td><td class='num'>0.123</td><td class='num'>0.562</td><td class='num'>0.537</td><td class='num'>0.000</td><td class='num'>0.292</td><td class='num'>0.257</td><td class='num'>0.600</td><td class='num'>0.631</td><td class='num'>0.488</td></tr>
+<tr><td>presidio</td><td class='num'>0.158</td><td class='num'>0.175</td><td class='num'>0.629</td><td class='num'>0.531</td><td class='num'>0.000</td><td class='num'>0.323</td><td class='num'>0.347</td><td class='num'>0.772</td><td class='num'>0.674</td><td class='num'>0.560</td></tr>
+</table>
+<div class="callout warn"><span class="lbl">Read the per-source spread</span>
+pii-bench GT quality varies a lot by source, so the <strong>clean-source</strong> aggregate above is the
+honest headline. The cleanest, richest PII is <code>nvidia_nemotron</code> and <code>gretel_finance</code> —
+that's where scores reflect real detector skill. The rest carry artifacts: <code>ai4privacy_400k</code>'s GT is
+sparse and dominated by out-of-scope labels (FINANCIAL_ENTITY / IP / LOC), so detectors that correctly find
+emails/usernames there get charged as false positives — <em>every</em> model (even Gemini: recall 0.92,
+precision 0.14) scores low, which is why the "all-sources" column is depressed. <code>isotonic_pii_200k</code>
+mislabels common words ("Male", "9 years old", greetings) as names and user-agent strings as usernames, and a
+handful of its GT spans sit in dense concatenated strings our BIO→char aligner can't place — both slightly
+understate precision there. <code>finer_139</code> (5k only) is XBRL financial tagging with <strong>zero in-scope
+GT</strong>, so every model reads 0.000 in that column — a pure false-positive probe, not a detection score. Treat
+all these columns as a precision stress-test, not a skill ranking; the clean-source aggregate is the number to rank on.</div>
+
+<h2>Method</h2>
+<ul>
+<li><strong>Dataset:</strong> pii-bench test split (5,000-doc / 1,500-doc stratified samples, seed 42,
+text 15–4000 chars). pii-bench GT is token-BIO; converted to char spans (token-align
+99.5% / 99.7%, 100% surface-consistent) and crosswalked from
+82 pii-bench labels into the 16-type taxonomy (in-scope GT spans: 3,614 / 8,050).</li>
+<li><strong>Out of scope</strong> (dropped from GT, never TP/FN): IP/MAC/PAN, City/State/Country/Postal,
+generic Date/Time, financial-entity/XBRL, sensitive attributes (gender/religion/health), etc. — only the 16 types count.</li>
+<li><strong>Reading the fine column:</strong> pii-bench GT <em>does</em> carry First / Last / Full Name as distinct
+labels, so name subtype <strong>is</strong> fine-scored. Detectors that emit only a coarse person label — notably
+Gemini (fine-F1 = 0.000 on names despite high support) — score ~0 there, so <em>fine</em> understates a
+coarse detector's real skill. Read <em>detection</em> (the headline) for "did it find the PII" and <em>fine</em>
+as a subtype-resolution metric that structurally favors detectors emitting First/Last/Full directly.</li>
+<li><strong>spaCy</strong> fine-F1 ≈ 0 by construction: it emits only coarse OntoNotes NER (PERSON/ORG/PRODUCT),
+which never resolves to a fine PII subtype — it's an NER model, not a PII-complete detector (as in the bake-off).</li>
+<li><strong>Distribution shift:</strong> <code>deberta_ft</code> and Gemini were tuned/prompted on Mercor data, not
+pii-bench — these numbers measure transfer to an external distribution, not in-domain skill. <code>deberta_ft</code>
+runs the training-matched sliding-window inference (256-token / 64-stride overflow) so no GT is lost to truncation.</li>
+<li><strong>Scoring detail:</strong> overlapping typed predictions are resolved highest-confidence-wins at the char
+level (so a nested Email+URL or Name+subtype span doesn't penalize the higher-confidence type). <code>qwen</code>
+is scored on the full sample. <strong>gliner2_ft</strong> (a doc frontier point) isn't here — its LoRA config was
+purged; <code>routed</code> uses OOB gliner2 (as its label says). StarPII is HF-gated (skipped if unauthenticated).</li>
+</ul>
+<footer>PII Tokenizer · pii-bench re-run · 2026-07. Harness: detector_bakeoff (<code>score_new_taxonomy.py</code>);
+fixtures + timing under <code>~/Documents/pii-bench-eval</code>. Measured on Apple Silicon (MPS/CPU) + google-genai (Gemini).</footer>
+</main></body></html>

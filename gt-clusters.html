@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synthetic World — GT Clusters (example-run)</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121821; --panel2:#0e141c; --line:#1f2a37;
+    --fg:#e6edf3; --muted:#8b98a5; --dim:#5b6875;
+    --identity:#2dd4bf; --institution:#f59e0b; --street:#a78bfa;
+    --accent:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  a{color:var(--accent)}
+  header{padding:22px 26px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;
+    background:linear-gradient(180deg,#0b0f14 70%,rgba(11,15,20,.85));backdrop-filter:blur(6px);z-index:5}
+  h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .sub{color:var(--muted);margin-top:3px;font-size:12.5px}
+  .sub code{color:var(--fg);background:#0e141c;padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12.5px;color:var(--muted)}
+  .chip b{color:var(--fg)}
+  .chip.identity b{color:var(--identity)} .chip.institution b{color:var(--institution)} .chip.street b{color:var(--street)}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{background:transparent;color:var(--muted);border:0;padding:7px 13px;font-size:12.5px;cursor:pointer}
+  .seg button.on{background:var(--panel);color:var(--fg)}
+  .seg button+button{border-left:1px solid var(--line)}
+  input[type=search]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--fg);
+    padding:7px 11px;font-size:12.5px;min-width:200px}
+  input[type=search]::placeholder{color:var(--dim)}
+  main{padding:20px 26px 60px;max-width:1500px;margin:0 auto}
+  .section-title{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin:26px 0 10px}
+
+  /* histogram */
+  .hist{display:flex;gap:14px;align-items:flex-end;height:74px;padding:8px 4px 0}
+  .hbar{display:flex;flex-direction:column;align-items:center;gap:5px;width:52px}
+  .hbar .bar{width:26px;background:linear-gradient(180deg,var(--identity),#0e6b60);border-radius:4px 4px 0 0;min-height:3px}
+  .hbar .n{font-size:11px;color:var(--muted)} .hbar .lab{font-size:10.5px;color:var(--dim)}
+
+  /* shared-token panel */
+  .tokpanel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .tokpanel p{margin:0 0 10px;color:var(--muted);font-size:12.5px}
+  .toks{display:flex;flex-wrap:wrap;gap:7px}
+  .tok{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:4px 11px;font-size:12px;cursor:pointer;color:var(--fg);transition:.12s}
+  .tok:hover{border-color:var(--accent)}
+  .tok .c{color:var(--dim);margin-left:5px;font-size:11px}
+  .tok.on{background:var(--accent);color:#04121f;border-color:var(--accent)}
+  .tok.on .c{color:#04121f}
+
+  /* grid of constellations */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 8px 6px;transition:.15s;position:relative}
+  .card.dim{opacity:.24;filter:saturate(.4)}
+  .card .cap{display:flex;justify-content:space-between;align-items:center;padding:0 8px 2px}
+  .card .cid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--muted)}
+  .badge{font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:2px 8px;border-radius:10px;font-weight:600}
+  .badge.identity{background:rgba(45,212,191,.14);color:var(--identity)}
+  .badge.institution{background:rgba(245,158,11,.15);color:var(--institution)}
+  .badge.street{background:rgba(167,139,250,.16);color:var(--street)}
+  svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .nsurf{fill:var(--dim);font-size:10px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:8px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);margin-top:34px;padding-top:16px}
+  footer b{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Synthetic World — Ground-Truth Clusters</h1>
+  <div class="sub">IR answer key <code>ground_truth/ir_gt_clusters.json</code> · run_id <code>example-run</code> · gmail-only smoke world · verify <b style="color:var(--identity)">PASS (23 gates)</b></div>
+  <div class="chips" id="chips"></div>
+  <div class="controls">
+    <div class="seg" id="filter">
+      <button data-f="all" class="on">All</button>
+      <button data-f="Identity">Identity</button>
+      <button data-f="Institution">Institution</button>
+      <button data-f="Street">Street</button>
+    </div>
+    <input type="search" id="search" placeholder="search a surface value (e.g. Bea, Tata)…">
+    <div class="legend">
+      <span><i class="dot" style="background:var(--identity)"></i>Identity</span>
+      <span><i class="dot" style="background:var(--institution)"></i>Institution</span>
+      <span><i class="dot" style="background:var(--street)"></i>Street</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="section-title">Surfaces per cluster — the alias distribution (recall signal)</div>
+  <div class="hist" id="hist"></div>
+
+  <div class="section-title">Cross-cluster string collisions — the implicit hard cases</div>
+  <div class="tokpanel">
+    <p>Even with <b>no tagged hard-negatives</b> in this smoke world, surface tokens recur across <em>distinct</em> clusters — a string matcher would wrongly merge them; only context (co-occurrence) separates them. Click a token to highlight every cluster that carries it.</p>
+    <div class="toks" id="toks"></div>
+  </div>
+
+  <div class="section-title" id="gridtitle">48 identity constellations</div>
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Each constellation is one GT cluster: the <b>center</b> is the entity, each <b>spoke</b> a surface form that must resolve to it (the IR merge target). Built directly from the emitted answer key — <b>30 Identity + 9 Institution + 9 Street = 48 clusters, 201 PII surfaces</b>. This gmail-only smoke run exercises the coarse Identity/Institution/Street taxonomy and coordinate-exact GT; it does <b>not</b> include cross-service co-occurrence edges, the 10-mode hard-negative taxonomy, or whitelist negative-space — those come with the full multi-service world.
+  </footer>
+</main>
+
+<script type="application/json" id="gt-data">
+{"run_id":"example-run","clusters":[{"id":"C_E_org_1","entity_id":"E_org_1","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Tata"},{"fine_type":"org_name","type":"Organization Name","value":"Tata LLC"},{"fine_type":"product_name","type":"Product Name","value":"Tata One"}]},{"id":"C_E_org_32","entity_id":"E_org_32","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Prisomi"},{"fine_type":"org_name","type":"Organization Name","value":"Prisomi Ltd"}]},{"id":"C_E_org_33","entity_id":"E_org_33","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Priked"},{"fine_type":"org_name","type":"Organization Name","value":"Priked Ltd"}]},{"id":"C_E_org_34","entity_id":"E_org_34","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Mita"},{"fine_type":"org_name","type":"Organization Name","value":"Mita Media Private Limited"}]},{"id":"C_E_org_35","entity_id":"E_org_35","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Kedkof"},{"fine_type":"org_name","type":"Organization Name","value":"Kedkof Inc"},{"fine_type":"product_name","type":"Product Name","value":"Kedkof Reach"}]},{"id":"C_E_org_36","entity_id":"E_org_36","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Kedso"},{"fine_type":"org_name","type":"Organization Name","value":"Kedso Media Private Limited"}]},{"id":"C_E_org_37","entity_id":"E_org_37","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Boen"},{"fine_type":"org_name","type":"Organization Name","value":"Boen Media Private Limited"}]},{"id":"C_E_org_38","entity_id":"E_org_38","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Miluna"},{"fine_type":"org_name","type":"Organization Name","value":"Miluna Ltd"}]},{"id":"C_E_org_39","entity_id":"E_org_39","cluster":"Institution","entities":[{"fine_type":"brand","type":"Brand Name","value":"Kedbo"},{"fine_type":"org_name","type":"Organization Name","value":"Kedbo LLC"}]},{"id":"C_E_person_10","entity_id":"E_person_10","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Omar"},{"fine_type":"person_full_name","type":"Full Name","value":"Omar Park"},{"fine_type":"person_last_name","type":"Last Name","value":"Park"},{"fine_type":"person_username","type":"Username","value":"opark"},{"fine_type":"email_address","type":"Email Address","value":"opark@tata.example"}]},{"id":"C_E_person_11","entity_id":"E_person_11","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Blum"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Evan"},{"fine_type":"person_first_name","type":"First Name","value":"Noor"},{"fine_type":"person_full_name","type":"Full Name","value":"Noor Blum"},{"fine_type":"person_username","type":"Username","value":"nblum"},{"fine_type":"email_address","type":"Email Address","value":"nblum@tata.example"}]},{"id":"C_E_person_12","entity_id":"E_person_12","cluster":"Identity","entities":[{"fine_type":"person_nickname","type":"Nickname","value":"Ace"},{"fine_type":"person_first_name","type":"First Name","value":"Dara"},{"fine_type":"person_full_name","type":"Full Name","value":"Dara Wei"},{"fine_type":"person_last_name","type":"Last Name","value":"Wei"},{"fine_type":"person_username","type":"Username","value":"dwei"},{"fine_type":"email_address","type":"Email Address","value":"dwei@tata.example"}]},{"id":"C_E_person_13","entity_id":"E_person_13","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Mensah"},{"fine_type":"person_nickname","type":"Nickname","value":"Milo"},{"fine_type":"person_first_name","type":"First Name","value":"Omar"},{"fine_type":"person_full_name","type":"Full Name","value":"Omar Mensah"},{"fine_type":"person_username","type":"Username","value":"omensah"},{"fine_type":"email_address","type":"Email Address","value":"omensah@tata.example"}]},{"id":"C_E_person_14","entity_id":"E_person_14","cluster":"Identity","entities":[{"fine_type":"person_nickname","type":"Nickname","value":"Ace"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Farah"},{"fine_type":"person_first_name","type":"First Name","value":"Gita"},{"fine_type":"person_full_name","type":"Full Name","value":"Gita Shah"},{"fine_type":"person_last_name","type":"Last Name","value":"Shah"},{"fine_type":"person_username","type":"Username","value":"gshah"},{"fine_type":"email_address","type":"Email Address","value":"gshah@tata.example"}]},{"id":"C_E_person_15","entity_id":"E_person_15","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Evan"},{"fine_type":"person_full_name","type":"Full Name","value":"Evan Ito"},{"fine_type":"person_last_name","type":"Last Name","value":"Ito"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Liam"},{"fine_type":"person_username","type":"Username","value":"eito"},{"fine_type":"email_address","type":"Email Address","value":"eito@tata.example"}]},{"id":"C_E_person_16","entity_id":"E_person_16","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Liam"},{"fine_type":"person_full_name","type":"Full Name","value":"Liam Novak"},{"fine_type":"person_last_name","type":"Last Name","value":"Novak"},{"fine_type":"person_username","type":"Username","value":"lnovak"},{"fine_type":"email_address","type":"Email Address","value":"lnovak@tata.example"}]},{"id":"C_E_person_17","entity_id":"E_person_17","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Bea"},{"fine_type":"person_full_name","type":"Full Name","value":"Bea Wei"},{"fine_type":"person_last_name","type":"Last Name","value":"Wei"},{"fine_type":"person_username","type":"Username","value":"bwei"},{"fine_type":"email_address","type":"Email Address","value":"bwei@tata.example"}]},{"id":"C_E_person_18","entity_id":"E_person_18","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Ali"},{"fine_type":"person_first_name","type":"First Name","value":"Omar"},{"fine_type":"person_full_name","type":"Full Name","value":"Omar Ali"},{"fine_type":"person_username","type":"Username","value":"oali"},{"fine_type":"email_address","type":"Email Address","value":"oali@tata.example"}]},{"id":"C_E_person_19","entity_id":"E_person_19","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Bea"},{"fine_type":"person_full_name","type":"Full Name","value":"Bea Vega"},{"fine_type":"person_nickname","type":"Nickname","value":"Nell"},{"fine_type":"person_last_name","type":"Last Name","value":"Vega"},{"fine_type":"person_username","type":"Username","value":"bvega"},{"fine_type":"email_address","type":"Email Address","value":"bvega@tata.example"}]},{"id":"C_E_person_2","entity_id":"E_person_2","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Dubois"},{"fine_type":"person_first_name","type":"First Name","value":"Noor"},{"fine_type":"person_full_name","type":"Full Name","value":"Noor Dubois"},{"fine_type":"person_username","type":"Username","value":"ndubois"},{"fine_type":"email_address","type":"Email Address","value":"ndubois@tata.example"}]},{"id":"C_E_person_20","entity_id":"E_person_20","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Blum"},{"fine_type":"person_first_name","type":"First Name","value":"Evan"},{"fine_type":"person_full_name","type":"Full Name","value":"Evan Blum"},{"fine_type":"person_username","type":"Username","value":"eblum"},{"fine_type":"email_address","type":"Email Address","value":"eblum@tata.example"}]},{"id":"C_E_person_21","entity_id":"E_person_21","cluster":"Identity","entities":[{"fine_type":"person_nickname","type":"Nickname","value":"Cy"},{"fine_type":"person_first_name","type":"First Name","value":"Gita"},{"fine_type":"person_full_name","type":"Full Name","value":"Gita Novak"},{"fine_type":"person_last_name","type":"Last Name","value":"Novak"},{"fine_type":"person_username","type":"Username","value":"gnovak"},{"fine_type":"email_address","type":"Email Address","value":"gnovak@tata.example"}]},{"id":"C_E_person_22","entity_id":"E_person_22","cluster":"Identity","entities":[{"fine_type":"person_nickname","type":"Nickname","value":"Ace"},{"fine_type":"person_last_name","type":"Last Name","value":"Ali"},{"fine_type":"person_first_name","type":"First Name","value":"Jae"},{"fine_type":"person_full_name","type":"Full Name","value":"Jae Ali"},{"fine_type":"person_username","type":"Username","value":"jali"},{"fine_type":"email_address","type":"Email Address","value":"jali@tata.example"}]},{"id":"C_E_person_23","entity_id":"E_person_23","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Costa"},{"fine_type":"person_first_name","type":"First Name","value":"Kira"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Kira"},{"fine_type":"person_full_name","type":"Full Name","value":"Kira Costa"},{"fine_type":"person_nickname","type":"Nickname","value":"Ozzie"},{"fine_type":"person_username","type":"Username","value":"kcosta"},{"fine_type":"email_address","type":"Email Address","value":"kcosta@tata.example"}]},{"id":"C_E_person_24","entity_id":"E_person_24","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Bea"},{"fine_type":"person_full_name","type":"Full Name","value":"Bea Shah"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Chen"},{"fine_type":"person_last_name","type":"Last Name","value":"Shah"},{"fine_type":"person_username","type":"Username","value":"bshah"},{"fine_type":"email_address","type":"Email Address","value":"bshah@tata.example"}]},{"id":"C_E_person_25","entity_id":"E_person_25","cluster":"Identity","entities":[{"fine_type":"person_middle_name","type":"Middle Name","value":"Bea"},{"fine_type":"person_first_name","type":"First Name","value":"Chen"},{"fine_type":"person_full_name","type":"Full Name","value":"Chen Wei"},{"fine_type":"person_nickname","type":"Nickname","value":"Jax"},{"fine_type":"person_last_name","type":"Last Name","value":"Wei"},{"fine_type":"person_username","type":"Username","value":"cwei"},{"fine_type":"email_address","type":"Email Address","value":"cwei@tata.example"}]},{"id":"C_E_person_26","entity_id":"E_person_26","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Bea"},{"fine_type":"person_full_name","type":"Full Name","value":"Bea Novak"},{"fine_type":"person_last_name","type":"Last Name","value":"Novak"},{"fine_type":"person_username","type":"Username","value":"bnovak"},{"fine_type":"email_address","type":"Email Address","value":"bnovak@tata.example"}]},{"id":"C_E_person_27","entity_id":"E_person_27","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Bea"},{"fine_type":"person_full_name","type":"Full Name","value":"Bea Lin"},{"fine_type":"person_last_name","type":"Last Name","value":"Lin"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Priya"},{"fine_type":"person_username","type":"Username","value":"blin"},{"fine_type":"email_address","type":"Email Address","value":"blin@tata.example"}]},{"id":"C_E_person_28","entity_id":"E_person_28","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Chen"},{"fine_type":"person_full_name","type":"Full Name","value":"Chen Novak"},{"fine_type":"person_nickname","type":"Nickname","value":"Indy"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Noor"},{"fine_type":"person_last_name","type":"Last Name","value":"Novak"},{"fine_type":"person_username","type":"Username","value":"cnovak"},{"fine_type":"email_address","type":"Email Address","value":"cnovak@tata.example"}]},{"id":"C_E_person_29","entity_id":"E_person_29","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Priya"},{"fine_type":"person_full_name","type":"Full Name","value":"Priya Shah"},{"fine_type":"person_last_name","type":"Last Name","value":"Shah"},{"fine_type":"person_username","type":"Username","value":"pshah"},{"fine_type":"email_address","type":"Email Address","value":"pshah@tata.example"}]},{"id":"C_E_person_3","entity_id":"E_person_3","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Bea"},{"fine_type":"person_full_name","type":"Full Name","value":"Bea Rao"},{"fine_type":"person_nickname","type":"Nickname","value":"Ozzie"},{"fine_type":"person_last_name","type":"Last Name","value":"Rao"},{"fine_type":"person_username","type":"Username","value":"brao"},{"fine_type":"email_address","type":"Email Address","value":"brao@tata.example"}]},{"id":"C_E_person_30","entity_id":"E_person_30","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Ford"},{"fine_type":"person_nickname","type":"Nickname","value":"Hollis"},{"fine_type":"person_first_name","type":"First Name","value":"Mira"},{"fine_type":"person_full_name","type":"Full Name","value":"Mira Ford"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Omar"},{"fine_type":"person_username","type":"Username","value":"mford"},{"fine_type":"email_address","type":"Email Address","value":"mford@tata.example"}]},{"id":"C_E_person_31","entity_id":"E_person_31","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Dubois"},{"fine_type":"person_first_name","type":"First Name","value":"Evan"},{"fine_type":"person_full_name","type":"Full Name","value":"Evan Dubois"},{"fine_type":"person_username","type":"Username","value":"edubois"},{"fine_type":"email_address","type":"Email Address","value":"edubois@tata.example"}]},{"id":"C_E_person_4","entity_id":"E_person_4","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Priya"},{"fine_type":"person_full_name","type":"Full Name","value":"Priya Vega"},{"fine_type":"person_last_name","type":"Last Name","value":"Vega"},{"fine_type":"person_username","type":"Username","value":"pvega"},{"fine_type":"email_address","type":"Email Address","value":"pvega@tata.example"}]},{"id":"C_E_person_5","entity_id":"E_person_5","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Farah"},{"fine_type":"person_full_name","type":"Full Name","value":"Farah Khan"},{"fine_type":"person_last_name","type":"Last Name","value":"Khan"},{"fine_type":"person_username","type":"Username","value":"fkhan"},{"fine_type":"email_address","type":"Email Address","value":"fkhan@tata.example"}]},{"id":"C_E_person_6","entity_id":"E_person_6","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Ali"},{"fine_type":"person_first_name","type":"First Name","value":"Bea"},{"fine_type":"person_full_name","type":"Full Name","value":"Bea Ali"},{"fine_type":"person_username","type":"Username","value":"bali"},{"fine_type":"email_address","type":"Email Address","value":"bali@tata.example"}]},{"id":"C_E_person_7","entity_id":"E_person_7","cluster":"Identity","entities":[{"fine_type":"person_last_name","type":"Last Name","value":"Blum"},{"fine_type":"person_first_name","type":"First Name","value":"Liam"},{"fine_type":"person_full_name","type":"Full Name","value":"Liam Blum"},{"fine_type":"person_username","type":"Username","value":"lblum"},{"fine_type":"email_address","type":"Email Address","value":"lblum@tata.example"}]},{"id":"C_E_person_8","entity_id":"E_person_8","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Ines"},{"fine_type":"person_full_name","type":"Full Name","value":"Ines Shah"},{"fine_type":"person_middle_name","type":"Middle Name","value":"Jae"},{"fine_type":"person_nickname","type":"Nickname","value":"Lex"},{"fine_type":"person_last_name","type":"Last Name","value":"Shah"},{"fine_type":"person_username","type":"Username","value":"ishah"},{"fine_type":"email_address","type":"Email Address","value":"ishah@tata.example"}]},{"id":"C_E_person_9","entity_id":"E_person_9","cluster":"Identity","entities":[{"fine_type":"person_first_name","type":"First Name","value":"Evan"},{"fine_type":"person_full_name","type":"Full Name","value":"Evan Wei"},{"fine_type":"person_last_name","type":"Last Name","value":"Wei"},{"fine_type":"person_username","type":"Username","value":"ewei"},{"fine_type":"email_address","type":"Email Address","value":"ewei@tata.example"}]},{"id":"C_S_E_org_1","entity_id":"S_E_org_1","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"8 Maple Ter"}]},{"id":"C_S_E_org_32","entity_id":"S_E_org_32","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"4102 Birch Blvd"}]},{"id":"C_S_E_org_33","entity_id":"S_E_org_33","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"7457 Chestnut St"}]},{"id":"C_S_E_org_34","entity_id":"S_E_org_34","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"8613 Pine Rd"}]},{"id":"C_S_E_org_35","entity_id":"S_E_org_35","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"7693 Maple Dr"}]},{"id":"C_S_E_org_36","entity_id":"S_E_org_36","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"4979 Elm Pl"}]},{"id":"C_S_E_org_37","entity_id":"S_E_org_37","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"9681 Pine Way"}]},{"id":"C_S_E_org_38","entity_id":"S_E_org_38","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"669 Oak Blvd"}]},{"id":"C_S_E_org_39","entity_id":"S_E_org_39","cluster":"Street","entities":[{"fine_type":"street_address","type":"Street Address","value":"8602 Birch Blvd"}]}]}
+</script>
+
+<script>
+"use strict";
+const DATA = JSON.parse(document.getElementById('gt-data').textContent);
+const CL = DATA.clusters;
+const COARSE = {Identity:'var(--identity)', Institution:'var(--institution)', Street:'var(--street)'};
+const COARSE_HEX = {Identity:'#2dd4bf', Institution:'#f59e0b', Street:'#a78bfa'};
+const FT_SHORT = {person_full_name:'Full',person_first_name:'First',person_last_name:'Last',
+  person_middle_name:'Mid',person_nickname:'Nick',person_username:'User',email_address:'Email',
+  brand:'Brand',org_name:'Org',product_name:'Prod',street_address:'Addr'};
+
+let filter='all', query='', activeTok=null;
+
+// ---- summary chips ----
+(function(){
+  const by=c=>CL.filter(x=>x.cluster===c).length;
+  const surf=CL.reduce((s,c)=>s+c.entities.length,0);
+  document.getElementById('chips').innerHTML =
+    `<span class="chip"><b>${CL.length}</b> clusters</span>`+
+    `<span class="chip identity"><b>${by('Identity')}</b> Identity</span>`+
+    `<span class="chip institution"><b>${by('Institution')}</b> Institution</span>`+
+    `<span class="chip street"><b>${by('Street')}</b> Street</span>`+
+    `<span class="chip"><b>${surf}</b> PII surfaces</span>`+
+    `<span class="chip">offset unit <b>utf8_byte</b></span>`;
+})();
+
+// ---- histogram: surfaces per cluster ----
+(function(){
+  const counts={};
+  CL.forEach(c=>{const n=c.entities.length; counts[n]=(counts[n]||0)+1;});
+  const sizes=Object.keys(counts).map(Number).sort((a,b)=>a-b);
+  const max=Math.max(...Object.values(counts));
+  document.getElementById('hist').innerHTML = sizes.map(s=>{
+    const h=Math.round(6+ (counts[s]/max)*58);
+    return `<div class="hbar"><div class="n">${counts[s]}</div>`+
+      `<div class="bar" style="height:${h}px"></div>`+
+      `<div class="lab">${s} surf${s>1?'s':''}</div></div>`;
+  }).join('');
+})();
+
+// ---- shared-token index (name/brand parts across distinct clusters) ----
+const STOP=new Set(['llc','ltd','inc','media','private','limited','one','reach','the']);
+const tokIndex={}; // token -> Set(clusterId)
+CL.forEach(c=>{
+  const seen=new Set();
+  c.entities.forEach(e=>{
+    let v=e.value;
+    if(e.fine_type==='email_address') v=v.split('@')[0];        // local-part only
+    if(e.fine_type==='street_address') return;                  // numbers dominate; skip
+    v.toLowerCase().split(/[^a-z0-9]+/).forEach(t=>{
+      if(t.length<2||STOP.has(t)) return; seen.add(t);
+    });
+  });
+  seen.forEach(t=>{(tokIndex[t]=tokIndex[t]||new Set()).add(c.id);});
+});
+const shared=Object.entries(tokIndex).filter(([,s])=>s.size>=2)
+  .sort((a,b)=>b[1].size-a[1].size);
+(function(){
+  document.getElementById('toks').innerHTML = shared.map(([t,s])=>
+    `<span class="tok" data-tok="${t}">${t}<span class="c">${s.size}</span></span>`).join('')
+    || '<span style="color:var(--dim)">none</span>';
+})();
+
+// ---- constellation SVG ----
+function constellation(c){
+  const W=300,H=248,cx=W/2,cy=H/2+4;
+  const n=c.entities.length;
+  const R = n<=1?0 : n<=4?74:88;
+  const col=COARSE_HEX[c.cluster];
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  // spokes
+  const pts=c.entities.map((e,i)=>{
+    const ang = n<=1 ? Math.PI/2 : (-Math.PI/2 + i*2*Math.PI/n);
+    return {e, x:cx+R*Math.cos(ang), y:cy+R*Math.sin(ang), ang};
+  });
+  pts.forEach(p=>{ s+=`<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="${col}" stroke-opacity="0.28" stroke-width="1.4"/>`; });
+  // center
+  s+=`<circle cx="${cx}" cy="${cy}" r="21" fill="${col}" fill-opacity="0.16" stroke="${col}" stroke-width="1.6"/>`;
+  const idShort=c.entity_id.replace(/^E_/,'').replace(/^S_E_/,'S·');
+  s+=`<text x="${cx}" y="${cy+3.5}" text-anchor="middle" fill="${col}" font-size="10.5" font-weight="600">${idShort}</text>`;
+  // surface nodes
+  pts.forEach(p=>{
+    const right=Math.cos(p.ang)>=-0.01;
+    const lx = p.x + (right?9:-9);
+    const anchor = right?'start':'end';
+    const val = p.e.value.length>21 ? p.e.value.slice(0,20)+'…' : p.e.value;
+    const tokv = p.e.fine_type==='email_address'?p.e.value.split('@')[0]:p.e.value;
+    const isHit = activeTok && tokv.toLowerCase().split(/[^a-z0-9]+/).includes(activeTok);
+    const nodeCol=isHit?'#60a5fa':col;
+    s+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${isHit?5.5:4}" fill="${nodeCol}" ${isHit?'stroke="#bfdbfe" stroke-width="1.5"':''}><title>${p.e.type}: ${p.e.value}</title></circle>`;
+    s+=`<text x="${lx.toFixed(1)}" y="${(p.y+0.5).toFixed(1)}" text-anchor="${anchor}" fill="${isHit?'#bfdbfe':'#e6edf3'}" font-size="10.5" font-weight="${isHit?600:400}">${val}</text>`;
+    s+=`<text x="${lx.toFixed(1)}" y="${(p.y+11).toFixed(1)}" text-anchor="${anchor}" class="nsurf">${FT_SHORT[p.e.fine_type]||p.e.fine_type}</text>`;
+  });
+  s+=`</svg>`;
+  return s;
+}
+
+function render(){
+  const grid=document.getElementById('grid');
+  const q=query.trim().toLowerCase();
+  const shown=CL.filter(c=>{
+    if(filter!=='all' && c.cluster!==filter) return false;
+    if(q && !c.entities.some(e=>e.value.toLowerCase().includes(q)) && !c.id.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById('gridtitle').textContent =
+    `${shown.length} identity constellation${shown.length!==1?'s':''}`+(activeTok?` · highlighting “${activeTok}”`:'');
+  grid.innerHTML = shown.map(c=>{
+    const hasTok = activeTok && (tokIndex[activeTok]||new Set()).has(c.id);
+    const dim = activeTok && !hasTok ? ' dim':'';
+    const kl=c.cluster.toLowerCase();
+    return `<div class="card${dim}">`+
+      `<div class="cap"><span class="cid">${c.id}</span>`+
+      `<span class="badge ${kl}">${c.cluster} · ${c.entities.length}</span></div>`+
+      constellation(c)+`</div>`;
+  }).join('');
+}
+
+// ---- events ----
+document.getElementById('filter').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  [...e.currentTarget.children].forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); filter=b.dataset.f; render();
+});
+document.getElementById('search').addEventListener('input',e=>{query=e.target.value; render();});
+document.getElementById('toks').addEventListener('click',e=>{
+  const t=e.target.closest('.tok'); if(!t) return;
+  const tok=t.dataset.tok;
+  activeTok = activeTok===tok ? null : tok;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle('on', x.dataset.tok===activeTok));
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

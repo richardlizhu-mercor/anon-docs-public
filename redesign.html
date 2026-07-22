@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anonymization Redesign</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{
+    --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-800:#3730a3; --indigo-100:#e0e7ff; --indigo-50:#eef2ff;
+    --slate-900:#0f172a; --slate-700:#334155; --slate-600:#475569; --slate-500:#64748b;
+    --slate-300:#cbd5e1; --slate-200:#e2e8f0; --slate-100:#f1f5f9; --slate-50:#f8fafc; --white:#fff;
+    --amber-50:#fffbeb; --amber-700:#b45309; --green-50:#f0fdf4; --green-700:#15803d;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; font-family:var(--font); color:var(--slate-900); background:var(--slate-50); line-height:1.65; font-weight:400; -webkit-font-smoothing:antialiased;}
+  .layout{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:250px 1fr; gap:0;}
+  nav.toc{position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; padding:32px 20px 32px 24px; border-right:1px solid var(--slate-200); background:var(--white); font-size:.86rem;}
+  nav.toc .brand{font-weight:600; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:var(--indigo-600); margin-bottom:18px;}
+  nav.toc a{display:block; color:var(--slate-600); text-decoration:none; padding:5px 10px; border-radius:6px; margin:1px 0; transition:all 120ms ease;}
+  nav.toc a:hover{background:var(--indigo-50); color:var(--indigo-700);}
+  nav.toc a.sub{padding-left:22px; font-size:.82rem; color:var(--slate-500);}
+  main{padding:48px 56px 120px; background:var(--slate-50); min-width:0;}
+  header.doc{margin-bottom:36px;}
+  header.doc .eyebrow{font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:var(--indigo-600); font-weight:600;}
+  header.doc h1{font-size:2.35rem; font-weight:600; line-height:1.14; margin:.35em 0 .3em; letter-spacing:-.02em;}
+  header.doc .sub{font-size:1.14rem; color:var(--slate-600); font-weight:300; max-width:70ch;}
+  .meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;}
+  .pill{font-size:.76rem; padding:4px 12px; border-radius:9999px; background:var(--white); border:1px solid var(--slate-200); color:var(--slate-600);}
+  .pill.accent{background:var(--indigo-50); border-color:var(--indigo-100); color:var(--indigo-700); font-weight:500;}
+  h2{font-size:1.5rem; font-weight:600; margin:2.3em 0 .5em; letter-spacing:-.01em; padding-top:10px; border-top:1px solid var(--slate-200);}
+  h2.nolne{border-top:none; padding-top:0;}
+  h3{font-size:1.1rem; font-weight:600; margin:1.5em 0 .4em;}
+  p{margin:.7em 0; color:var(--slate-700);}
+  strong{font-weight:600; color:var(--slate-900);}
+  a{color:var(--indigo-700);}
+  code{font-family:var(--mono); font-size:.85em; background:var(--indigo-50); color:var(--indigo-800); padding:1.5px 6px; border-radius:5px;}
+  ul,ol{color:var(--slate-700); padding-left:1.25em;}
+  li{margin:.32em 0;}
+  .lead{font-size:1.05rem; color:var(--slate-600);}
+  .callout{border-radius:12px; padding:15px 19px; margin:18px 0; font-size:.95rem;}
+  .callout .lbl{font-weight:600; font-size:.74rem; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:4px;}
+  .callout.key{background:var(--indigo-50); border:1px solid var(--indigo-100);} .callout.key .lbl{color:var(--indigo-700);}
+  .callout.warn{background:var(--amber-50); border:1px solid #fde68a;} .callout.warn .lbl{color:var(--amber-700);}
+  .callout.win{background:var(--green-50); border:1px solid #bbf7d0;} .callout.win .lbl{color:var(--green-700);}
+  .cmp{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0;}
+  @media(max-width:820px){.cmp{grid-template-columns:1fr;}}
+  .cmp .col{border-radius:12px; padding:18px 20px; border:1px solid var(--slate-200); background:var(--white);}
+  .cmp .col.old{background:var(--slate-50);}
+  .cmp .col.new{background:var(--indigo-50); border-color:var(--indigo-100);}
+  .cmp .col h4{margin:0 0 8px; font-size:.8rem; letter-spacing:.05em; text-transform:uppercase;}
+  .cmp .col.old h4{color:var(--slate-500);} .cmp .col.new h4{color:var(--indigo-700);}
+  .cmp .col ul{margin:.3em 0; padding-left:1.15em; font-size:.92rem;}
+  .cmp .col li{margin:.32em 0;}
+  .fig{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:22px; margin:20px 0; overflow-x:auto;}
+  .fig .cap{font-size:.82rem; color:var(--slate-500); margin-top:12px; text-align:center;}
+  .mermaid{display:flex; justify-content:center;}
+  table{border-collapse:collapse; width:100%; margin:16px 0; font-size:.88rem; background:var(--white); border-radius:12px; overflow:hidden; border:1px solid var(--slate-200);}
+  th{background:var(--slate-100); text-align:left; font-weight:600; color:var(--slate-700); padding:9px 13px; font-size:.8rem;}
+  td{padding:9px 13px; border-top:1px solid var(--slate-200); color:var(--slate-700); vertical-align:top;}
+  tr:hover td{background:var(--slate-50);}
+  .tag{display:inline-block; font-size:.7rem; font-weight:600; padding:1px 8px; border-radius:9999px;}
+  .tag.ir{background:var(--indigo-100); color:var(--indigo-800);}
+  .tag.det{background:var(--slate-100); color:var(--slate-600);}
+  .tag.web{background:var(--amber-50); color:var(--amber-700);}
+  .statgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0;}
+  @media(max-width:820px){.statgrid{grid-template-columns:repeat(2,1fr);}}
+  .stat{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:15px;}
+  .stat .v{font-size:1.35rem; font-weight:300; color:var(--indigo-700); font-variant-numeric:tabular-nums;}
+  .stat .k{font-size:.76rem; color:var(--slate-500); margin-top:2px;}
+  footer{color:var(--slate-500); font-size:.82rem; margin-top:54px; padding-top:22px; border-top:1px solid var(--slate-200);}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc">
+    <div class="brand">Data Acq · Anonymization</div>
+    <a href="#summary">Summary</a>
+    <a href="#taxonomy">The new taxonomy</a>
+    <a href="#detection">1 · Detection</a>
+    <a href="#eag">The EAG, alongside</a>
+    <a href="#ir">2 · Identity Resolution</a>
+    <a href="#faker">3 · Faker</a>
+    <a href="#replacer">4 · Replacer</a>
+    <a href="#next" class="sub">Next steps</a>
+  </nav>
+
+  <main>
+    <header class="doc">
+      <span class="eyebrow">Data Acquisition · Design</span>
+      <h1>Anonymization Redesign</h1>
+      <p class="sub">A modular rethink of the four-stage anonymization pipeline: a fast bi-encoder for detection,
+      entity-level identity resolution with a learned pairwise merger, EAG features alongside, and an LLM-driven faker.</p>
+      <div class="meta">
+        <span class="pill accent">Status: Draft</span>
+        <span class="pill">apps/server/data-acq</span>
+        <span class="pill">Detection · IR · Faker · Replacer</span>
+        <span class="pill">2026-07</span>
+      </div>
+    </header>
+
+    <!-- ================= SUMMARY ================= -->
+    <h2 id="summary" class="nolne">Summary</h2>
+    <p class="lead">One pipeline, four stages, redesigned so the expensive model runs once and its output gets reused.</p>
+    <p>
+      The pipeline still does the same job: find sensitive values in raw customer data, decide which ones refer to the
+      same real entity, and swap each for a consistent fake while preserving format and structure. The redesign changes
+      how each stage works, and it rebalances where the cost goes.
+    </p>
+    <p>Three changes:</p>
+    <ul>
+      <li><strong>Detection becomes a bi-encoder.</strong> One encoder produces an embedding per span, and a 20-head attribute classifier (softmaxed over 21 scores, the 20 types plus a non-PII flag) picks the type. It's the most expensive model in the pipeline, so we run it once and reuse the same embedding in IR.</li>
+      <li><strong>IR goes entity-level.</strong> We cluster entities, not raw strings, and reuse the detector's embedding instead of re-encoding. FAISS ANN proposes merge candidates and an order-agnostic model scores each pair using the embedding, lexical signals, and EAG features. Only three clusters need IR: Identity, Street, Institution.</li>
+      <li><strong>The LLM moves to faker.</strong> We take it out of detection and put it in faker, generating coherent fake identities that map onto the IR clusters.</li>
+    </ul>
+
+    <div class="fig">
+      <div class="mermaid">
+flowchart TB
+  subgraph OLD["● Today"]
+    direction LR
+    o1["Detect<br/><span style='font-size:11px'>Gemini</span>"] --> o2["Classify<br/><span style='font-size:11px'>Gemini Pro · 76 types</span>"]
+    o2 --> o3["IR<br/><span style='font-size:11px'>string-level · MiniLM cosine<br/>hand-tuned · Leiden</span>"]
+    o3 --> o4["Faker<br/><span style='font-size:11px'>deterministic · seeded<br/>(LLM only validates)</span>"]
+    o4 --> o5["Replacer"]
+  end
+  subgraph NEW["◆ Redesign (proposed)"]
+    direction LR
+    n1["Detect<br/><span style='font-size:11px'>bi-encoder embed<br/>+ 21-way softmax</span>"] --> n3["IR<br/><span style='font-size:11px'>entity-level · reuse embedding<br/>FAISS ANN · pairwise merger</span>"]
+    n3 --> n4["Faker<br/><span style='font-size:11px'>LLM-driven<br/>semantic identities</span>"]
+    n4 --> n5["Replacer"]
+    nE[("EAG · G_obs<br/><span style='font-size:11px'>built alongside</span>")] -. "pair features" .-> n3
+    n1 -. "reused embedding" .-> n3
+  end
+  OLD -.->|"LLM moves detection → faker · one embedding, two uses"| NEW
+      </div>
+      <div class="cap">Old vs new pipeline. The redesign runs one encoder, reuses its embedding in IR, builds the EAG alongside, and relocates the LLM to faker.</div>
+    </div>
+
+    <div class="statgrid">
+      <div class="stat"><div class="v">30x+</div><div class="k">faster detection (target)</div></div>
+      <div class="stat"><div class="v">2 → 0</div><div class="k">LLM passes in detection (proposed)</div></div>
+      <div class="stat"><div class="v">1 embedding</div><div class="k">shared by detection + IR</div></div>
+      <div class="stat"><div class="v">3 clusters</div><div class="k">go to IR: Identity · Street · Institution</div></div>
+    </div>
+
+    <!-- ================= TAXONOMY ================= -->
+    <h2 id="taxonomy">The new taxonomy</h2>
+    <p>
+      The taxonomy collapses the current ~76 attribute types down to 20, and each attribute carries its
+      <em>resolver</em> — how it gets anonymized. The classifier's softmax has one head per attribute type plus a
+      non-PII flag, so 21 outputs in total.
+    </p>
+    <table>
+      <tr><th>Cluster</th><th>Attribute</th><th>Resolver</th></tr>
+      <tr><td rowspan="7">Identity <span class="tag ir">IR</span></td><td>Full Name</td><td>IR</td></tr>
+      <tr><td>Middle Name</td><td>IR</td></tr>
+      <tr><td>Last Name</td><td>IR</td></tr>
+      <tr><td>Single Name</td><td>IR</td></tr>
+      <tr><td>Nickname</td><td>IR</td></tr>
+      <tr><td>Username</td><td>IR</td></tr>
+      <tr><td>Email Address</td><td>IR — deconstructed: local part → Identity as a username; domain → web parser</td></tr>
+      <tr><td>Street <span class="tag ir">IR</span></td><td>Street Address</td><td>IR</td></tr>
+      <tr><td rowspan="3">Institution <span class="tag ir">IR</span></td><td>Brand Name</td><td>IR</td></tr>
+      <tr><td>Product Name</td><td>IR</td></tr>
+      <tr><td>Organization Name</td><td>IR</td></tr>
+      <tr><td>Phone</td><td>Phone Number</td><td class="tag det">Deterministic FPR</td></tr>
+      <tr><td>Date of Birth</td><td>Date of Birth</td><td>Deterministic FPR</td></tr>
+      <tr><td>Coordinates</td><td>GPS Coordinates</td><td>Deterministic FPR</td></tr>
+      <tr><td>ID</td><td>IDs / account numbers / passwords</td><td>Deterministic FPR</td></tr>
+      <tr><td rowspan="2">Payment Card</td><td>Payment Card Number (PAN)</td><td>Deterministic FPR</td></tr>
+      <tr><td>Card Last4</td><td>Deterministic FPR</td></tr>
+      <tr><td>IP</td><td>IP Address</td><td>Deterministic FPR</td></tr>
+      <tr><td>MAC</td><td>MAC Address</td><td>Deterministic FPR</td></tr>
+      <tr><td>Web</td><td>URL / Domain / Subdomain</td><td class="tag web">Web parser — deconstruct, run NER/LLM (decomposed, not one PII value)</td></tr>
+    </table>
+    <p style="font-size:.9rem;color:var(--slate-500)">Three resolver classes: <strong>IR</strong> (Identity, Street, Institution) · <strong>Deterministic format-preserving replace</strong> (Phone, DOB, Coordinates, ID, Payment Card, IP, MAC) · <strong>Web parser</strong> (URLs, and email domains).</p>
+
+    <!-- ================= DETECTION ================= -->
+    <h2 id="detection">1 · Detection</h2>
+    <p class="lead">Replace two LLM passes with one bi-encoder and a small softmax head.</p>
+    <p>
+      We've tried a few detectors: GLiGuard, NER, and local LLMs. The plan is to settle on one, most likely a
+      <strong>bi-encoder</strong>, that turns each candidate span into an embedding. That embedding feeds a 20-head
+      attribute classifier plus a non-PII flag, softmaxed to 21 scores; the argmax picks the type, which maps to its
+      cluster and resolver via the taxonomy above.
+    </p>
+    <div class="cmp">
+      <div class="col old">
+        <h4>Today</h4>
+        <ul>
+          <li>Two LLM passes. Gemini 2.5 Flash detects spans (batched ~15 texts / 15k chars), then Gemini 2.5 Pro classifies each value against a ~76-attribute taxonomy (batched 50).</li>
+          <li>Every classify batch carries the full taxonomy prompt. It's slow, expensive, and dominates pipeline latency.</li>
+          <li>No embedding survives the stage, so IR later re-encodes with a separate model.</li>
+        </ul>
+      </div>
+      <div class="col new">
+        <h4>Redesign</h4>
+        <ul>
+          <li>One bi-encoder embedding per span, then a 21-way softmax picks the type.</li>
+          <li>No per-value LLM call.</li>
+          <li>The embedding is kept and handed to IR.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  span["candidate span"] --> ENC["bi-encoder"]
+  ENC --> EMB["embedding"]
+  EMB --> HEADS["classifier heads<br/><span style='font-size:11px'>20 attribute types + non-PII</span>"]
+  HEADS --> SM["softmax → 21 scores"]
+  SM --> T["attribute type → cluster + resolver"]
+  EMB -. "reused" .-> IR["→ Identity Resolution"]
+      </div>
+      <div class="cap">New detection: one encoder produces both the classification and the embedding IR reuses.</div>
+    </div>
+
+    <!-- ================= EAG ================= -->
+    <h2 id="eag">The EAG, alongside</h2>
+    <p class="lead">The Enterprise Activity Graph builds from the same raw data during detection and hands IR extra evidence.</p>
+    <p>
+      The EAG's graph-init pass does PII detection and entity marking, the same work detection does, and can
+      supersede it. Alongside that it assembles a typed graph of activities, contexts, and identities. Its job for IR
+      is to distill features. It supplements the merger, it doesn't replace it, and IR reads these signals
+      <em>in addition to</em> the embedding and lexical features already on each pair.
+    </p>
+    <div class="cmp">
+      <div class="col new" style="grid-column:1 / -1">
+        <h4>What IR reads from the EAG</h4>
+        <ul>
+          <li><strong>8 pair features</strong> (per the EAG's <em>Features for IR Consumption</em> spec): <code>rare_context_overlap</code>, <code>cooccur_weight</code>, <code>shared_context_count</code>, <code>adamic_adar_context</code>, <code>direct_interaction_count</code>, <code>active_period_jaccard</code>, <code>content_embedding_cosine</code>, <code>same_person_rejected_count</code>.</li>
+          <li><strong>Structural anchors</strong>: <code>SAME_PERSON_CONFIRMED</code> from profile-table rows (a Stage-0a pass that resolves ~80% of within-service identity equivalences for free) as zero-cost pre-merges, and <code>SAME_PERSON_REJECTED</code> from an author and a recipient of the same message as hard cannot-links.</li>
+          <li><strong>Activity attributes</strong> (<code>pii_density</code>, <code>pii_category_distribution</code>) to weight or filter noisy sources before scoring.</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--slate-500)">"EAG" here means <strong>Enterprise Activity Graph</strong>. (An older, unrelated "Embedding-Anchor-Graph" was removed in the current IR engine; different thing, same acronym.)</p>
+
+    <!-- ================= IR ================= -->
+    <h2 id="ir">2 · Identity Resolution</h2>
+    <p class="lead">Cluster entities, not strings, and reuse the detector's embedding.</p>
+    <div class="callout key">
+      <span class="lbl">The key shift: contextual embeddings, not string de-dup</span>
+      Today the pipeline de-dups identical strings, so 100 people named "Jane" collapse into a single <code>Jane</code>
+      node and can only ever become one entity and one fake. In the redesign the encoder self-attends over each
+      mention's surrounding context, so those 100 "Jane"s get 100 different embeddings, and IR can split them into
+      distinct entities (merging only the ones that are genuinely the same person). The faker then keeps a running map
+      of every replacement it makes, so each occurrence is faked consistently, while IR is what guarantees each Jane
+      belongs to exactly one entity.
+    </div>
+    <p>
+      IR takes the bi-encoder embeddings from detection and resolves the three IR clusters, Identity, Street, and
+      Institution, into entities. FAISS ANN over the embeddings proposes merge candidates. An
+      <strong>order-agnostic</strong> model scores each candidate and returns a calibrated probability that the two are
+      the same entity; high means merge. The score is symmetric, so it doesn't depend on ordering. Confirmed merges
+      compose into clusters, and those clusters are what faker anonymizes.
+    </p>
+    <div class="callout key">
+      <span class="lbl">Most of this is already built</span>
+      The learned machinery here — FAISS ANN candidate generation, the GBDT pairwise merger, calibrated
+      <code>P(merge)</code>, and learned per-type thresholds — already exists in the shipped v2 IR engine. The
+      genuinely new parts of this redesign are <strong>entity-level clustering</strong>, <strong>reusing the bi-encoder
+      detection embedding</strong> (one encode, two uses) instead of a separate encoder, and the tighter
+      <strong>3-cluster taxonomy</strong>.
+    </div>
+    <div class="cmp">
+      <div class="col old">
+        <h4>Old prod (string-level)</h4>
+        <ul>
+          <li>Re-embed values with a separate MiniLM, score edges with hand-tuned signals, cut one graph with Leiden.</li>
+        </ul>
+      </div>
+      <div class="col new">
+        <h4>Redesign (entity-level)</h4>
+        <ul>
+          <li>Reuse the detector's embedding, FAISS ANN candidates, learned order-agnostic merger.</li>
+          <li>Features: embedding + lexical + EAG signals → calibrated <code>P(merge)</code>, learned per-type thresholds.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  EMB["reused embeddings<br/><span style='font-size:11px'>Identity · Street · Institution</span>"] --> ANN["FAISS ANN<br/><span style='font-size:11px'>merge candidates</span>"]
+  ANN --> PM["order-agnostic pairwise merger<br/><span style='font-size:11px'>embedding + lexical + EAG feats → P(merge)</span>"]
+  EAG[("EAG features + anchors")] -. feed .-> PM
+  PM --> CL["entity clusters"]
+  CL --> AC["→ faker → anonymized clusters"]
+      </div>
+      <div class="cap">Entity-level IR: candidates from ANN, merges from a learned symmetric scorer fed by the embedding and EAG features.</div>
+    </div>
+
+    <h3>The merger: a GBDT today, room to grow</h3>
+    <p>
+      The pairwise scorer is a gradient-boosted tree (LightGBM). We're still data-poor, and a GBDT handles monotone
+      constraints and native categoricals well at this scale. The feature set has grown from the original
+      <strong>19</strong> production features, through a <strong>~90</strong>-feature expansion, to today's
+      <strong>259</strong>, spanning string, phonetic, embedding, co-occurrence, and graph families. As labeled data
+      accumulates, the next step is an <strong>MLP</strong> over the same feature space, eventually one that shares the
+      encoder representation end-to-end. The scorer is a clean interface, so swapping it is contained.
+    </p>
+    <div class="callout key">
+      <span class="lbl">Grounded in Saahil's experiments</span>
+      The merger comes out of a long experiment sweep (his IR-v2 engine explainer and experiments write-up). The
+      findings that shaped it:
+      <ul style="margin:.5em 0 0">
+        <li>Co-occurrence is the strongest signal — it recovers same-person pairs no string or embedding match can.</li>
+        <li>The clustering step matters more than the scorer. A strong pairwise model collapsed under naive single-linkage until average-linkage clustering fixed the chaining.</li>
+        <li>Fine-tuning the encoder flips embedding cosine from a liability into a strong positive signal.</li>
+        <li>A cross-encoder and an LLM judge weren't worth their cost over the calibrated GBDT.</li>
+      </ul>
+    </div>
+
+    <!-- ================= FAKER ================= -->
+    <h2 id="faker">3 · Faker</h2>
+    <p class="lead">Keep the deterministic guarantees, add an LLM to generate coherent identities.</p>
+    <p>
+      Today's faker is fully deterministic and seeded, and that spine is worth keeping. The redesign adds an LLM to
+      generate <strong>semantically continuous fake identities</strong>: personas whose name, email, username, and
+      handle cohere and fit their context. Those get mapped onto the IR clusters to produce the anonymized clusters.
+    </p>
+    <div class="cmp">
+      <div class="col old">
+        <h4>Today (deterministic)</h4>
+        <ul>
+          <li>Per-cluster seed (SHA256) by priority: email, then full name, then username, then first member.</li>
+          <li>Type-aware router: 114 BII types to ~64 methods, preserving format, casing, and structure.</li>
+          <li>A persona cache shares one fake first/last across an Identity cluster; a global name map keeps the same original mapping to the same fake everywhere.</li>
+          <li>Two passes (anchors, then masked-variant transfer) plus cross-cluster collision resolution.</li>
+          <li>An LLM runs only as an optional validator. Generation itself uses no LLM.</li>
+        </ul>
+      </div>
+      <div class="col new">
+        <h4>Redesign (LLM-driven)</h4>
+        <ul>
+          <li>An LLM generates coherent, context-aware fake personas per cluster, mapped onto the IR clusters.</li>
+          <li>A replacement map records every original → fake decision, so each occurrence is faked consistently across the run, even though the same surface string can now belong to different entities.</li>
+          <li>The deterministic router stays for format-preserving types (phone, IDs, cards, IP/MAC, coordinates, DOB).</li>
+          <li>This is where the pipeline's LLM budget now lives, freed up by dropping it from detection.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  CL["IR clusters"] --> LLM["LLM<br/><span style='font-size:11px'>generate semantic fake identities</span>"]
+  LLM --> MAP["map fakes → clusters"]
+  DET["deterministic FPR<br/><span style='font-size:11px'>phone · IDs · cards · IP/MAC · DOB · coords</span>"] --> MAP
+  MAP --> AC["anonymized clusters<br/><span style='font-size:11px'>flat_lookup: original → fake</span>"]
+      </div>
+      <div class="cap">New faker: LLM personas for the IR clusters, deterministic replace for format-preserving types, merged into anonymized clusters.</div>
+    </div>
+
+    <!-- ================= REPLACER ================= -->
+    <h2 id="replacer">4 · Replacer</h2>
+    <p class="lead">Substitute the anonymized clusters back into the document.</p>
+    <p>
+      The replacer takes the anonymized clusters (a flat map of original value to fake) and writes them into the source
+      text. It matches each occurrence by exact value plus case variants, substitutes any UUID placeholders, and falls
+      back to a format-preserving replace for anything unmatched. Mechanically it barely changes; it just consumes the
+      new, semantically coherent fakes.
+    </p>
+
+    <!-- ================= NEXT STEPS ================= -->
+    <h2 id="next">Next steps</h2>
+    <p>The complete redesign is two weeks out at the earliest. In the meantime we ship the part that's already done, and start building the data to train the rest.</p>
+    <ol>
+      <li><strong>Dual-engine prod (now).</strong> Sahil's updated 259-feature IR engine is ready, so we're wiring the live prod pipeline to run through <em>either</em> IR engine — the current one or the new one — and validate the new engine in production while the full redesign proceeds.</li>
+      <li><strong>Generate synthetic data.</strong> Mint a large synthetic corpus to train against the new taxonomy.</li>
+      <li><strong>Train the detector.</strong> Train the bi-encoder on that data.</li>
+      <li><strong>Train the new IR.</strong> Train the merger on the new 3-cluster taxonomy.</li>
+    </ol>
+
+    <footer>
+      Draft · Anonymization Redesign · Data Acquisition. Sections are meant to be edited independently.<br/>
+      Grounded in the current pipeline code (detector + classifier, faker_pipeline, replacer), Saahil's
+      IR-v2 engine explainer + experiments write-up, and the EAG design doc + its "Features for IR Consumption" spec.
+    </footer>
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad:true, theme:'base',
+    themeVariables:{
+      primaryColor:'#eef2ff', primaryBorderColor:'#4f46e5', primaryTextColor:'#0f172a',
+      lineColor:'#94a3b8', secondaryColor:'#f1f5f9', tertiaryColor:'#ffffff',
+      fontFamily:'ui-sans-serif, system-ui, sans-serif', fontSize:'13px'
+    },
+    flowchart:{ curve:'basis', htmlLabels:true, padding:14 }
+  });
+</script>
+</body>
+</html>

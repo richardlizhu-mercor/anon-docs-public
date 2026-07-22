@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IR v2 — Core Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{
+    --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-800:#3730a3; --indigo-100:#e0e7ff; --indigo-50:#eef2ff;
+    --slate-900:#0f172a; --slate-700:#334155; --slate-600:#475569; --slate-500:#64748b;
+    --slate-300:#cbd5e1; --slate-200:#e2e8f0; --slate-100:#f1f5f9; --slate-50:#f8fafc; --white:#fff;
+    --amber-50:#fffbeb; --amber-700:#b45309; --green-50:#f0fdf4; --green-700:#15803d;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; font-family:var(--font); color:var(--slate-900); background:var(--slate-50); line-height:1.68; font-weight:400; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:880px; margin:0 auto; padding:60px 30px 120px;}
+  .eyebrow{font-size:.78rem; letter-spacing:.09em; text-transform:uppercase; color:var(--indigo-600); font-weight:600;}
+  h1{font-size:2.3rem; font-weight:600; line-height:1.15; margin:.35em 0 .3em; letter-spacing:-.02em;}
+  .sub{font-size:1.14rem; color:var(--slate-600); font-weight:300; line-height:1.5; max-width:66ch;}
+  .meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px;}
+  .pill{font-size:.76rem; padding:4px 12px; border-radius:9999px; background:var(--white); border:1px solid var(--slate-200); color:var(--slate-600);}
+  .pill.accent{background:var(--indigo-50); border-color:var(--indigo-100); color:var(--indigo-700); font-weight:500;}
+  .pill.mono{font-family:var(--mono); font-size:.72rem;}
+  h2{font-size:1.42rem; font-weight:600; margin:2.4em 0 .5em; letter-spacing:-.01em;}
+  h3{font-size:1.04rem; font-weight:600; margin:1.6em 0 .3em; color:var(--slate-900);}
+  p{margin:.75em 0; color:var(--slate-700); font-size:1.02rem;}
+  strong{font-weight:600; color:var(--slate-900);}
+  a{color:var(--indigo-700);}
+  code{font-family:var(--mono); font-size:.85em; background:var(--indigo-50); color:var(--indigo-800); padding:1.5px 6px; border-radius:5px;}
+  ul,ol{color:var(--slate-700); font-size:1.02rem; padding-left:1.3em;}
+  li{margin:.4em 0;}
+  .callout{border-radius:12px; padding:16px 20px; margin:20px 0; font-size:1rem;}
+  .callout .lbl{font-weight:600; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:5px;}
+  .callout.key{background:var(--indigo-50); border:1px solid var(--indigo-100);}
+  .callout.key .lbl{color:var(--indigo-700);}
+  .callout.win{background:var(--green-50); border:1px solid #bbf7d0;}
+  .callout.win .lbl{color:var(--green-700);}
+  .fig{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto;}
+  .fig .cap{font-size:.82rem; color:var(--slate-500); margin-top:14px; text-align:center;}
+  .mermaid{display:flex; justify-content:center;}
+  table{border-collapse:collapse; width:100%; margin:18px 0; font-size:.92rem; background:var(--white); border-radius:12px; overflow:hidden; border:1px solid var(--slate-200);}
+  th{background:var(--slate-100); text-align:left; font-weight:600; color:var(--slate-700); padding:10px 14px; font-size:.82rem;}
+  td{padding:10px 14px; border-top:1px solid var(--slate-200); color:var(--slate-700); vertical-align:top;}
+  tr:hover td{background:var(--slate-50);}
+  .num{font-variant-numeric:tabular-nums;}
+  .chips{display:flex; flex-wrap:wrap; gap:7px; margin:14px 0;}
+  .chip{font-family:var(--mono); font-size:.76rem; padding:4px 10px; border-radius:8px; background:var(--slate-100); color:var(--slate-700); border:1px solid var(--slate-200);}
+  .chip b{color:var(--indigo-800); font-weight:600;}
+  .chip.eag{background:var(--indigo-50); color:var(--indigo-800); border-color:var(--indigo-100); font-weight:600;}
+  .statgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:20px 0;}
+  @media(max-width:760px){.statgrid{grid-template-columns:repeat(2,1fr);}}
+  .stat{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:15px;}
+  .stat .v{font-size:1.35rem; font-weight:300; color:var(--indigo-700); font-variant-numeric:tabular-nums;}
+  .stat .k{font-size:.76rem; color:var(--slate-500); margin-top:2px;}
+  .comp{background:var(--white); border:1px solid var(--slate-200); border-radius:12px; padding:18px 22px; margin:14px 0;}
+  .comp h3{margin-top:0;}
+  .comp .tagrow{font-family:var(--mono); font-size:.74rem; color:var(--indigo-700); margin-bottom:6px;}
+  footer{color:var(--slate-500); font-size:.85rem; margin-top:56px; padding-top:22px; border-top:1px solid var(--slate-200);}
+  footer a{font-weight:500;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="eyebrow">Data Acquisition · Anonymization · Stage 2</span>
+    <h1>IR v2 — core architecture</h1>
+    <p class="sub">The current EAG-free identity-resolution engine, distilled to its spine: what each stage does, and
+    the two learned knobs that decide every merge.</p>
+    <div class="meta">
+      <span class="pill accent">Core architecture</span>
+      <span class="pill mono">feat/ir-eag-free-engine</span>
+      <span class="pill">apps/server/data-acq</span>
+      <span class="pill">Updated July 2026</span>
+    </div>
+
+    <div class="callout key">
+      <span class="lbl">The one-line mental model</span>
+      Ingest once, route by type, then fan out per type through a learned chain — encode → block → score → reduce →
+      cluster — re-key global→local exactly once, and fill in the singletons. Only S3 keys cross the Temporal boundary,
+      and only two learned knobs, <strong>τ</strong> (the merge threshold) and <strong>γ</strong> (the Leiden
+      resolution), decide merges. Both are learned, not tuned.
+    </div>
+
+    <h2>The job, and what changed</h2>
+    <p>
+      The job hasn't changed: collapse the many surface forms of a person, org, or place into one identity, so the
+      faker can substitute a single fake for every occurrence. What changed is the machine. The old engine was one
+      2,526-line activity that embedded values with MiniLM, scored candidate pairs with a hand-tuned cosine combiner,
+      and ran a global Leiden pass with hand-tuned resolution tables. The rebuild replaces all of that with a
+      <strong>learned, order-invariant pairwise merge decision</strong>: a trained model scores each candidate pair, and
+      clustering composes those decisions. The payoff is precision under scale, which is exactly where the old engine
+      degraded.
+    </p>
+
+    <div class="statgrid">
+      <div class="stat"><div class="v">0.68→0.84</div><div class="k">HEAD F1 as data scales 2K→13K</div></div>
+      <div class="stat"><div class="v">0.75→0.71</div><div class="k">main F1 over the same range</div></div>
+      <div class="stat"><div class="v">≈0.96</div><div class="k">HEAD merge precision (vs 0.75 main)</div></div>
+      <div class="stat"><div class="v">0.9332</div><div class="k">shipped bundle CV F1max</div></div>
+    </div>
+
+    <h2>The pipeline in one picture</h2>
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  TOK["tokenized parquet<br/><span style='font-size:11px'>svc / table / col</span>"] --> S0["S0 · ingest + route"]
+  S0 -->|"~68% non-clusterable"| SINK["normalizer / exact-dedup /<br/>no-cluster (singletons)"]
+  S0 -->|"~32% clusterable"| FAN{{"per-type fan-out<br/>(window 4)"}}
+  subgraph CHAIN["per cluster-type chain"]
+    direction LR
+    ENC["encode<br/>Qwen+LoRA (GPU)"] --> BLK["block<br/>FAISS ∪ cooc ∪ token"]
+    BLK --> FEAT["featurize<br/>259 cols"]
+    FEAT --> SC["score<br/>GBDT → P(merge)"]
+    SC --> RED["reduce<br/>cut p < τ"]
+    RED --> WCC["connected<br/>components"]
+    WCC --> LEI["Leiden @ γ<br/>+ CL / ML"]
+  end
+  FAN --> CHAIN
+  CHAIN --> BUILD["S8 · build<br/>clusters.parquet"]
+  SINK --> BUILD
+  BUILD --> FAKE["faker →<br/>replacer"]
+      </div>
+      <div class="cap">Every arrow is a durable Temporal boundary; every artifact is an S3 key. Only the clusterable ~32% runs the learned chain.</div>
+    </div>
+
+    <h2>The core idea: decide per pair, then cluster</h2>
+    <p>
+      Instead of folding signals into edge weights and cutting one global graph, the engine asks a trained model a
+      direct, symmetric question for every candidate pair: are these the same entity? Because every feature is symmetric
+      in the two values, the answer doesn't depend on order. That calibrated <code>P(merge)</code> is the whole
+      decision. Everything downstream just composes those per-pair answers into clusters, carefully.
+    </p>
+    <div class="fig">
+      <div class="mermaid">
+flowchart LR
+  P["candidate pair (a, b)"] --> F["259 symmetric features"]
+  F --> B["LightGBM Booster"]
+  B --> C["1-D calibrator"]
+  C --> PM["calibrated P(merge)"]
+  PM --> D{"P ≥ τ ?"}
+  D -->|yes| M["merge edge"]
+  D -->|no| X["drop"]
+      </div>
+      <div class="cap">The learned pairwise decision. τ is per-type and learned, not a global constant.</div>
+    </div>
+
+    <h2>The stages, briefly</h2>
+
+    <div class="comp">
+      <div class="tagrow">encode · Modal GPU</div>
+      <h3>Qwen LoRA encoder</h3>
+      <p>A shared <code>Qwen3-Embedding-0.6B</code> base with 5 frozen per-type LoRA adapters (Identity, Org, Brand,
+      Product, Street) turns each value into a 1024-d vector on a warm Modal GPU. It's a matcher, not a generic
+      sentence embedder: recall@50 measured 0.95 vs bge's 0.80. No CPU fallback — if the encoder is down, the run stops
+      rather than silently embedding with the wrong model.</p>
+    </div>
+
+    <div class="comp">
+      <div class="tagrow">block · S3</div>
+      <h3>Candidate generation: three arms, three columns</h3>
+      <p>Blocking cuts O(n²) down to candidates using FAISS kNN (k=200, streamed), the co-occurrence graph (values
+      sharing a <code>(service, table, row)</code>), and token/cross-attribute blocks. The three signals stay in three
+      separate columns because the model reads them apart.</p>
+    </div>
+
+    <div class="comp">
+      <div class="tagrow">featurize + score · S4</div>
+      <h3>259-feature bank + GBDT</h3>
+      <p>One vectorized calculator produces a 259-column vector per pair, and the same function runs at train and serve
+      time, so there's no skew. A LightGBM raw Booster plus a small 1-D calibrator turns that into a calibrated
+      <code>P(merge)</code>. The old 19 production features are still here, re-homed into their families.</p>
+      <div class="chips">
+        <span class="chip">string <b>46</b></span><span class="chip">phonetic <b>12</b></span><span class="chip">affix <b>14</b></span>
+        <span class="chip">email <b>24</b></span><span class="chip">corpus <b>26</b></span>
+        <span class="chip eag">cooc <b>25</b></span><span class="chip eag">graph <b>18</b></span>
+        <span class="chip">embedding <b>41</b></span><span class="chip">coherence <b>22</b></span><span class="chip">type_schema <b>31</b></span>
+      </div>
+    </div>
+
+    <div class="comp">
+      <div class="tagrow">the operating point · learned</div>
+      <h3>τ and γ — the only two knobs that decide merges</h3>
+      <p>Both are learned per type on the calibrated probability scale, via a train-through-serving harness that runs
+      fixtures through the exact serving code. <strong>τ</strong>, the merge threshold, uses a starvation-aware rule:
+      hold a 0.95-precision floor unless that floor can only be met at recall below 0.10, then fall back to F1-max.
+      <strong>γ</strong>, the Leiden resolution, sits between the negatives' P90 and the positives' P10, capped just
+      under the positive floor so it can't collapse. There's no default table anymore: resolution goes
+      operator-override → bundle → fail-loud for τ, or singleton for γ.</p>
+    </div>
+
+    <div class="comp">
+      <div class="tagrow">cluster · S5 → S8</div>
+      <h3>Reduce → components → per-component Leiden → constraints</h3>
+      <p>Keep the edges above τ, break them into weakly-connected components (a P≥τ edge never crosses a component, so
+      this loses nothing), then run Leiden per component at the learned γ. Hard constraints finish the job:
+      CANNOT-LINK applies as a pure final split (five predicates, including different-last-name and
+      different-role-same-row), and MUST-LINK covers exact-normalized equality. Co-occurrence is never a MUST-LINK; it's
+      soft evidence only. The ~97% of nodes with no surviving edge are refilled as singletons at the end, so every value
+      reaches the faker.</p>
+    </div>
+
+    <div class="comp">
+      <div class="tagrow">substrate · co-occurrence</div>
+      <h3>The co-occurrence signal</h3>
+      <p>Co-occurrence is the evidence the encoder can't see: two people named "J. Smith" never share a row, but a
+      person's name and email sit in the same one. It's rebuilt from the nodes' service-qualified
+      <code>(service, table, row)</code> self-join, with a role gate that drops cross-person links (a sender and a
+      recipient in one email row don't merge). It shows up as a candidate arm, a Leiden weight, and ~43 of the 259
+      features.</p>
+    </div>
+
+    <div class="comp">
+      <div class="tagrow">orchestration · Temporal</div>
+      <h3>Per-type fan-out</h3>
+      <p>The run is a Temporal <code>IRFanoutWorkflow</code>: route once, fan out one durable unit per cluster type
+      across a sliding window of 4 on a dedicated 64-concurrency worker, then build once. A failure retries one stage of
+      one type instead of the whole world, and only S3 keys and scalars cross activity boundaries, so history stays
+      flat regardless of data volume.</p>
+    </div>
+
+    <div class="callout key">
+      <span class="lbl">Two things both called "EAG"</span>
+      The <strong>Enterprise Activity Graph</strong> is the north-star typed activity graph; IR is "Stage 1" of it, and
+      it feeds IR drop-in pair features (that's the sense of "features from the EAG"). The
+      <strong>Embedding-Anchor-Graph</strong> is the old live-LLM-judge path this branch deletes — which is what
+      "eag-free" refers to. Same acronym, different thing. Today's engine gets the activity-graph signal from the
+      structured <code>(service,table,row)</code> self-join; the fuller typed graph and cross-modal documents are future
+      work (DACQ-2809).
+    </div>
+
+    <h2>How values are routed</h2>
+    <p>The 57 cluster types split three ways, and only the first group runs the learned chain:</p>
+    <table>
+      <tr><th>Group</th><th>Types</th><th>How it resolves</th></tr>
+      <tr><td><strong>5 · clusterable</strong></td><td>Identity, Org, Brand, Product, Street</td><td class="new">encode + block + GBDT + Leiden (the full chain)</td></tr>
+      <tr><td><strong>8 · normalizer</strong></td><td>Phone, City, State, Country, Postal Code, Coordinates, DOB, Age</td><td>deterministic canonical-key equality; no encoder</td></tr>
+      <tr><td><strong>44 · singleton</strong></td><td>gov IDs, financial, health, credentials, network, Web, …</td><td>each value is its own entity; skips the chain</td></tr>
+    </table>
+
+    <h2>The decisive result</h2>
+    <p>
+      Both engines were scored by the same metric code on the same two synthetic fixtures. The trend is the story, not
+      any single point: HEAD improves as the dataset grows while main degrades, and HEAD is far more precise at
+      representative scale (fewer of the privacy-risky wrong merges).
+    </p>
+    <table>
+      <tr><th>Fixture</th><th>Engine</th><th>F1</th><th>Precision</th><th>Recall</th></tr>
+      <tr><td>2K</td><td>main</td><td class="num">0.7500</td><td class="num">0.8587</td><td class="num">0.6657</td></tr>
+      <tr><td>2K</td><td>HEAD</td><td class="num">0.6791</td><td class="num">0.9700</td><td class="num">0.5225</td></tr>
+      <tr><td>13K</td><td>main</td><td class="num">0.7101</td><td class="num">0.7518</td><td class="num">0.6729</td></tr>
+      <tr><td>13K</td><td>HEAD</td><td class="num">0.8367</td><td class="num">0.9621</td><td class="num">0.7402</td></tr>
+    </table>
+    <p style="font-size:.9rem;color:var(--slate-500)">Internal synthetic fixtures (run-4011827, run-4061225); directional, not a production guarantee.</p>
+
+    <footer>
+      A distilled core-architecture reference for the current EAG-free engine.
+      Full detail: your coworker's <strong>IR-V2-ENGINE-EXPLAINER</strong> (the book-length version).
+      Companion docs: the <a href="./ir-architecture-evolution-revoiced.html">old-vs-new architecture write-up</a> and
+      the <a href="./ir-architecture-overview.html">plain-language overview</a>. Benchmark numbers are
+      internal-synthetic and directional.
+    </footer>
+  </div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad:true, theme:'base',
+    themeVariables:{
+      primaryColor:'#eef2ff', primaryBorderColor:'#4f46e5', primaryTextColor:'#0f172a',
+      lineColor:'#94a3b8', secondaryColor:'#f1f5f9', tertiaryColor:'#ffffff',
+      fontFamily:'ui-sans-serif, system-ui, sans-serif', fontSize:'13px'
+    },
+    flowchart:{ curve:'basis', htmlLabels:true, padding:14 }
+  });
+</script>
+</body>
+</html>

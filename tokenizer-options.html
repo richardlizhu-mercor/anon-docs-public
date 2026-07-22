@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PII Tokenizer — All Options Compared</title>
+<style>
+  :root{
+    --indigo-600:#4f46e5; --indigo-700:#4338ca; --indigo-800:#3730a3; --indigo-100:#e0e7ff; --indigo-50:#eef2ff;
+    --slate-900:#0f172a; --slate-700:#334155; --slate-600:#475569; --slate-500:#64748b;
+    --slate-300:#cbd5e1; --slate-200:#e2e8f0; --slate-100:#f1f5f9; --slate-50:#f8fafc; --white:#fff;
+    --amber-50:#fffbeb; --amber-700:#b45309; --red-50:#fef2f2; --red-700:#b91c1c; --red-100:#fee2e2;
+    --green-50:#f0fdf4; --green-700:#15803d; --green-100:#dcfce7;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0; font-family:var(--font); color:var(--slate-900); background:var(--slate-50); line-height:1.6; -webkit-font-smoothing:antialiased;}
+  main{max-width:1080px; margin:0 auto; padding:48px 40px 120px;}
+  .eyebrow{font-size:.76rem; letter-spacing:.08em; text-transform:uppercase; color:var(--indigo-600); font-weight:600;}
+  h1{font-size:2.1rem; font-weight:600; line-height:1.14; margin:.35em 0 .3em; letter-spacing:-.02em;}
+  .sub{font-size:1.05rem; color:var(--slate-600); font-weight:300; max-width:80ch;}
+  .note{font-size:.86rem; color:var(--slate-500); max-width:90ch; margin:12px 0;}
+  h2{font-size:1.35rem; font-weight:600; margin:1.9em 0 .5em; padding-top:12px; border-top:1px solid var(--slate-200);}
+  p{margin:.7em 0; color:var(--slate-700);} strong{font-weight:600; color:var(--slate-900);} em{color:var(--slate-600);}
+  code{font-family:var(--mono); font-size:.84em; background:var(--indigo-50); color:var(--indigo-800); padding:1.5px 6px; border-radius:5px;}
+  ul{color:var(--slate-700); padding-left:1.25em;} li{margin:.34em 0;}
+  table{border-collapse:collapse; width:100%; margin:16px 0; font-size:.85rem; background:var(--white); border-radius:12px; overflow:hidden; border:1px solid var(--slate-200);}
+  th{background:var(--slate-100); text-align:left; font-weight:600; color:var(--slate-700); padding:10px 12px; font-size:.78rem;}
+  td{padding:9px 12px; border-top:1px solid var(--slate-200); color:var(--slate-700); vertical-align:top;}
+  .num{font-variant-numeric:tabular-nums; text-align:right;}
+  tr.frontier td{background:var(--green-50);} tr.frontier:hover td{background:var(--green-100);}
+  tr.frontier td:first-child{font-weight:600; color:var(--green-700);}
+  tr.excl td{color:var(--slate-500);} tr.excl td:first-child{text-decoration:line-through; text-decoration-color:var(--slate-300);}
+  tr.cloud td{background:var(--red-50);} tr.cloud td:first-child{font-weight:600; color:var(--red-700);}
+  .acc{font-weight:600;} .cost-bad{color:var(--red-700); font-weight:600;} .cost-good{color:var(--green-700); font-weight:600;}
+  .callout{border-radius:12px; padding:15px 19px; margin:18px 0; font-size:.95rem;}
+  .callout .lbl{font-weight:600; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:5px;}
+  .callout.key{background:var(--indigo-50); border:1px solid var(--indigo-100);} .callout.key .lbl{color:var(--indigo-700);}
+  .callout.warn{background:var(--amber-50); border:1px solid #fde68a;} .callout.warn .lbl{color:var(--amber-700);}
+  .legend{font-size:.8rem; color:var(--slate-500); margin:6px 0 0;}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin:0 3px 0 10px;border:1px solid var(--slate-300);}
+  footer{color:var(--slate-500); font-size:.82rem; margin-top:48px; padding-top:20px; border-top:1px solid var(--slate-200);}
+</style>
+</head>
+<body>
+<main>
+  <span class="eyebrow">Data Acquisition · Tokenizer Redesign</span>
+  <h1>PII Tokenizer — All Options Compared</h1>
+  <p class="sub">Every detector we explored, in one chart: <strong>accuracy</strong>, <strong>cost per TB</strong>, and <strong>runtime to tokenize 1 TB</strong> (≈1.32B docs). The best choice is whichever sits on the accuracy-vs-cost <strong>frontier</strong> — everything else is <em>dominated</em>.</p>
+  <p class="note">Local runtime/cost = compute-ratio estimate on real GPUs (H100/L4, MFU 35%), ±2–3× pending a measured run. <code>$/TB</code> = GPU-hours × $/hr (fleet-size-independent). Gemini = verified pricing + Datadog-verified quota/deploy ceilings. Accuracy = anobench locked-test char-F1; Gemini's 0.919 is partly "home-field" (GT seeded by a Gemini-family detector) so the true local gap is likely smaller.</p>
+
+  <div class="callout key">
+    <span class="lbl">The frontier is three points — everything else is dominated</span>
+    <strong>deberta_ft</strong> (0.874, $167/TB — best value) · <strong>routed</strong> (0.910, $498/TB — best local accuracy) · <strong>Gemini</strong> (0.919, but $242k+/TB &amp; quota-bound — priced out at TB scale). For terabytes: <strong>deberta_ft</strong>, stepping up to <strong>routed</strong> if the +0.036 accuracy is worth 3× the compute.
+  </div>
+
+  <table>
+    <tr><th>Option</th><th>Type</th><th class="num">Accuracy</th><th class="num">$ / TB</th><th>1 TB runtime (1×H100 · 8×H100)</th><th>Verdict</th></tr>
+    <tr class="frontier"><td>⭐ deberta_ft</td><td>fine-tuned local</td><td class="num acc">0.874</td><td class="num cost-good">$167</td><td>2.3 days · <strong>6.9 hrs</strong></td><td><strong>best value</strong> — cheapest, fastest, near-top accuracy</td></tr>
+    <tr class="frontier"><td>⭐ routed (deberta+gliner2)</td><td>fine-tuned local</td><td class="num acc">0.910</td><td class="num">$498</td><td>6.9 days · 20.8 hrs</td><td><strong>best local accuracy</strong> — +0.036 for 3× cost</td></tr>
+    <tr><td>gliner2_ft</td><td>fine-tuned local</td><td class="num">0.867</td><td class="num">$334</td><td>4.6 days · 13.9 hrs</td><td>dominated by deberta_ft</td></tr>
+    <tr class="cloud"><td>⭐ Gemini (baseline)</td><td>cloud LLM</td><td class="num acc">0.919</td><td class="num cost-bad">$242k–482k</td><td>~153 days (2-replica) / ~1.3 days (250-worker)</td><td>best accuracy, <strong>priced out</strong> at TB + quota/worker-bound</td></tr>
+    <tr><td>deberta_ai4privacy</td><td>OOB local</td><td class="num">0.861</td><td class="num">$167</td><td>2.3 days · 6.9 hrs</td><td>strong OOB → becomes deberta_ft when tuned</td></tr>
+    <tr class="excl"><td>qwen2.5-7B</td><td>OOB local (LLM)</td><td class="num">0.802</td><td class="num">$3,876</td><td>54 days · 6.7 days</td><td>accurate-ish but ~23× the compute → excluded</td></tr>
+    <tr><td>presidio</td><td>OOB local (CPU)</td><td class="num">0.784</td><td class="num">~$391</td><td>~11 days (32-core) · —</td><td>over-fires on real text; structured pre-filter only</td></tr>
+    <tr class="excl"><td>openai_pf</td><td>OOB local</td><td class="num">0.616</td><td class="num">$714†</td><td>9.9 days · 29.8 hrs</td><td>†measured ~5–40× slower (MoE+viterbi); mid-accuracy → excluded</td></tr>
+    <tr><td>gliner_know_large</td><td>OOB local</td><td class="num">0.562</td><td class="num">$528</td><td>7.3 days · 22 hrs</td><td>only Brand-strong model → weak-label source</td></tr>
+    <tr><td>gliner2</td><td>OOB local</td><td class="num">0.502</td><td class="num">$334</td><td>4.6 days · 13.9 hrs</td><td>under-fires OOB (fine-tunes to 0.867)</td></tr>
+    <tr><td>gliner_urchade</td><td>OOB local</td><td class="num">0.417</td><td class="num">$347</td><td>4.8 days · 14.4 hrs</td><td>dominated</td></tr>
+    <tr><td>gliner_know_base</td><td>OOB local</td><td class="num">0.350</td><td class="num">$199</td><td>2.8 days · 8.3 hrs</td><td>dominated</td></tr>
+    <tr><td>piiranha</td><td>OOB local</td><td class="num">0.344</td><td class="num">$334</td><td>4.6 days · 13.9 hrs</td><td>best Single-Name recall → weak-label source</td></tr>
+    <tr class="excl"><td>spaCy (trf)</td><td>OOB local</td><td class="num">0.242</td><td class="num">$150</td><td>2.1 days · 6.2 hrs</td><td>not a PII model (names/orgs only)</td></tr>
+    <tr class="excl"><td>StarPII</td><td>OOB local</td><td class="num">—</td><td class="num">—</td><td>—</td><td>HF-gated; not runnable (no token)</td></tr>
+    <tr><td>GLiGuard</td><td>doc-gate</td><td class="num">— (doc)</td><td class="num">~$400</td><td>~11 days · —</td><td>"contains PII?" pre-filter, not a span detector</td></tr>
+  </table>
+  <p class="legend"><span class="sw" style="background:var(--green-50)"></span>frontier / recommended <span class="sw" style="background:var(--red-50)"></span>cloud (priced out at TB) <span class="sw" style="background:var(--white)"></span>dominated / secondary <span style="color:var(--slate-400)">— struck-through = excluded</span></p>
+
+  <h2>Which is best</h2>
+  <ul>
+    <li><strong>Terabytes → <code>deberta_ft</code></strong>: 0.874 accuracy, <strong>$167/TB</strong>, a full TB in ~7 hrs on 8×H100. Best accuracy-per-dollar by a wide margin.</li>
+    <li><strong>Want the extra accuracy → <code>routed</code></strong>: 0.910 at $498/TB — pay 3× compute for +0.036 (still ~485× cheaper than Gemini).</li>
+    <li><strong>Gemini</strong> is the accuracy leader (0.919) but <strong>out at TB scale</strong>: ~$242k–482k/TB and ~153 days at the current deploy. Keep it only below ~3M docs/month.</li>
+    <li><strong>Dominated:</strong> gliner2_ft, gliner_know_large/base/urchade, piiranha — lower accuracy than deberta_ft at equal-or-higher cost. <strong>Excluded:</strong> qwen-7B (23× compute), openai_pf (slow+mid), spaCy (not PII-complete). presidio / gliner_know_large / piiranha are useful as cheap <em>pre-filters or weak-label sources</em>.</li>
+  </ul>
+
+  <h2>Why local wins on runtime too</h2>
+  <p>Local models are <strong>embarrassingly parallel — linear with GPUs</strong>: deberta_ft does 1 TB in ~2.3 days on <strong>1</strong> H100, ~7 hrs on <strong>8</strong>, ~33 min on <strong>100</strong> — add GPUs, go faster, no ceiling but budget. <strong>Gemini does not scale with your hardware</strong> — it's capped by Vertex quota + worker count (~100 docs/s at the current 2 replicas → 153 days/TB; the quota ceiling needs a ~250-worker fan-out, then it's RPM/TPM-bound). Rate limits are <em>not</em> the constraint (0 model-serving 429s in 14 days of prod) — <strong>cost and throughput scaling are</strong>.</p>
+
+  <h2>Caveats</h2>
+  <ul>
+    <li>Local runtime/$ are <strong>compute-ratio estimates</strong> (MFU 35%), not measured on a real GPU — ±2–3×; the frontier ordering + the ~1,000× Gemini gap survive that. A 1-hour measured deberta_ft run on a real L4/A100 would firm up the numbers.</li>
+    <li>Accuracy is anobench locked-test char-F1; Gemini's 0.919 is partly home-field, and the fine-tuned locals used <strong>distilled labels only</strong> — real gold would lift them.</li>
+    <li>1 TB = tokenizable text (~1.32B docs @ 756 chars); raw-file TB extract to less. <code>$/TB</code> is compute only (excludes one-time fine-tune + fleet ops).</li>
+  </ul>
+
+  <footer>
+    PII Tokenizer Bake-off · all-options comparison · 2026-07. Depth: <code>SUMMARY.md</code> (accuracy/encoder/fine-tune), <code>SUMMARY_v2.md</code> (TB scale), <code>WORKLOG.md</code> (history). Raw: <code>metrics/options_matrix.json</code>, <code>tb_scale.json</code>, <code>benchmark*.json</code>.
+  </footer>
+</main>
+</body>
+</html>
