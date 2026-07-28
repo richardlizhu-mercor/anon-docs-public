@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Snapping — Before / After Examples</title><style>:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--slate-900:#0f172a;--slate-700:#334155;
+--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;
+--slate-50:#f8fafc;--white:#fff;--amber-200:#fde68a;--green-100:#bbf7d0;--green-700:#15803d;
+--blue-100:#dbeafe;--blue-700:#1d4ed8;--red-600:#dc2626;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1000px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:92ch}
+.legend{background:var(--white);border:1px solid var(--slate-200);border-radius:10px;padding:12px 16px;margin:14px 0;font-size:.85rem;color:var(--slate-600)}
+.legend .sw{display:inline-block;border-radius:3px;padding:0 6px;margin:0 3px;font-size:.78rem}
+h2{font-size:1.2rem;font-weight:600;margin:1.8em 0 .2em}
+h2 .c{font-size:.72rem;font-weight:600;border-radius:999px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+h2 .fix{background:var(--green-100);color:var(--green-700)}h2 .hurt{background:#fee2e2;color:var(--red-600)}h2 .nofix{background:var(--slate-100);color:var(--slate-500)}
+.blurb{font-size:.88rem;color:var(--slate-600);margin:.1em 0 .8em;max-width:94ch}
+.ex{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;margin:10px 0;padding:12px 16px}
+.exhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.72rem;margin-bottom:8px}
+.bench{font-weight:700;border-radius:5px;padding:1px 7px}.bench.contigo{background:#ede9fe;color:#6d28d9}.bench.pii{background:#e0f2fe;color:#0369a1}
+.ml{font-family:var(--mono);font-weight:700;color:var(--slate-800);background:var(--slate-100);border-radius:5px;padding:1px 7px}
+.lbl{color:var(--slate-500)}.did{margin-left:auto;font-family:var(--mono);color:var(--slate-400);font-size:.68rem}
+.txt{font-family:var(--mono);font-size:.9rem;line-height:2;white-space:pre-wrap;word-break:break-word;background:var(--slate-50);border-radius:8px;padding:12px 14px}
+.txt .raw{background:var(--blue-100);color:var(--blue-700);border-radius:2px;font-weight:600}
+.txt .add{background:var(--green-100);color:var(--green-700);border-radius:2px;font-weight:700}
+.txt .gt{border-bottom:2px solid #b45309}
+.txt .mut{color:var(--slate-400)}
+.verd{font-size:.8rem;color:var(--slate-600);margin:8px 0 4px;font-family:var(--mono)}
+.verd code{background:var(--slate-100);padding:0 4px;border-radius:3px}
+.vy{color:var(--green-700);font-weight:700}.vn{color:var(--red-600);font-weight:700}
+.note{font-size:.83rem;color:var(--slate-500);max-width:92ch}.note code{background:var(--slate-100);padding:0 4px;border-radius:3px}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}</style></head><body><main>
+<span class="eyebrow">Detection &middot; word-snap &middot; examples</span>
+<h1>Word-Snapping — Before / After</h1>
+<p class="sub">Concrete, real examples of the whitespace snap that fixes incomplete model spans. Each shows
+one model's prediction on one document: the <span class="sw" style="background:#dbeafe;color:#1d4ed8">raw
+predicted span</span>, the <span class="sw" style="background:#bbf7d0;color:#15803d">characters snapping
+adds</span> (expanding to the nearest whitespace), and the <u>ground-truth extent</u> (underline).</p>
+<div class="legend"><b>How to read each example:</b>
+<span class="sw" style="background:#dbeafe;color:#1d4ed8">blue</span> = what the model emitted &middot;
+<span class="sw" style="background:#bbf7d0;color:#15803d">green</span> = added by snapping to whitespace &middot;
+<u>underline</u> = ground-truth span. When blue+green exactly fills the underline (no green past it), the
+snapped span matches GT exactly.</div>
+
+<h2>Snapping fixes it <span class="c fix">recovered</span></h2>
+<p class="blurb">The token classifier dropped the leading (or trailing) sub-word, so the raw span is
+incomplete and scores as a miss under exact match. Snapping to whitespace restores the whole token and the
+span becomes exact — this is the bulk of the encoders' recovered F1.</p>
+<div class="ex"><div class="exhead"><span class="bench contigo">Contigo</span><span class="ml">large</span><span class="lbl">Gmail</span><span class="did">gmail:197e9a27b16d00e5</span></div><div class="txt"><span class="mut">…</span><span class="gt">ta &lt;vanshita.gupta@housing.com&gt;</span>
+wrote:
+
+&gt; Hi <span class="add gt">Kaushik</span><span class="raw gt">,</span>
+&gt;
+&gt; Thank you for walking us through your cre<span class="mut">…</span></div><div class="verd">raw <code>[258,259)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[251,259)</code> <span class="vy">exact ✓</span></div><div class="note">The model dropped part of the token; snapping restored &ldquo;Kaushik&rdquo; on the left → now matches GT exactly.</div></div><div class="ex"><div class="exhead"><span class="bench contigo">Contigo</span><span class="ml">xxl</span><span class="lbl">Gmail</span><span class="did">gmail:190e864df4b45293</span></div><div class="txt"><span class="mut">…</span>andard Time - Kolkata
+
+Join with Google Meet
+<span class="add gt">https://meet.google.com/qwc-bqjg</span><span class="raw gt">-</span><span class="add gt">hjv?hs=224</span>
+
+
+	
+Join by phone
+(US) <span class="gt">+1 316-512-8994</span>
+PI<span class="mut">…</span></div><div class="verd">raw <code>[192,193)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[160,203)</code> <span class="vy">exact ✓</span></div><div class="note">The model dropped part of the token; snapping restored &ldquo;https://meet.google.com/qwc-bqjg&rdquo; on the left and &ldquo;hjv?hs=224&rdquo; on the right → now matches GT exactly.</div></div><div class="ex"><div class="exhead"><span class="bench contigo">Contigo</span><span class="ml">xxl</span><span class="lbl">Jira</span><span class="did">jira:19368</span></div><div class="txt"><span class="mut">…</span>interface &gt; initiate Api giving 500 Error.
+curl <span class="add gt">&#x27;https://staging</span><span class="raw gt">-</span><span class="add gt">api-ocb.kofluence.com/campaign/v2/initiate&#x27;</span> \
+  -H &#x27;authority: <span class="gt">staging-api-ocb.kofluence.co</span><span class="mut">…</span></div><div class="verd">raw <code>[84,85)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[68,128)</code> <span class="vy">exact ✓</span></div><div class="note">The model dropped part of the token; snapping restored &ldquo;&#x27;https://staging&rdquo; on the left and &ldquo;api-ocb.kofluence.com/campaign/v2/initiate&#x27;&rdquo; on the right → now matches GT exactly.</div></div><div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">large</span><span class="lbl">NVIDIA Nemotron</span><span class="did">nvidia_nemotron:3932</span></div><div class="txt"><span class="mut">…</span>THE DISTRICT COURT OF ATASCOSA COUNTY, TEXAS**
+
+<span class="add gt">*</span><span class="raw gt">*</span><span class="add gt">Leticia</span> <span class="gt">Alarcon,**</span>
+**Plaintiff,**
+
+**v.**
+
+<span class="gt">**John</span> <span class="gt">Doe,*</span><span class="mut">…</span></div><div class="verd">raw <code>[54,55)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[53,62)</code> <span class="vy">exact ✓</span></div><div class="note">The model dropped part of the token; snapping restored &ldquo;*&rdquo; on the left and &ldquo;Leticia&rdquo; on the right → now matches GT exactly.</div></div><div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">large</span><span class="lbl">NVIDIA Nemotron</span><span class="did">nvidia_nemotron:3932</span></div><div class="txt"><span class="mut">…</span>*
+
+<span class="gt">**Leticia</span> <span class="gt">Alarcon,**</span>
+**Plaintiff,**
+
+**v.**
+
+<span class="add gt">*</span><span class="raw gt">*</span><span class="add gt">John</span> <span class="gt">Doe,**</span>
+**Defendant.**
+
+**CASE CAPTION**
+
+**QUES<span class="mut">…</span></div><div class="verd">raw <code>[99,100)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[98,104)</code> <span class="vy">exact ✓</span></div><div class="note">The model dropped part of the token; snapping restored &ldquo;*&rdquo; on the left and &ldquo;John&rdquo; on the right → now matches GT exactly.</div></div><div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">large</span><span class="lbl">NVIDIA Nemotron</span><span class="did">nvidia_nemotron:3932</span></div><div class="txt"><span class="mut">…</span><span class="gt">ticia</span> <span class="gt">Alarcon,**</span>
+**Plaintiff,**
+
+**v.**
+
+<span class="gt">**John</span> <span class="add gt">Doe</span><span class="raw gt">,</span><span class="add gt">**</span>
+**Defendant.**
+
+**CASE CAPTION**
+
+**QUESTION PR<span class="mut">…</span></div><div class="verd">raw <code>[108,109)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[105,111)</code> <span class="vy">exact ✓</span></div><div class="note">The model dropped part of the token; snapping restored &ldquo;Doe&rdquo; on the left and &ldquo;**&rdquo; on the right → now matches GT exactly.</div></div>
+
+<h2>Snapping over-extends <span class="c hurt">regression</span></h2>
+<p class="blurb">When a model already emits the exact span (mostly <code>qwen</code>, which generates literal
+surfaces), snapping can push the boundary into attached punctuation or a neighboring token, turning an exact
+match into a miss. This is why snapping should be applied per-model (encoders yes, qwen no).</p>
+<div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">qwen</span><span class="lbl">Isotonic PII 200k</span><span class="did">isotonic_pii_200k:317</span></div><div class="txt">Hi <span class="raw gt">James</span><span class="add">,</span> does the special education curriculum in Cumbri<span class="mut">…</span></div><div class="verd">raw <code>[3,8)</code> <span class="vy">exact ✓</span> &nbsp;→&nbsp; snapped <code>[3,9)</code> <span class="vn">not exact ✗</span></div><div class="note">The model was already exact; snapping over-extended into &ldquo;,&rdquo; on the right, breaking the exact match. (Typical of <code>qwen</code>, which emits clean surfaces.)</div></div><div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">qwen</span><span class="lbl">Isotonic PII 200k</span><span class="did">isotonic_pii_200k:3323</span></div><div class="txt">Dear <span class="gt">Mrs.</span> <span class="raw gt">Padberg</span><span class="add">,</span>
+
+We are happy to inform you that your applicati<span class="mut">…</span></div><div class="verd">raw <code>[10,17)</code> <span class="vy">exact ✓</span> &nbsp;→&nbsp; snapped <code>[10,18)</code> <span class="vn">not exact ✗</span></div><div class="note">The model was already exact; snapping over-extended into &ldquo;,&rdquo; on the right, breaking the exact match. (Typical of <code>qwen</code>, which emits clean surfaces.)</div></div><div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">PF</span><span class="lbl">Isotonic PII 200k</span><span class="did">isotonic_pii_200k:24229</span></div><div class="txt"><span class="mut">…</span>y. Insurance account: <span class="gt">Checking Account</span>, number: <span class="raw gt">81653425</span><span class="add">.</span> To resolve this, contact <span class="gt">Mose</span> <span class="gt">Sasha</span> <span class="gt">Stroman</span> at <span class="mut">…</span></div><div class="verd">raw <code>[151,159)</code> <span class="vy">exact ✓</span> &nbsp;→&nbsp; snapped <code>[151,160)</code> <span class="vn">not exact ✗</span></div><div class="note">The model was already exact; snapping over-extended into &ldquo;.&rdquo; on the right, breaking the exact match. (Typical of <code>qwen</code>, which emits clean surfaces.)</div></div>
+
+<h2>Snapping can't fix it <span class="c nofix">out of reach</span></h2>
+<p class="blurb">Boundary repair only helps when the drift is sub-word. Where the GT span has a genuinely
+different extent — a coarse multi-field GT span (e.g. <code>Name &lt;email&gt;</code> as one span) or the
+model flagged a different region — a whitespace snap cannot reconstruct it.</p>
+<div class="ex"><div class="exhead"><span class="bench contigo">Contigo</span><span class="ml">large</span><span class="lbl">Gmail</span><span class="did">gmail:190e864df4b45293</span></div><div class="txt"><span class="mut">…</span>jv?pin=6424295248110&amp;hs=0
+
+
+Organiser
+<span class="gt">Shree </span><span class="add gt">Lahari</span><span class="raw gt">.</span> K. A
+<span class="gt">lahari@kofluence.com</span>
+
+Guests
+<span class="gt">Shree Lah</span><span class="mut">…</span></div><div class="verd">raw <code>[368,369)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[362,369)</code> <span class="vn">not exact ✗</span></div><div class="note">Snapping fixes boundaries but not this — the GT span has a different extent (coarse multi-field GT or a different region), which a whitespace snap cannot reconstruct.</div></div><div class="ex"><div class="exhead"><span class="bench contigo">Contigo</span><span class="ml">large</span><span class="lbl">Gmail</span><span class="did">gmail:194d0544caa333a1</span></div><div class="txt"><span class="gt">Hi </span><span class="add gt">Neha</span><span class="raw gt">,</span>
+
+Please find attached the draft agreement for<span class="mut">…</span></div><div class="verd">raw <code>[7,8)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[3,8)</code> <span class="vn">not exact ✗</span></div><div class="note">Snapping fixes boundaries but not this — the GT span has a different extent (coarse multi-field GT or a different region), which a whitespace snap cannot reconstruct.</div></div><div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">large</span><span class="lbl">Gretel Finance</span><span class="did">gretel_finance:96908</span></div><div class="txt"><span class="mut">…</span><span class="gt">D05f)</span> initiated account setup
+Customer Support: <span class="add gt">Hall</span><span class="raw gt">o</span><span class="gt"> Baltasar,</span> willkommen bei unserem Service! Ich b<span class="mut">…</span></div><div class="verd">raw <code>[115,116)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[111,116)</code> <span class="vn">not exact ✗</span></div><div class="note">Snapping fixes boundaries but not this — the GT span has a different extent (coarse multi-field GT or a different region), which a whitespace snap cannot reconstruct.</div></div><div class="ex"><div class="exhead"><span class="bench pii">pii-bench</span><span class="ml">xxl</span><span class="lbl">Gretel Finance</span><span class="did">gretel_finance:77333</span></div><div class="txt"><span class="mut">…</span>ame]
+Zip Code: [Zip Code]
+
+Phone Number: <span class="gt">[Phone </span><span class="add gt">Number</span><span class="raw gt">]</span>
+Email Address: [Email Address]
+
+Type of Loan Re<span class="mut">…</span></div><div class="verd">raw <code>[220,221)</code> <span class="vn">not exact ✗</span> &nbsp;→&nbsp; snapped <code>[214,221)</code> <span class="vn">not exact ✗</span></div><div class="note">Snapping fixes boundaries but not this — the GT span has a different extent (coarse multi-field GT or a different region), which a whitespace snap cannot reconstruct.</div></div>
+
+<footer>Auto-generated by <code>gen_examples_html.py</code> from <code>combined.json</code> +
+<code>combined_pii.json</code> (real predictions, no re-inference). Companion to the
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwQTndF0TUfuL1KgKAy4llkyhgIqpZDI12NxE4DAHJ7esLiMEqxozZjknKX__5cSJRW/exec" target="_top">Word-Snapped Leaderboard</a>
+and <a href="https://script.google.com/a/macros/mercor.com/s/AKfycbxzXviZ04XgxEJQXIFPW-YR_C_Wm14lvj5EN-G5U3RJygUkgi7IlVAF8VD5mX4FncLA/exec" target="_top">Raw Spans</a>.
+Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com).</footer>
+</main><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=snap-examples&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

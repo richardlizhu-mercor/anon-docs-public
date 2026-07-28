@@ -1,0 +1,1070 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Contigo Benchmark — Model Comparison</title><style>:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--indigo-50:#eef2ff;
+--slate-900:#0f172a;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
+--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--white:#fff;--amber-200:#fde68a;
+--green-100:#dcfce7;--green-700:#15803d;--red-100:#fee2e2;--red-700:#b91c1c;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1180px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:92ch}
+.note{font-size:.85rem;color:var(--slate-500);max-width:94ch;margin:10px 0 4px}
+.legend{background:var(--white);border:1px solid var(--slate-200);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.8rem;color:var(--slate-600)}
+.legend b{margin-right:6px} .sw{display:inline-block;border-radius:3px;padding:0 6px;margin:0 3px;font-size:.75rem}
+table.summ{border-collapse:collapse;font-size:.8rem;background:var(--white);border:1px solid var(--slate-200);border-radius:10px;overflow:hidden;margin:8px 0 6px}
+table.summ th{background:var(--slate-100);color:var(--slate-600);font-weight:600;padding:7px 12px;text-align:right;font-size:.72rem}
+table.summ td{padding:6px 12px;border-top:1px solid var(--slate-200);text-align:right;font-variant-numeric:tabular-nums}
+.l{text-align:left!important}
+.card{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;margin:16px 0;overflow:hidden}
+.chead{background:var(--slate-900);color:#fff;padding:8px 14px;font-size:.85rem;font-weight:600}
+.chead .did{float:right;font-family:var(--mono);font-size:.72rem;color:var(--slate-400);font-weight:400}
+.row{display:flex;border-top:1px solid var(--slate-100);font-size:.82rem}
+.row:first-child{border-top:0}
+.rl{flex:0 0 122px;padding:8px 12px;color:var(--slate-500);font-size:.72rem;font-weight:600;background:var(--slate-50);border-right:1px solid var(--slate-100)}
+.rl.mono{font-family:var(--mono)}
+.rl .cnt{float:right;color:var(--slate-400);font-weight:600}
+.rl .tpfp{font-size:.64rem}
+.rt{flex:1;padding:8px 14px;font-family:var(--mono);white-space:pre-wrap;word-break:break-word;line-height:1.75;color:var(--slate-700)}
+.gtrow .rt{background:#fffdf5}
+.consrow .rt{background:#fbfefb}
+mark{border-radius:3px;padding:0 1px}
+mark.gt{background:var(--amber-200);color:#7c2d12;font-weight:600}
+mark.tp{background:var(--green-100);color:var(--green-700);font-weight:600}
+mark.fp{background:var(--red-100);color:var(--red-700);font-weight:600}
+mark.miss{background:repeating-linear-gradient(45deg,#fecaca,#fecaca 3px,#fff 3px,#fff 6px);color:var(--red-700);font-weight:600}
+mark.gtu{border-bottom:2px solid #7c2d12}
+mark.c1{background:#fdba74}mark.c2{background:#fcd34d}mark.c3{background:#d9f99d}mark.c4{background:#86efac}mark.c5{background:#4ade80}mark.c6{background:#22c55e}
+.mono{font-family:var(--mono)} .muted{color:var(--slate-400);font-size:.72rem}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}</style></head><body><main>
+<span class="eyebrow">Anonymization &middot; Detection &middot; Contigo</span>
+<h1>Detectors Compared on the Same Docs</h1>
+<p class="sub">The six benchmark detectors run <strong>span-by-span on the same 14 documents</strong>
+(two per service), scored against the pipeline ground truth. Each doc shows the GT, a
+<strong>consensus heatmap</strong> (how many of the six models flagged each character), and one row per
+model with its predictions colored <span class="sw tp">true positive</span> /
+<span class="sw fp">false positive</span> against GT.</p>
+<p class="note">Unlike a bare detector-vs-detector view, every span here is scored: agreement with the
+self-referential GT (what the pipeline masked). This makes the recall gap visible &mdash; hatched
+<span class="sw miss">MISS</span> = a GT character no model caught. Docs were curated to include one
+high-agreement and one divergent case per service.</p>
+<div class="legend"><b>Consensus</b> (# of 6 models on a char): <span class="sw c1">1</span> <span class="sw c2">2</span> <span class="sw c3">3</span> <span class="sw c4">4</span> <span class="sw c5">5</span> <span class="sw c6">6</span>
+&nbsp; <span class="sw miss">MISS</span> in-GT / 0 models &nbsp; <u>underline</u> = GT char &nbsp;
+<span style="color:var(--slate-400)">hover any span for detail</span></div>
+<div class="legend"><b>Per-model rows</b>: <span class="sw tp">green</span> = TP (overlaps GT) &middot;
+<span class="sw fp">red</span> = FP (not in GT) &middot; badge = spans (tp✓ fp✗)</div>
+<table class="summ"><tr><th class="l">short</th><th class="l">model</th><th>overall F1</th><th>dets (featured)</th></tr><tr><td class="l mono">base</td><td class="l muted">deberta-v3-base</td><td>0.699</td><td>32</td></tr><tr><td class="l mono">large</td><td class="l muted">deberta-v3-large</td><td>0.633</td><td>42</td></tr><tr><td class="l mono">PF</td><td class="l muted">privacy-filter</td><td>0.554</td><td>47</td></tr><tr><td class="l mono">xxl</td><td class="l muted">deberta-v2-xxlarge</td><td>0.493</td><td>41</td></tr><tr><td class="l mono">xl</td><td class="l muted">deberta-v2-xlarge</td><td>0.394</td><td>29</td></tr><tr><td class="l mono">qwen</td><td class="l muted">qwen2.5-7b-qlora</td><td>0.305</td><td>38</td></tr></table>
+<div class="card"><div class="chead">✉️ Gmail<span class="did">gmail:197e9a27b16d00e5</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">Hi <mark class="gt">Vanshita,</mark>
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, <mark class="gt">Vanshita Gupta &lt;vanshita.gupta@housing.com&gt;</mark>
+wrote:
+
+&gt; Hi <mark class="gt">Kaushik,</mark>
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">Hi <mark class="c1 gtu" title="1/6 · qwen · GT✓">Van</mark><mark class="c5 gtu" title="5/6 · base, large, xxl, xl, qwen · GT✓">shita</mark><mark class="c3 gtu" title="3/6 · large, xxl, xl · GT✓">,</mark>
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, <mark class="c1 gtu" title="1/6 · qwen · GT✓">Van</mark><mark class="c4 gtu" title="4/6 · large, xxl, xl, qwen · GT✓">shita</mark><mark class="c1 gtu" title="1/6 · xl · GT✓"> </mark><mark class="c2 gtu" title="2/6 · xl, qwen · GT✓">Gupta</mark><mark class="c1 gtu" title="1/6 · base · GT✓"> &lt;</mark><mark class="c5 gtu" title="5/6 · base, large, xxl, xl, qwen · GT✓">vanshita</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">.gupta@housing.com</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, xl · GT✓">&gt;</mark><mark class="c1" title="1/6 · PF · not GT">
+wrote:
+
+&gt;</mark> Hi <mark class="c1 gtu" title="1/6 · qwen · GT✓">Kaushik</mark><mark class="c3 gtu" title="3/6 · large, xxl, xl · GT✓">,</mark>
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div><div class="row"><span class="rl mono">base<span class="cnt">2<span class="tpfp"> 2✓ 0✗</span></span></span><span class="rt">Hi Van<mark class="tp" title="TP · overlaps GT">shita</mark>,
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, Vanshita Gupta<mark class="tp" title="TP · overlaps GT"> &lt;vanshita.gupta@housing.com&gt;</mark>
+wrote:
+
+&gt; Hi Kaushik,
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div><div class="row"><span class="rl mono">large<span class="cnt">4<span class="tpfp"> 4✓ 0✗</span></span></span><span class="rt">Hi Van<mark class="tp" title="TP · overlaps GT">shita,</mark>
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, Van<mark class="tp" title="TP · overlaps GT">shita</mark> Gupta &lt;<mark class="tp" title="TP · overlaps GT">vanshita.gupta@housing.com&gt;</mark>
+wrote:
+
+&gt; Hi Kaushik<mark class="tp" title="TP · overlaps GT">,</mark>
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div><div class="row"><span class="rl mono">PF<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">Hi Vanshita,
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, Vanshita Gupta &lt;vanshita<mark class="tp" title="TP · overlaps GT">.gupta@housing.com&gt;
+wrote:
+
+&gt;</mark> Hi Kaushik,
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">4<span class="tpfp"> 4✓ 0✗</span></span></span><span class="rt">Hi Van<mark class="tp" title="TP · overlaps GT">shita,</mark>
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, Van<mark class="tp" title="TP · overlaps GT">shita</mark> Gupta &lt;<mark class="tp" title="TP · overlaps GT">vanshita.gupta@housing.com&gt;</mark>
+wrote:
+
+&gt; Hi Kaushik<mark class="tp" title="TP · overlaps GT">,</mark>
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div><div class="row"><span class="rl mono">xl<span class="cnt">4<span class="tpfp"> 4✓ 0✗</span></span></span><span class="rt">Hi Van<mark class="tp" title="TP · overlaps GT">shita,</mark>
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, Van<mark class="tp" title="TP · overlaps GT">shita Gupta</mark> &lt;<mark class="tp" title="TP · overlaps GT">vanshita.gupta@housing.com&gt;</mark>
+wrote:
+
+&gt; Hi Kaushik<mark class="tp" title="TP · overlaps GT">,</mark>
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">5<span class="tpfp"> 5✓ 0✗</span></span></span><span class="rt">Hi <mark class="tp" title="TP · overlaps GT">Vanshita</mark>,
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, <mark class="tp" title="TP · overlaps GT">Vanshita</mark> <mark class="tp" title="TP · overlaps GT">Gupta</mark> &lt;<mark class="tp" title="TP · overlaps GT">vanshita.gupta@housing.com</mark>&gt;
+wrote:
+
+&gt; Hi <mark class="tp" title="TP · overlaps GT">Kaushik</mark>,
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</span></div></div><div class="card"><div class="chead">✉️ Gmail<span class="did">gmail:1958357279bd51e4</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">Department Hunters Name <mark class="gt">Shruthi</mark>
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#SerokeralaIG Closed Won 18058 3.03 3.03 0.0…</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">Department Hunters Name <mark class="miss" title="MISS · in GT, 0/6 models">S</mark><mark class="c3 gtu" title="3/6 · base, large, xxl · GT✓">hruthi</mark>
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#Ser<mark class="c1" title="1/6 · base · not GT">okeralaIG</mark> Closed Won 18058 3.03 3.03 0.0…</span></div><div class="row"><span class="rl mono">base<span class="cnt">2<span class="tpfp"> 1✓ 1✗</span></span></span><span class="rt">Department Hunters Name S<mark class="tp" title="TP · overlaps GT">hruthi</mark>
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#Ser<mark class="fp" title="FP · not in GT">okeralaIG</mark> Closed Won 18058 3.03 3.03 0.0…</span></div><div class="row"><span class="rl mono">large<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">Department Hunters Name S<mark class="tp" title="TP · overlaps GT">hruthi</mark>
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#SerokeralaIG Closed Won 18058 3.03 3.03 0.0…</span></div><div class="row"><span class="rl mono">PF<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">Department Hunters Name Shruthi
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#SerokeralaIG Closed Won 18058 3.03 3.03 0.0…</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">Department Hunters Name S<mark class="tp" title="TP · overlaps GT">hruthi</mark>
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#SerokeralaIG Closed Won 18058 3.03 3.03 0.0…</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">Department Hunters Name Shruthi
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#SerokeralaIG Closed Won 18058 3.03 3.03 0.0…</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">Department Hunters Name Shruthi
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#SerokeralaIG Closed Won 18058 3.03 3.03 0.0…</span></div></div><div class="card"><div class="chead">💬 Microsoft Teams<span class="did">msteams:1706689947312</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">&lt;p&gt;Hi &lt;at <mark class="gt">id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing</mark> below 10 names who has Pan India reach . Some of them are already <mark class="gt">onboarded</mark> and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;vj_manoj&lt;/…</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">&lt;p&gt;Hi &lt;at <mark class="miss" title="MISS · in GT, 0/6 models">id=&quot;0&quot;&gt;Priyadarshi</mark><mark class="c1 gtu" title="1/6 · PF · GT✓">&lt;/</mark><mark class="miss" title="MISS · in GT, 0/6 models">at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing</mark> below 10 names who has Pan India reach . Some of them are already <mark class="miss" title="MISS · in GT, 0/6 models">onboarded</mark> and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;<mark class="c1" title="1/6 · qwen · not GT">vj</mark><mark class="c2" title="2/6 · base, qwen · not GT">_manoj</mark><mark class="c1" title="1/6 · base · not GT">&lt;</mark>/…</span></div><div class="row"><span class="rl mono">base<span class="cnt">1<span class="tpfp"> 0✓ 1✗</span></span></span><span class="rt">&lt;p&gt;Hi &lt;at id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing below 10 names who has Pan India reach . Some of them are already onboarded and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;vj<mark class="fp" title="FP · not in GT">_manoj&lt;</mark>/…</span></div><div class="row"><span class="rl mono">large<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">&lt;p&gt;Hi &lt;at id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing below 10 names who has Pan India reach . Some of them are already onboarded and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;vj_manoj&lt;/…</span></div><div class="row"><span class="rl mono">PF<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">&lt;p&gt;Hi &lt;at id=&quot;0&quot;&gt;Priyadarshi<mark class="tp" title="TP · overlaps GT">&lt;/</mark>at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing below 10 names who has Pan India reach . Some of them are already onboarded and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;vj_manoj&lt;/…</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">&lt;p&gt;Hi &lt;at id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing below 10 names who has Pan India reach . Some of them are already onboarded and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;vj_manoj&lt;/…</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">&lt;p&gt;Hi &lt;at id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing below 10 names who has Pan India reach . Some of them are already onboarded and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;vj_manoj&lt;/…</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">1<span class="tpfp"> 0✓ 1✗</span></span></span><span class="rt">&lt;p&gt;Hi &lt;at id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing below 10 names who has Pan India reach . Some of them are already onboarded and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;<mark class="fp" title="FP · not in GT">vj_manoj</mark>&lt;/…</span></div></div><div class="card"><div class="chead">💬 Microsoft Teams<span class="did">msteams:1691989799187</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">&lt;p&gt;Hi <mark class="gt">Pavan</mark> payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-CARAT LANE TRADING PRIVATE LIMITED-CARAT LANE TRADING PRIVATE LIMITED-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">&lt;p&gt;Hi <mark class="miss" title="MISS · in GT, 0/6 models">Pavan</mark> payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-<mark class="c1" title="1/6 · qwen · not GT">CARAT LANE TRADING PRIVATE</mark><mark class="c2" title="2/6 · large, qwen · not GT"> LIMITED</mark><mark class="c1" title="1/6 · large · not GT">-</mark><mark class="c2" title="2/6 · large, qwen · not GT">CARAT LANE TRADING</mark><mark class="c3" title="3/6 · base, large, qwen · not GT"> PRIVATE LIMITED</mark>-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div><div class="row"><span class="rl mono">base<span class="cnt">1<span class="tpfp"> 0✓ 1✗</span></span></span><span class="rt">&lt;p&gt;Hi Pavan payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-CARAT LANE TRADING PRIVATE LIMITED-CARAT LANE TRADING<mark class="fp" title="FP · not in GT"> PRIVATE LIMITED</mark>-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div><div class="row"><span class="rl mono">large<span class="cnt">1<span class="tpfp"> 0✓ 1✗</span></span></span><span class="rt">&lt;p&gt;Hi Pavan payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-CARAT LANE TRADING PRIVATE<mark class="fp" title="FP · not in GT"> LIMITED-CARAT LANE TRADING PRIVATE LIMITED</mark>-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div><div class="row"><span class="rl mono">PF<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">&lt;p&gt;Hi Pavan payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-CARAT LANE TRADING PRIVATE LIMITED-CARAT LANE TRADING PRIVATE LIMITED-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">&lt;p&gt;Hi Pavan payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-CARAT LANE TRADING PRIVATE LIMITED-CARAT LANE TRADING PRIVATE LIMITED-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">&lt;p&gt;Hi Pavan payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-CARAT LANE TRADING PRIVATE LIMITED-CARAT LANE TRADING PRIVATE LIMITED-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">2<span class="tpfp"> 0✓ 2✗</span></span></span><span class="rt">&lt;p&gt;Hi Pavan payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-<mark class="fp" title="FP · not in GT">CARAT LANE TRADING PRIVATE LIMITED</mark>-<mark class="fp" title="FP · not in GT">CARAT LANE TRADING PRIVATE LIMITED</mark>-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</span></div></div><div class="card"><div class="chead">🎫 Jira<span class="did">jira:26091</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB <mark class="gt">(automationtestops@kofluence.com)</mark>
+2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB <mark class="miss" title="MISS · in GT, 0/6 models">(</mark><mark class="c5 gtu" title="5/6 · large, PF, xxl, xl, qwen · GT✓">automation</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">testops@kofluence.com</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, xl · GT✓">)</mark><mark class="c1" title="1/6 · PF · not GT">
+</mark>2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div><div class="row"><span class="rl mono">base<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB (automation<mark class="tp" title="TP · overlaps GT">testops@kofluence.com)</mark>
+2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div><div class="row"><span class="rl mono">large<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB (<mark class="tp" title="TP · overlaps GT">automationtestops@kofluence.com)</mark>
+2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div><div class="row"><span class="rl mono">PF<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB (<mark class="tp" title="TP · overlaps GT">automationtestops@kofluence.com)
+</mark>2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB (<mark class="tp" title="TP · overlaps GT">automationtestops@kofluence.com)</mark>
+2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div><div class="row"><span class="rl mono">xl<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB (<mark class="tp" title="TP · overlaps GT">automationtestops@kofluence.com)</mark>
+2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB (<mark class="tp" title="TP · overlaps GT">automationtestops@kofluence.com</mark>)
+2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</span></div></div><div class="card"><div class="chead">🎫 Jira<span class="did">jira:17883</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your <mark class="gt">Kofinity</mark> link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your <mark class="gt">Kofinity</mark> link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = <mark class="gt">Kofinity</mark> Outward Clicks as mentioned in the Affise report
+Active S…</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your <mark class="miss" title="MISS · in GT, 0/6 models">Kofinity</mark> link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your <mark class="miss" title="MISS · in GT, 0/6 models">Kofinity</mark> link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = <mark class="miss" title="MISS · in GT, 0/6 models">K</mark><mark class="c1 gtu" title="1/6 · PF · GT✓">of</mark><mark class="miss" title="MISS · in GT, 0/6 models">inity</mark> Outward Clicks as mentioned in the Aff<mark class="c1" title="1/6 · large · not GT">ise</mark> report
+Active S…</span></div><div class="row"><span class="rl mono">base<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your Kofinity link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your Kofinity link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = Kofinity Outward Clicks as mentioned in the Affise report
+Active S…</span></div><div class="row"><span class="rl mono">large<span class="cnt">1<span class="tpfp"> 0✓ 1✗</span></span></span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your Kofinity link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your Kofinity link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = Kofinity Outward Clicks as mentioned in the Aff<mark class="fp" title="FP · not in GT">ise</mark> report
+Active S…</span></div><div class="row"><span class="rl mono">PF<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your Kofinity link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your Kofinity link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = K<mark class="tp" title="TP · overlaps GT">of</mark>inity Outward Clicks as mentioned in the Affise report
+Active S…</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your Kofinity link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your Kofinity link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = Kofinity Outward Clicks as mentioned in the Affise report
+Active S…</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your Kofinity link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your Kofinity link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = Kofinity Outward Clicks as mentioned in the Affise report
+Active S…</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…but No Activity Yet
+Show streak count=0 with the message- “Share your Kofinity link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your Kofinity link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = Kofinity Outward Clicks as mentioned in the Affise report
+Active S…</span></div></div><div class="card"><div class="chead">📄 Confluence<span class="did">confluence:141066261</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about Gupshup (Owner) <mark class="gt">Vishal</mark> C Gupshup POC Mr. <mark class="gt">Vaibhav vaibhav.gupta@gupshup.io 9650906780</mark> (Current) Mr. <mark class="gt">Nitin Marwah nitin.marwah@gupshup.io 9910699666</mark> Mr. <mark class="gt">Shubham Kumar shubham.kumar@gupshup.io 7503556170</mark> Ms. <mark class="gt">Surabhi Johari surbhi.johari@gupshup.io 8630460380</mark> Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp Gupshup NEW panel) Gupshup Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about <mark class="c1" title="1/6 · qwen · not GT">G</mark><mark class="c4" title="4/6 · base, large, xxl, qwen · not GT">upshup</mark> (Owner) <mark class="miss" title="MISS · in GT, 0/6 models">Vish</mark><mark class="c1 gtu" title="1/6 · PF · GT✓">al</mark><mark class="c4" title="4/6 · large, PF, xxl, xl · not GT"> C</mark><mark class="c2" title="2/6 · large, PF · not GT"> </mark><mark class="c3" title="3/6 · large, PF, qwen · not GT">G</mark><mark class="c4" title="4/6 · large, PF, xxl, qwen · not GT">up</mark><mark class="c3" title="3/6 · large, PF, qwen · not GT">sh</mark><mark class="c4" title="4/6 · large, PF, xxl, qwen · not GT">up</mark> P<mark class="c1" title="1/6 · PF · not GT">OC Mr</mark><mark class="c3" title="3/6 · PF, xxl, xl · not GT">.</mark> <mark class="miss" title="MISS · in GT, 0/6 models">Va</mark><mark class="c1 gtu" title="1/6 · PF · GT✓">i</mark><mark class="c4 gtu" title="4/6 · large, PF, xxl, xl · GT✓">bhav</mark><mark class="miss" title="MISS · in GT, 0/6 models"> va</mark><mark class="c1 gtu" title="1/6 · PF · GT✓">i</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, xl · GT✓">bhav.gupta@gupshup.io</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓"> 9</mark><mark class="c3 gtu" title="3/6 · base, large, PF · GT✓">65090678</mark><mark class="c2 gtu" title="2/6 · base, large · GT✓">0</mark> (Current) Mr<mark class="c2" title="2/6 · xxl, xl · not GT">.</mark> <mark class="miss" title="MISS · in GT, 0/6 models">N</mark><mark class="c1 gtu" title="1/6 · PF · GT✓">itin</mark><mark class="c4 gtu" title="4/6 · large, PF, xxl, xl · GT✓"> Marwah</mark><mark class="c1 gtu" title="1/6 · base · GT✓"> nit</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, xl · GT✓">in.marwah@gupshup.io</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓"> 9910699</mark><mark class="c3 gtu" title="3/6 · base, large, PF · GT✓">66</mark><mark class="c2 gtu" title="2/6 · base, large · GT✓">6</mark><mark class="c1" title="1/6 · PF · not GT"> Mr</mark><mark class="c3" title="3/6 · PF, xxl, xl · not GT">.</mark><mark class="c1" title="1/6 · PF · not GT"> </mark><mark class="c1 gtu" title="1/6 · PF · GT✓">Shubh</mark><mark class="c4 gtu" title="4/6 · large, PF, xxl, xl · GT✓">am Kumar</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓"> s</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, xl · GT✓">hubham.kumar@gupshup.io</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓"> </mark><mark class="c1 gtu" title="1/6 · base · GT✓">750</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓">355</mark><mark class="c1 gtu" title="1/6 · base · GT✓">617</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓">0</mark><mark class="c1" title="1/6 · PF · not GT"> Ms</mark><mark class="c2" title="2/6 · PF, xl · not GT">.</mark> <mark class="miss" title="MISS · in GT, 0/6 models">Sur</mark><mark class="c4 gtu" title="4/6 · large, PF, xxl, xl · GT✓">abhi Johari</mark><mark class="c1 gtu" title="1/6 · base · GT✓"> sur</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, xl · GT✓">bhi.johari@gupshup.io</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓"> </mark><mark class="c1 gtu" title="1/6 · base · GT✓">863</mark><mark class="c2 gtu" title="2/6 · base, PF · GT✓">046038</mark><mark class="c1 gtu" title="1/6 · base · GT✓">0</mark> Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp <mark class="c1" title="1/6 · qwen · not GT">G</mark><mark class="c2" title="2/6 · large, qwen · not GT">upshup</mark> NEW panel) <mark class="c1" title="1/6 · qwen · not GT">G</mark><mark class="c2" title="2/6 · large, qwen · not GT">up</mark><mark class="c3" title="3/6 · large, PF, qwen · not GT">sh</mark><mark class="c2" title="2/6 · large, qwen · not GT">up</mark> Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div><div class="row"><span class="rl mono">base<span class="cnt">7<span class="tpfp"> 6✓ 1✗</span></span></span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about G<mark class="fp" title="FP · not in GT">upshup</mark> (Owner) Vishal C Gupshup POC Mr. Vaibhav vai<mark class="tp" title="TP · overlaps GT">bhav.gupta@gupshup.io 9</mark><mark class="tp" title="TP · overlaps GT">650906780</mark> (Current) Mr. Nitin Marwah<mark class="tp" title="TP · overlaps GT"> nitin.marwah@gupshup.io 9910</mark><mark class="tp" title="TP · overlaps GT">699666</mark> Mr. Shubham Kumar<mark class="tp" title="TP · overlaps GT"> shubham.kumar@gupshup.io 7503556170</mark> Ms. Surabhi Johari<mark class="tp" title="TP · overlaps GT"> surbhi.johari@gupshup.io 8630460380</mark> Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp Gupshup NEW panel) Gupshup Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div><div class="row"><span class="rl mono">large<span class="cnt">14<span class="tpfp"> 10✓ 4✗</span></span></span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about G<mark class="fp" title="FP · not in GT">upshup</mark> (Owner) Vishal<mark class="fp" title="FP · not in GT"> C Gupshup</mark> POC Mr. Vai<mark class="tp" title="TP · overlaps GT">bhav</mark> vai<mark class="tp" title="TP · overlaps GT">bhav.gupta@gupshup.io</mark> 9<mark class="tp" title="TP · overlaps GT">650906780</mark> (Current) Mr. Nitin<mark class="tp" title="TP · overlaps GT"> Marwah</mark> nit<mark class="tp" title="TP · overlaps GT">in.marwah@gupshup.io</mark> 9910699<mark class="tp" title="TP · overlaps GT">666</mark> Mr. Shubh<mark class="tp" title="TP · overlaps GT">am Kumar</mark> s<mark class="tp" title="TP · overlaps GT">hubham.kumar@gupshup.io</mark> 7503556170 Ms. Sur<mark class="tp" title="TP · overlaps GT">abhi Johari</mark> sur<mark class="tp" title="TP · overlaps GT">bhi.johari@gupshup.io</mark> 8630460380 Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp G<mark class="fp" title="FP · not in GT">upshup</mark> NEW panel) G<mark class="fp" title="FP · not in GT">upshup</mark> Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div><div class="row"><span class="rl mono">PF<span class="cnt">23<span class="tpfp"> 18✓ 5✗</span></span></span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about Gupshup (Owner) Vish<mark class="tp" title="TP · overlaps GT">al C Gupshup</mark> P<mark class="fp" title="FP · not in GT">OC Mr.</mark> Va<mark class="tp" title="TP · overlaps GT">ibh</mark><mark class="tp" title="TP · overlaps GT">av</mark> va<mark class="tp" title="TP · overlaps GT">ibhav.gupta@gupshup.io 965090</mark><mark class="tp" title="TP · overlaps GT">678</mark>0 (Current) Mr. N<mark class="tp" title="TP · overlaps GT">itin Marwah</mark> nit<mark class="tp" title="TP · overlaps GT">in.marwah@gupshup.io 991</mark><mark class="tp" title="TP · overlaps GT">069966</mark>6<mark class="fp" title="FP · not in GT"> Mr</mark><mark class="tp" title="TP · overlaps GT">. Shubham Kumar</mark><mark class="tp" title="TP · overlaps GT"> shubham.kumar@gupshup.io </mark>750<mark class="tp" title="TP · overlaps GT">355</mark>617<mark class="tp" title="TP · overlaps GT">0</mark><mark class="fp" title="FP · not in GT"> Ms</mark><mark class="fp" title="FP · not in GT">.</mark> Sur<mark class="tp" title="TP · overlaps GT">ab</mark><mark class="tp" title="TP · overlaps GT">hi</mark><mark class="tp" title="TP · overlaps GT"> Joh</mark><mark class="tp" title="TP · overlaps GT">ari</mark> sur<mark class="tp" title="TP · overlaps GT">bhi.johari@gupshup.io </mark>863<mark class="tp" title="TP · overlaps GT">046038</mark>0 Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp Gupshup NEW panel) Gup<mark class="fp" title="FP · not in GT">sh</mark>up Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">15<span class="tpfp"> 8✓ 7✗</span></span></span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about G<mark class="fp" title="FP · not in GT">upshup</mark> (Owner) Vishal<mark class="fp" title="FP · not in GT"> C</mark> G<mark class="fp" title="FP · not in GT">up</mark>sh<mark class="fp" title="FP · not in GT">up</mark> POC Mr<mark class="fp" title="FP · not in GT">.</mark> Vai<mark class="tp" title="TP · overlaps GT">bhav</mark> vai<mark class="tp" title="TP · overlaps GT">bhav.gupta@gupshup.io</mark> 9650906780 (Current) Mr<mark class="fp" title="FP · not in GT">.</mark> Nitin<mark class="tp" title="TP · overlaps GT"> Marwah</mark> nit<mark class="tp" title="TP · overlaps GT">in.marwah@gupshup.io</mark> 9910699666 Mr<mark class="fp" title="FP · not in GT">.</mark> Shubh<mark class="tp" title="TP · overlaps GT">am Kumar</mark> s<mark class="tp" title="TP · overlaps GT">hubham.kumar@gupshup.io</mark> 7503556170 Ms. Sur<mark class="tp" title="TP · overlaps GT">abhi Johari</mark> sur<mark class="tp" title="TP · overlaps GT">bhi.johari@gupshup.io</mark> 8630460380 Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp Gupshup NEW panel) Gupshup Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div><div class="row"><span class="rl mono">xl<span class="cnt">13<span class="tpfp"> 8✓ 5✗</span></span></span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about Gupshup (Owner) Vishal<mark class="fp" title="FP · not in GT"> C</mark> Gupshup POC Mr<mark class="fp" title="FP · not in GT">.</mark> Vai<mark class="tp" title="TP · overlaps GT">bhav</mark> vai<mark class="tp" title="TP · overlaps GT">bhav.gupta@gupshup.io</mark> 9650906780 (Current) Mr<mark class="fp" title="FP · not in GT">.</mark> Nitin<mark class="tp" title="TP · overlaps GT"> Marwah</mark> nit<mark class="tp" title="TP · overlaps GT">in.marwah@gupshup.io</mark> 9910699666 Mr<mark class="fp" title="FP · not in GT">.</mark> Shubh<mark class="tp" title="TP · overlaps GT">am Kumar</mark> s<mark class="tp" title="TP · overlaps GT">hubham.kumar@gupshup.io</mark> 7503556170 Ms<mark class="fp" title="FP · not in GT">.</mark> Sur<mark class="tp" title="TP · overlaps GT">abhi Johari</mark> sur<mark class="tp" title="TP · overlaps GT">bhi.johari@gupshup.io</mark> 8630460380 Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp Gupshup NEW panel) Gupshup Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">4<span class="tpfp"> 0✓ 4✗</span></span></span><span class="rt">…Only people who&amp;rsquo;ve opted in Has Knowledge about <mark class="fp" title="FP · not in GT">Gupshup</mark> (Owner) Vishal C <mark class="fp" title="FP · not in GT">Gupshup</mark> POC Mr. Vaibhav vaibhav.gupta@gupshup.io 9650906780 (Current) Mr. Nitin Marwah nitin.marwah@gupshup.io 9910699666 Mr. Shubham Kumar shubham.kumar@gupshup.io 7503556170 Ms. Surabhi Johari surbhi.johari@gupshup.io 8630460380 Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp <mark class="fp" title="FP · not in GT">Gupshup</mark> NEW panel) <mark class="fp" title="FP · not in GT">Gupshup</mark> Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</span></div></div><div class="card"><div class="chead">📄 Confluence<span class="did">confluence:88309761</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s <mark class="gt">Kofinity</mark> link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote <mark class="gt">Kofinity</mark> Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their <mark class="gt">Kofinity</mark> link Profile picture: Default image Social m…</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s <mark class="c2 gtu" title="2/6 · qwen, qwen · GT✓">K</mark><mark class="c3 gtu" title="3/6 · PF, qwen, qwen · GT✓">ofinity</mark> link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote <mark class="c2 gtu" title="2/6 · qwen, qwen · GT✓">K</mark><mark class="c3 gtu" title="3/6 · PF, qwen, qwen · GT✓">o</mark><mark class="c4 gtu" title="4/6 · large, PF, qwen, qwen · GT✓">finity</mark> Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their <mark class="c2 gtu" title="2/6 · qwen, qwen · GT✓">Kofinity</mark> link Profile picture: Default image Social m…</span></div><div class="row"><span class="rl mono">base<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s Kofinity link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote Kofinity Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their Kofinity link Profile picture: Default image Social m…</span></div><div class="row"><span class="rl mono">large<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s Kofinity link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote Ko<mark class="tp" title="TP · overlaps GT">finity</mark> Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their Kofinity link Profile picture: Default image Social m…</span></div><div class="row"><span class="rl mono">PF<span class="cnt">3<span class="tpfp"> 3✓ 0✗</span></span></span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s K<mark class="tp" title="TP · overlaps GT">of</mark><mark class="tp" title="TP · overlaps GT">inity</mark> link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote K<mark class="tp" title="TP · overlaps GT">ofinity</mark> Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their Kofinity link Profile picture: Default image Social m…</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s Kofinity link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote Kofinity Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their Kofinity link Profile picture: Default image Social m…</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s Kofinity link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote Kofinity Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their Kofinity link Profile picture: Default image Social m…</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">6<span class="tpfp"> 6✓ 0✗</span></span></span><span class="rt">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s <mark class="tp" title="TP · overlaps GT">Kofinity</mark> link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote <mark class="tp" title="TP · overlaps GT">Kofinity</mark> Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their <mark class="tp" title="TP · overlaps GT">Kofinity</mark> link Profile picture: Default image Social m…</span></div></div><div class="card"><div class="chead">📁 Google Drive<span class="did">gdrive:19EBlT5f6tWa7-EU51wGogKOEJP2OTMVx</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">RELEASE ORDER
+Times Internet <mark class="gt">Limited</mark> RO No:-.
+Plot No. <mark class="gt">391, Udyog Vihar Phase – III,</mark> Date:- 30-07-2024 
+ Gurgaon, Haryana – <mark class="gt">122016</mark>
+GSTIN:- <mark class="gt">06AABCT1559M1Z3</mark>
+Client Details
+Company Billing Name:
+<mark class="gt">KOFLUENCE</mark> TECH PRIVATE LIMITED
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+PAN:
+Mobile Number:
+TAN:
+Email:
+GST:
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">RELEASE ORDER
+<mark class="c1" title="1/6 · qwen · not GT">Times</mark><mark class="c5" title="5/6 · base, large, xxl, xl, qwen · not GT"> Internet </mark><mark class="c5 gtu" title="5/6 · base, large, xxl, xl, qwen · GT✓">Limited</mark> RO No:-.
+<mark class="c1" title="1/6 · qwen · not GT">Plot</mark><mark class="c3" title="3/6 · large, xxl, qwen · not GT"> No</mark><mark class="c4" title="4/6 · large, PF, xxl, qwen · not GT">. </mark><mark class="c3 gtu" title="3/6 · large, xxl, qwen · GT✓">391</mark><mark class="c4 gtu" title="4/6 · large, PF, xxl, qwen · GT✓">,</mark><mark class="c3 gtu" title="3/6 · large, xxl, qwen · GT✓"> U</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, qwen · GT✓">dyog Vihar Phase</mark><mark class="c4 gtu" title="4/6 · large, PF, xxl, qwen · GT✓"> –</mark><mark class="c3 gtu" title="3/6 · large, xxl, qwen · GT✓"> III,</mark> Date:- 30-07-2024 
+ Gurgaon, Haryana – <mark class="miss" title="MISS · in GT, 0/6 models">122016</mark>
+GSTIN:- <mark class="miss" title="MISS · in GT, 0/6 models">06</mark><mark class="c1 gtu" title="1/6 · large · GT✓">A</mark><mark class="c2 gtu" title="2/6 · large, PF · GT✓">ABCT1559M1Z3</mark>
+Client Details
+Company Billing Name:
+<mark class="c1 gtu" title="1/6 · qwen · GT✓">K</mark><mark class="c5 gtu" title="5/6 · base, large, xxl, xl, qwen · GT✓">O</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">FLUENCE</mark><mark class="c5" title="5/6 · base, large, xxl, xl, qwen · not GT"> TECH PRIVATE LIMITED</mark>
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+<mark class="c1" title="1/6 · qwen · not GT">PAN:</mark>
+<mark class="c1" title="1/6 · qwen · not GT">Mobile Number:</mark>
+TAN:
+Email:
+<mark class="c1" title="1/6 · qwen · not GT">GST:</mark>
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div><div class="row"><span class="rl mono">base<span class="cnt">3<span class="tpfp"> 3✓ 0✗</span></span></span><span class="rt">RELEASE ORDER
+Times<mark class="tp" title="TP · overlaps GT"> Internet Limited</mark> RO No:-.
+Plot No. 391, U<mark class="tp" title="TP · overlaps GT">dyog Vihar Phase</mark> – III, Date:- 30-07-2024 
+ Gurgaon, Haryana – 122016
+GSTIN:- 06AABCT1559M1Z3
+Client Details
+Company Billing Name:
+K<mark class="tp" title="TP · overlaps GT">OFLUENCE TECH PRIVATE LIMITED</mark>
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+PAN:
+Mobile Number:
+TAN:
+Email:
+GST:
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div><div class="row"><span class="rl mono">large<span class="cnt">4<span class="tpfp"> 4✓ 0✗</span></span></span><span class="rt">RELEASE ORDER
+Times<mark class="tp" title="TP · overlaps GT"> Internet Limited</mark> RO No:-.
+Plot<mark class="tp" title="TP · overlaps GT"> No. 391, Udyog Vihar Phase – III,</mark> Date:- 30-07-2024 
+ Gurgaon, Haryana – 122016
+GSTIN:- 06<mark class="tp" title="TP · overlaps GT">AABCT1559M1Z3</mark>
+Client Details
+Company Billing Name:
+K<mark class="tp" title="TP · overlaps GT">OFLUENCE TECH PRIVATE LIMITED</mark>
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+PAN:
+Mobile Number:
+TAN:
+Email:
+GST:
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div><div class="row"><span class="rl mono">PF<span class="cnt">5<span class="tpfp"> 4✓ 1✗</span></span></span><span class="rt">RELEASE ORDER
+Times Internet Limited RO No:-.
+Plot No<mark class="fp" title="FP · not in GT">. </mark>391<mark class="tp" title="TP · overlaps GT">,</mark> U<mark class="tp" title="TP · overlaps GT">dyog Vihar Phase –</mark> III, Date:- 30-07-2024 
+ Gurgaon, Haryana – 122016
+GSTIN:- 06A<mark class="tp" title="TP · overlaps GT">ABCT1559M1Z3</mark>
+Client Details
+Company Billing Name:
+KO<mark class="tp" title="TP · overlaps GT">FLUENCE</mark> TECH PRIVATE LIMITED
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+PAN:
+Mobile Number:
+TAN:
+Email:
+GST:
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">3<span class="tpfp"> 3✓ 0✗</span></span></span><span class="rt">RELEASE ORDER
+Times<mark class="tp" title="TP · overlaps GT"> Internet Limited</mark> RO No:-.
+Plot<mark class="tp" title="TP · overlaps GT"> No. 391, Udyog Vihar Phase – III,</mark> Date:- 30-07-2024 
+ Gurgaon, Haryana – 122016
+GSTIN:- 06AABCT1559M1Z3
+Client Details
+Company Billing Name:
+K<mark class="tp" title="TP · overlaps GT">OFLUENCE TECH PRIVATE LIMITED</mark>
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+PAN:
+Mobile Number:
+TAN:
+Email:
+GST:
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div><div class="row"><span class="rl mono">xl<span class="cnt">2<span class="tpfp"> 2✓ 0✗</span></span></span><span class="rt">RELEASE ORDER
+Times<mark class="tp" title="TP · overlaps GT"> Internet Limited</mark> RO No:-.
+Plot No. 391, Udyog Vihar Phase – III, Date:- 30-07-2024 
+ Gurgaon, Haryana – 122016
+GSTIN:- 06AABCT1559M1Z3
+Client Details
+Company Billing Name:
+K<mark class="tp" title="TP · overlaps GT">OFLUENCE TECH PRIVATE LIMITED</mark>
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+PAN:
+Mobile Number:
+TAN:
+Email:
+GST:
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">6<span class="tpfp"> 3✓ 3✗</span></span></span><span class="rt">RELEASE ORDER
+<mark class="tp" title="TP · overlaps GT">Times Internet Limited</mark> RO No:-.
+<mark class="tp" title="TP · overlaps GT">Plot No. 391, Udyog Vihar Phase – III,</mark> Date:- 30-07-2024 
+ Gurgaon, Haryana – 122016
+GSTIN:- 06AABCT1559M1Z3
+Client Details
+Company Billing Name:
+<mark class="tp" title="TP · overlaps GT">KOFLUENCE TECH PRIVATE LIMITED</mark>
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+<mark class="fp" title="FP · not in GT">PAN:</mark>
+<mark class="fp" title="FP · not in GT">Mobile Number:</mark>
+TAN:
+Email:
+<mark class="fp" title="FP · not in GT">GST:</mark>
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</span></div></div><div class="card"><div class="chead">📁 Google Drive<span class="did">gdrive:1289G3lCkFybtykCSvYQF1SOrEniJeRli</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps <mark class="gt">Dinesh</mark> bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps <mark class="c1 gtu" title="1/6 · qwen · GT✓">Dinesh</mark> bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div><div class="row"><span class="rl mono">base<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps Dinesh bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div><div class="row"><span class="rl mono">large<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps Dinesh bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div><div class="row"><span class="rl mono">PF<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps Dinesh bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps Dinesh bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps Dinesh bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">… of this candidate? Liberty to work his ideas out and improvise helps <mark class="tp" title="TP · overlaps GT">Dinesh</mark> bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</span></div></div><div class="card"><div class="chead">🗄️ MySQL<span class="did">mysql:crm_event_logs:24577256</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via <mark class="gt">f***********4@gmail.com</mark> is already connected to a different <mark class="gt">Kofluence</mark> account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via <mark class="c1 gtu" title="1/6 · qwen · GT✓">f</mark><mark class="c5 gtu" title="5/6 · large, PF, xxl, xl, qwen · GT✓">*</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">**********4@gmail.com</mark> is already connected to a different <mark class="miss" title="MISS · in GT, 0/6 models">Kofluence</mark> account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div><div class="row"><span class="rl mono">base<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via f*<mark class="tp" title="TP · overlaps GT">**********4@gmail.com</mark> is already connected to a different Kofluence account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div><div class="row"><span class="rl mono">large<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via f<mark class="tp" title="TP · overlaps GT">***********4@gmail.com</mark> is already connected to a different Kofluence account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div><div class="row"><span class="rl mono">PF<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via f<mark class="tp" title="TP · overlaps GT">***********4@gmail.com</mark> is already connected to a different Kofluence account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via f<mark class="tp" title="TP · overlaps GT">***********4@gmail.com</mark> is already connected to a different Kofluence account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div><div class="row"><span class="rl mono">xl<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via f<mark class="tp" title="TP · overlaps GT">***********4@gmail.com</mark> is already connected to a different Kofluence account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via <mark class="tp" title="TP · overlaps GT">f***********4@gmail.com</mark> is already connected to a different Kofluence account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</span></div></div><div class="card"><div class="chead">🗄️ MySQL<span class="did">mysql:crm_event_logs:24574727</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: <mark class="gt">&quot;delhi,delhi,29-01-2004&quot;}</mark></span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: <mark class="miss" title="MISS · in GT, 0/6 models">&quot;</mark><mark class="c1 gtu" title="1/6 · large · GT✓">delhi</mark><mark class="c2 gtu" title="2/6 · base, large · GT✓">,delhi,</mark><mark class="c1 gtu" title="1/6 · base · GT✓">29</mark><mark class="c2 gtu" title="2/6 · base, large · GT✓">-01-2004&quot;</mark><mark class="miss" title="MISS · in GT, 0/6 models">}</mark></span></div><div class="row"><span class="rl mono">base<span class="cnt">1<span class="tpfp"> 1✓ 0✗</span></span></span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: &quot;delhi<mark class="tp" title="TP · overlaps GT">,delhi,29-01-2004&quot;</mark>}</span></div><div class="row"><span class="rl mono">large<span class="cnt">2<span class="tpfp"> 2✓ 0✗</span></span></span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: &quot;<mark class="tp" title="TP · overlaps GT">delhi,delhi,</mark>29<mark class="tp" title="TP · overlaps GT">-01-2004&quot;</mark>}</span></div><div class="row"><span class="rl mono">PF<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: &quot;delhi,delhi,29-01-2004&quot;}</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: &quot;delhi,delhi,29-01-2004&quot;}</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: &quot;delhi,delhi,29-01-2004&quot;}</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: &quot;delhi,delhi,29-01-2004&quot;}</span></div></div><div class="card"><div class="chead">📊 Zoho CRM<span class="did">zoho:leads:zcrm_4536924000006239132</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">Last Name: <mark class="gt">Jivan Ghadei</mark>
+Lead Name: <mark class="gt">Jivan Ghadei</mark>
+Company: TutorBin
+Website: tutorbin.com
+Contact LinkedIn: <mark class="gt">https://www.linkedin.com/in/jivan-jyoti-ghadei-6b538066</mark>
+Lead Owner: <mark class="gt">Nandini Saini</mark>
+Assigned To: <mark class="gt">Nandini</mark>
+Remarks: Not answered
+Lead Source: <mark class="gt">Manju</mark></span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">Last Name: <mark class="c1 gtu" title="1/6 · qwen · GT✓">J</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">ivan</mark><mark class="c1 gtu" title="1/6 · base · GT✓"> </mark><mark class="c2 gtu" title="2/6 · base, qwen · GT✓">Gh</mark><mark class="c3 gtu" title="3/6 · base, PF, qwen · GT✓">a</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">dei</mark>
+Lead Name: <mark class="c1 gtu" title="1/6 · qwen · GT✓">J</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">ivan</mark><mark class="c1 gtu" title="1/6 · base · GT✓"> </mark><mark class="c2 gtu" title="2/6 · base, qwen · GT✓">Gha</mark><mark class="c5 gtu" title="5/6 · base, large, xxl, xl, qwen · GT✓">de</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">i</mark>
+Company: <mark class="c1" title="1/6 · qwen · not GT">Tutor</mark><mark class="c5" title="5/6 · base, large, xxl, xl, qwen · not GT">Bin</mark>
+Website: <mark class="c1" title="1/6 · qwen · not GT">tutorbin.</mark><mark class="c2" title="2/6 · base, qwen · not GT">com</mark>
+Contact LinkedIn: <mark class="c1 gtu" title="1/6 · qwen · GT✓">https</mark><mark class="c3 gtu" title="3/6 · base, xxl, qwen · GT✓">://www.linkedin.com/in/j</mark><mark class="c4 gtu" title="4/6 · base, PF, xxl, qwen · GT✓">ivan-jyoti</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, qwen · GT✓">-ghadei-6</mark><mark class="c4 gtu" title="4/6 · base, PF, xxl, qwen · GT✓">b538066</mark>
+Lead Owner: <mark class="c1 gtu" title="1/6 · qwen · GT✓">N</mark><mark class="c2 gtu" title="2/6 · PF, qwen · GT✓">andi</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">ni</mark><mark class="c3 gtu" title="3/6 · base, large, xxl · GT✓"> </mark><mark class="c4 gtu" title="4/6 · base, large, xxl, qwen · GT✓">S</mark><mark class="c5 gtu" title="5/6 · base, large, PF, xxl, qwen · GT✓">ain</mark><mark class="c6 gtu" title="6/6 · base, large, PF, xxl, xl, qwen · GT✓">i</mark>
+Assigned To: <mark class="c1 gtu" title="1/6 · qwen · GT✓">Nandi</mark><mark class="c5 gtu" title="5/6 · base, large, xxl, xl, qwen · GT✓">ni</mark>
+Remarks: Not answered
+Lead Source: <mark class="c1 gtu" title="1/6 · qwen · GT✓">Manju</mark></span></div><div class="row"><span class="rl mono">base<span class="cnt">10<span class="tpfp"> 8✓ 2✗</span></span></span><span class="rt">Last Name: J<mark class="tp" title="TP · overlaps GT">ivan Ghadei</mark>
+Lead Name: J<mark class="tp" title="TP · overlaps GT">ivan Ghadei</mark>
+Company: Tutor<mark class="fp" title="FP · not in GT">Bin</mark>
+Website: tutorbin.<mark class="fp" title="FP · not in GT">com</mark>
+Contact LinkedIn: https<mark class="tp" title="TP · overlaps GT">://www.linkedin.com/in/ji</mark><mark class="tp" title="TP · overlaps GT">van-jyoti-ghadei</mark><mark class="tp" title="TP · overlaps GT">-6b538</mark><mark class="tp" title="TP · overlaps GT">066</mark>
+Lead Owner: Nandi<mark class="tp" title="TP · overlaps GT">ni Saini</mark>
+Assigned To: Nandi<mark class="tp" title="TP · overlaps GT">ni</mark>
+Remarks: Not answered
+Lead Source: Manju</span></div><div class="row"><span class="rl mono">large<span class="cnt">8<span class="tpfp"> 7✓ 1✗</span></span></span><span class="rt">Last Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Gha<mark class="tp" title="TP · overlaps GT">dei</mark>
+Lead Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Gha<mark class="tp" title="TP · overlaps GT">dei</mark>
+Company: Tutor<mark class="fp" title="FP · not in GT">Bin</mark>
+Website: tutorbin.com
+Contact LinkedIn: https://www.linkedin.com/in/jivan-jyoti<mark class="tp" title="TP · overlaps GT">-ghadei-6</mark>b538066
+Lead Owner: Nandi<mark class="tp" title="TP · overlaps GT">ni Saini</mark>
+Assigned To: Nandi<mark class="tp" title="TP · overlaps GT">ni</mark>
+Remarks: Not answered
+Lead Source: Manju</span></div><div class="row"><span class="rl mono">PF<span class="cnt">7<span class="tpfp"> 7✓ 0✗</span></span></span><span class="rt">Last Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Gh<mark class="tp" title="TP · overlaps GT">adei</mark>
+Lead Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Ghade<mark class="tp" title="TP · overlaps GT">i</mark>
+Company: TutorBin
+Website: tutorbin.com
+Contact LinkedIn: https://www.linkedin.com/in/j<mark class="tp" title="TP · overlaps GT">ivan-jyoti-ghadei-6b538066</mark>
+Lead Owner: N<mark class="tp" title="TP · overlaps GT">andini</mark> S<mark class="tp" title="TP · overlaps GT">aini</mark>
+Assigned To: Nandini
+Remarks: Not answered
+Lead Source: Manju</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">11<span class="tpfp"> 10✓ 1✗</span></span></span><span class="rt">Last Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Gha<mark class="tp" title="TP · overlaps GT">dei</mark>
+Lead Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Gha<mark class="tp" title="TP · overlaps GT">dei</mark>
+Company: Tutor<mark class="fp" title="FP · not in GT">Bin</mark>
+Website: tutorbin.com
+Contact LinkedIn: https<mark class="tp" title="TP · overlaps GT">://www.</mark><mark class="tp" title="TP · overlaps GT">linkedin.com</mark><mark class="tp" title="TP · overlaps GT">/in/jivan-jyoti-ghadei-6b538066</mark>
+Lead Owner: Nandi<mark class="tp" title="TP · overlaps GT">ni Sain</mark><mark class="tp" title="TP · overlaps GT">i</mark>
+Assigned To: Nandi<mark class="tp" title="TP · overlaps GT">ni</mark>
+Remarks: Not answered
+Lead Source: Manju</span></div><div class="row"><span class="rl mono">xl<span class="cnt">8<span class="tpfp"> 7✓ 1✗</span></span></span><span class="rt">Last Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Gha<mark class="tp" title="TP · overlaps GT">dei</mark>
+Lead Name: J<mark class="tp" title="TP · overlaps GT">ivan</mark> Gha<mark class="tp" title="TP · overlaps GT">dei</mark>
+Company: Tutor<mark class="fp" title="FP · not in GT">Bin</mark>
+Website: tutorbin.com
+Contact LinkedIn: https://www.linkedin.com/in/jivan-jyoti-ghadei-6b538066
+Lead Owner: Nandi<mark class="tp" title="TP · overlaps GT">ni</mark> Sain<mark class="tp" title="TP · overlaps GT">i</mark>
+Assigned To: Nandi<mark class="tp" title="TP · overlaps GT">ni</mark>
+Remarks: Not answered
+Lead Source: Manju</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">11<span class="tpfp"> 9✓ 2✗</span></span></span><span class="rt">Last Name: <mark class="tp" title="TP · overlaps GT">Jivan</mark> <mark class="tp" title="TP · overlaps GT">Ghadei</mark>
+Lead Name: <mark class="tp" title="TP · overlaps GT">Jivan</mark> <mark class="tp" title="TP · overlaps GT">Ghadei</mark>
+Company: <mark class="fp" title="FP · not in GT">TutorBin</mark>
+Website: <mark class="fp" title="FP · not in GT">tutorbin.com</mark>
+Contact LinkedIn: <mark class="tp" title="TP · overlaps GT">https://www.linkedin.com/in/jivan-jyoti-ghadei-6b538066</mark>
+Lead Owner: <mark class="tp" title="TP · overlaps GT">Nandini</mark> <mark class="tp" title="TP · overlaps GT">Saini</mark>
+Assigned To: <mark class="tp" title="TP · overlaps GT">Nandini</mark>
+Remarks: Not answered
+Lead Source: <mark class="tp" title="TP · overlaps GT">Manju</mark></span></div></div><div class="card"><div class="chead">📊 Zoho CRM<span class="did">zoho:leads:zcrm_4536924000009049715</span></div><div class="row gtrow"><span class="rl">Ground truth</span><span class="rt">Last Name: <mark class="gt">Yogeshwar</mark> S <mark class="gt">Patil</mark>
+Lead Name: <mark class="gt">Yogeshwar</mark> S <mark class="gt">Patil</mark>
+Company: Greenply Industries Ltd
+Lead Owner: <mark class="gt">Chaitra</mark>
+Assigned To: <mark class="gt">Anmol</mark>
+Lead Source: 21KAGAIN</span></div><div class="row consrow"><span class="rl">Consensus</span><span class="rt">Last Name: <mark class="miss" title="MISS · in GT, 0/6 models">Yog</mark><mark class="c4 gtu" title="4/6 · base, large, PF, xxl · GT✓">eshwar</mark><mark class="c3" title="3/6 · base, large, xxl · not GT"> S</mark><mark class="c4" title="4/6 · base, large, PF, xxl · not GT"> </mark><mark class="c4 gtu" title="4/6 · base, large, PF, xxl · GT✓">Patil</mark>
+Lead Name: <mark class="miss" title="MISS · in GT, 0/6 models">Yog</mark><mark class="c4 gtu" title="4/6 · base, large, PF, xxl · GT✓">eshwar</mark><mark class="c3" title="3/6 · base, large, xxl · not GT"> S </mark><mark class="c3 gtu" title="3/6 · base, large, xxl · GT✓">Patil</mark>
+Company: Green<mark class="c4" title="4/6 · base, large, PF, xxl · not GT">ply Industries Ltd</mark>
+Lead Owner: <mark class="miss" title="MISS · in GT, 0/6 models">Chai</mark><mark class="c1 gtu" title="1/6 · xxl · GT✓">tra</mark>
+Assigned To: <mark class="miss" title="MISS · in GT, 0/6 models">An</mark><mark class="c1 gtu" title="1/6 · xxl · GT✓">mol</mark>
+Lead Source: 21<mark class="c1" title="1/6 · large · not GT">K</mark>AGAIN</span></div><div class="row"><span class="rl mono">base<span class="cnt">3<span class="tpfp"> 2✓ 1✗</span></span></span><span class="rt">Last Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar S Patil</mark>
+Lead Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar S Patil</mark>
+Company: Green<mark class="fp" title="FP · not in GT">ply Industries Ltd</mark>
+Lead Owner: Chaitra
+Assigned To: Anmol
+Lead Source: 21KAGAIN</span></div><div class="row"><span class="rl mono">large<span class="cnt">4<span class="tpfp"> 2✓ 2✗</span></span></span><span class="rt">Last Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar S Patil</mark>
+Lead Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar S Patil</mark>
+Company: Green<mark class="fp" title="FP · not in GT">ply Industries Ltd</mark>
+Lead Owner: Chaitra
+Assigned To: Anmol
+Lead Source: 21<mark class="fp" title="FP · not in GT">K</mark>AGAIN</span></div><div class="row"><span class="rl mono">PF<span class="cnt">4<span class="tpfp"> 3✓ 1✗</span></span></span><span class="rt">Last Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar</mark> S<mark class="tp" title="TP · overlaps GT"> Patil</mark>
+Lead Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar</mark> S Patil
+Company: Green<mark class="fp" title="FP · not in GT">ply Industries Ltd</mark>
+Lead Owner: Chaitra
+Assigned To: Anmol
+Lead Source: 21KAGAIN</span></div><div class="row"><span class="rl mono">xxl<span class="cnt">5<span class="tpfp"> 4✓ 1✗</span></span></span><span class="rt">Last Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar S Patil</mark>
+Lead Name: Yog<mark class="tp" title="TP · overlaps GT">eshwar S Patil</mark>
+Company: Green<mark class="fp" title="FP · not in GT">ply Industries Ltd</mark>
+Lead Owner: Chai<mark class="tp" title="TP · overlaps GT">tra</mark>
+Assigned To: An<mark class="tp" title="TP · overlaps GT">mol</mark>
+Lead Source: 21KAGAIN</span></div><div class="row"><span class="rl mono">xl<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">Last Name: Yogeshwar S Patil
+Lead Name: Yogeshwar S Patil
+Company: Greenply Industries Ltd
+Lead Owner: Chaitra
+Assigned To: Anmol
+Lead Source: 21KAGAIN</span></div><div class="row"><span class="rl mono">qwen<span class="cnt">0<span class="tpfp"> 0✓ 0✗</span></span></span><span class="rt">Last Name: Yogeshwar S Patil
+Lead Name: Yogeshwar S Patil
+Company: Greenply Industries Ltd
+Lead Owner: Chaitra
+Assigned To: Anmol
+Lead Source: 21KAGAIN</span></div></div>
+<footer>Companion to the <a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwwX88MSXYqIYRxUb_f_mmZGvefB8LuOh7xX5ujX1U6GOxUhu-j4QH_TQMyhym0nzw-/exec" target="_top">Detection Leaderboard</a>
+and the <a href="https://script.google.com/a/macros/mercor.com/s/AKfycbyIebOqw50GXQDpwULJwp0Y1AZa5-AqgkfG5ck2lIV0cpxnseArSZZ1wqjEuAC0yP5F/exec" target="_top">GT Samples browser</a>. Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com).</footer>
+</main><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=contigo-benchmark-comparison&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

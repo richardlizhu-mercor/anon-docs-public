@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>qwen Exact-Match Gap — Contigo vs pii-bench</title><style>:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--slate-900:#0f172a;--slate-700:#334155;
+--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;
+--slate-50:#f8fafc;--white:#fff;--amber-200:#fde68a;--blue-100:#dbeafe;--blue-700:#1d4ed8;
+--green-700:#15803d;--red-600:#dc2626;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1040px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:94ch}
+h2{font-size:1.2rem;font-weight:600;margin:1.7em 0 .3em}
+h3{font-size:1rem;font-weight:600;margin:1.2em 0 .2em}
+.blurb{font-size:.88rem;color:var(--slate-600);margin:.1em 0 .7em;max-width:94ch}
+.cards{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+.kpi{flex:1;min-width:200px;background:var(--white);border:1px solid var(--slate-200);border-radius:12px;padding:14px 16px}
+.kpi .n{font-size:1.7rem;font-weight:700;color:var(--indigo-700);font-variant-numeric:tabular-nums}
+.kpi .n.red{color:var(--red-600)}.kpi .l{font-size:.78rem;color:var(--slate-500);margin-top:2px}
+.kpi .d{font-size:.76rem;color:var(--slate-400);margin-top:4px}
+.decomp{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;padding:16px 18px;margin:14px 0;font-size:.9rem}
+.bar{height:26px;border-radius:6px;display:flex;overflow:hidden;margin:10px 0 6px;font-size:.72rem;font-weight:600;color:#fff}
+.seg{display:flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 6px}
+.s1{background:#6366f1}.s2{background:#a855f7}.s3{background:#f59e0b;color:#3a2a10}.s4{background:#94a3b8}
+.leg{font-size:.78rem;color:var(--slate-600);margin:4px 0}
+.leg span{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:middle}
+table{border-collapse:collapse;width:100%;margin:8px 0 4px;font-size:.8rem;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--slate-200)}
+th{background:var(--slate-100);text-align:right;font-weight:600;color:var(--slate-600);padding:8px 9px;font-size:.7rem;white-space:nowrap}
+th.l,td.l{text-align:left}
+td{padding:7px 9px;border-top:1px solid var(--slate-200);color:var(--slate-700);text-align:right;vertical-align:top}
+td.mono{font-family:var(--mono);font-weight:600;color:var(--slate-800);font-size:.75rem}
+td.def{color:var(--slate-600)}td.def em{color:var(--slate-900);font-style:normal;font-weight:600}
+td.cc{font-weight:700;color:var(--indigo-700)}.why{color:var(--slate-500);font-size:.78rem}
+.mut{color:var(--slate-400);font-weight:400}
+.cause{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;padding:12px 16px;margin:12px 0}
+.ct{font-size:.68rem;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+.ct.artifact{background:#fee2e2;color:var(--red-600)}.ct.gt-gap{background:#fef3c7;color:#b45309}.ct.qwen-better{background:#dcfce7;color:var(--green-700)}
+.cd{font-size:.85rem;color:var(--slate-600);margin:.2em 0 .7em;max-width:94ch}.cd em{color:var(--slate-900);font-style:normal;font-weight:600}
+.ex{background:var(--slate-50);border-radius:8px;padding:9px 12px;margin:7px 0}
+.extxt{font-family:var(--mono);font-size:.82rem;line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.extxt .q{background:var(--blue-100);color:var(--blue-700);border-radius:2px;font-weight:600}
+.extxt .g{border-bottom:2px solid #b45309}
+.extxt .mut{color:var(--slate-400)}
+.exrow{font-size:.76rem;margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.exrow code{background:var(--white);border:1px solid var(--slate-200);border-radius:4px;padding:0 5px;font-size:.76rem}
+.tagG{font-weight:700;color:#b45309}.tagQ{font-weight:700;color:var(--blue-700)}.none{color:var(--slate-400);font-style:italic}
+.callout{background:var(--white);border:1px solid var(--slate-200);border-left:3px solid var(--indigo-600);border-radius:8px;padding:14px 18px;margin:16px 0;font-size:.88rem;color:var(--slate-700);max-width:96ch}
+.callout b{color:var(--slate-900)}.callout code{background:var(--slate-100);padding:1px 5px;border-radius:4px;font-size:.85em}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}</style></head><body><main>
+<span class="eyebrow">Detection &middot; exact-match gap analysis</span>
+<h1>Why qwen's Exact-Match Score Splits: 0.186 vs 0.794</h1>
+<p class="sub">The same model (<code>qwen2.5-7b-qlora</code>) scores exact-span F1 of
+<b>0.186 on Contigo</b> but <b>0.794 on pii-bench</b>. This
+characterizes that gap by categorizing every false positive and false negative and attributing it to a
+cause. Short version: most of the gap is a <b>ground-truth format artifact</b>, not a capability gap.</p>
+
+<div class="cards">
+<div class="kpi"><div class="n red">0.186</div><div class="l">Contigo exact-span F1</div><div class="d">P 0.22 · R 0.16</div></div>
+<div class="kpi"><div class="n">0.794</div><div class="l">pii-bench exact-span F1</div><div class="d">P 0.78 · R 0.81</div></div>
+<div class="kpi"><div class="n red">48%</div><div class="l">Contigo GT spans containing markup</div><div class="d">pii-bench: 10%</div></div>
+<div class="kpi"><div class="n red">51%</div><div class="l">of Contigo &ldquo;missed&rdquo; GT that is non-PII markup</div><div class="d">qwen correctly skips these</div></div>
+</div>
+
+<h2>The gap has two layers</h2>
+<div class="decomp">
+<b>Layer 1 — does qwen fire in the right region?</b> (span-overlap F1)
+<div class="bar"><div class="seg s1" style="width:53%">Contigo 0.533</div><div class="seg s4" style="width:47%"></div></div>
+<div class="bar"><div class="seg s1" style="width:91%">pii-bench 0.915</div><div class="seg s4" style="width:9%"></div></div>
+<div class="leg">A 0.38 detection gap — but <b>51% of Contigo's misses are non-PII diff artifacts</b>, so roughly half of it is illusory.</div>
+<div style="margin-top:12px"><b>Layer 2 — when it fires, is the boundary exact?</b> (overlap&rarr;exact drop)</div>
+<div class="leg">Contigo drops <b>0.348</b> (0.533&rarr;0.186) vs pii-bench only <b>0.120</b> (0.915&rarr;0.794). The extra Contigo drop is almost entirely GT coarseness/markup (below).</div>
+</div>
+
+<h2>False positives — where qwen predicts a span GT doesn't have exactly</h2>
+<p class="blurb">Contigo total FP 64,353 · pii-bench 34,849. Fractions of each model's FPs.</p>
+<table><tr><th class="l">category</th><th class="l">meaning</th><th>Contigo</th><th>pii-bench</th><th class="l">interpretation</th></tr><tr><td class="l mono">sub_of_gt</td><td class="l def">qwen's span sits <em>inside</em> a coarser GT span</td><td class="cc">75%<span class="mut"> (48,107)</span></td><td>30%<span class="mut"> (10,514)</span></td><td class="l why">GT span is broader — extra words or wrapping markup</td></tr><tr><td class="l mono">no_gt_overlap</td><td class="l def">qwen fired where GT has nothing</td><td class="cc">19%<span class="mut"> (12,411)</span></td><td>37%<span class="mut"> (12,801)</span></td><td class="l why">real PII the pipeline never masked, or spurious</td></tr><tr><td class="l mono">super_of_gt</td><td class="l def">qwen's span <em>contains</em> the GT span</td><td class="cc">4%<span class="mut"> (2,570)</span></td><td>14%<span class="mut"> (5,048)</span></td><td class="l why">qwen included an initial / street-type the GT clipped</td></tr><tr><td class="l mono">boundary_drift</td><td class="l def">overlaps GT, shifted boundary</td><td class="cc">2%<span class="mut"> (1,265)</span></td><td>19%<span class="mut"> (6,486)</span></td><td class="l why">true off-by-token drift</td></tr></table>
+
+<h2>False negatives — GT spans qwen doesn't reproduce exactly</h2>
+<p class="blurb">Contigo total FN 96,661 · pii-bench 28,068.</p>
+<table><tr><th class="l">category</th><th class="l">meaning</th><th>Contigo</th><th>pii-bench</th><th class="l">interpretation</th></tr><tr><td class="l mono">missed</td><td class="l def">no qwen span overlaps at all</td><td class="cc">71%<span class="mut"> (68,598)</span></td><td>45%<span class="mut"> (12,694)</span></td><td class="l why">recall miss — half are non-PII diff artifacts, half genuine OOD</td></tr><tr><td class="l mono">gt_coarser</td><td class="l def">GT span <em>contains</em> a qwen span</td><td class="cc">26%<span class="mut"> (24,986)</span></td><td>14%<span class="mut"> (3,847)</span></td><td class="l why">GT merged fields / wrapped markup around the entity</td></tr><tr><td class="l mono">gt_finer</td><td class="l def">GT span sits inside a qwen span</td><td class="cc">2%<span class="mut"> (2,394)</span></td><td>19%<span class="mut"> (5,340)</span></td><td class="l why">qwen over-extended over it</td></tr><tr><td class="l mono">boundary_drift</td><td class="l def">overlaps a qwen span, shifted</td><td class="cc">1%<span class="mut"> (683)</span></td><td>22%<span class="mut"> (6,187)</span></td><td class="l why">true off-by-token drift</td></tr></table>
+
+<h2>Real examples, by cause</h2>
+<p class="blurb"><span style="border-bottom:2px solid #b45309">underline</span> = ground-truth span &middot;
+<span style="background:#dbeafe;color:#1d4ed8;border-radius:2px;padding:0 3px">blue</span> = qwen's span.</p>
+<div class="cause"><h3>GT span is wrapped in markup / punctuation <span class="ct artifact">artifact</span></h3><p class="cd">The diff captured the whole changed region, so the GT span includes surrounding HTML/CSS/brackets. qwen emits the clean entity — scored as a miss <em>and</em> a false positive though it is arguably more correct.</p><div class="ex"><div class="extxt"><span class="mut">…</span>age.
+
+                   The mail system
+
+<span class="g">&lt;</span><span class="q g">sonu.kumar@motherdairy.com</span><span class="g">&gt;:</span> host
+    motherdairy-com.mail.protection.out<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code>&lt;sonu.kumar@motherdairy.com&gt;:</code><span class="tagQ">qwen</span><code>sonu.kumar@motherdairy.com</code></div></div><div class="ex"><div class="extxt"><span class="mut">…</span>color:#5558af;text-decoration:none;font-size: <span class="g">14px&quot;&gt;</span><span class="q g">Nithish</span> sent a message in chat&lt;/a&gt;&lt;/td&gt;			
+				&lt;/tr&gt;<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code>14px&quot;&gt;Nithish</code><span class="tagQ">qwen</span><code>Nithish</code></div></div><div class="ex"><div class="extxt"><span class="mut">…</span>								  &lt;![endif]--&gt;
+																			&lt;a <span class="g">href=&quot;</span><span class="q g">https://urlshortener.teams.cloud.microsoft/8DCAC7E527DFBD9-3-5&quot;</span> style=&quot; -webkit-text-size-adjust:none;height:<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code>href=&quot;https://urlshortener.teams.cloud.microsoft/8DCAC7E527DFBD9-3-5&quot;</code><span class="tagQ">qwen</span><code>https://urlshortener.teams.cloud.microsoft/8DCAC7E527DFBD9-3-5&quot;</code></div></div></div><div class="cause"><h3>GT flags non-PII that changed in the diff <span class="ct artifact">artifact</span></h3><p class="cd">Because GT = &ldquo;whatever the pipeline altered,&rdquo; changed non-PII tokens (CSS font lists, XML namespaces, HTML attributes) become GT spans. qwen correctly ignores them, but they count as recall misses.</p><div class="ex"><div class="extxt"><span class="mut">…</span>Segoe UI,-apple-system,BlinkMacSystemFont,San <span class="g">Francisco,Roboto,Helvetica</span> Neue,Arial;font-size:18px&quot; xmlns=&quot;http://www.<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code>Francisco,Roboto,Helvetica</code><span class="tagQ">qwen</span><code><span class="none">— none —</span></code></div></div><div class="ex"><div class="extxt"><span class="mut">…</span>o,Roboto,Helvetica Neue,Arial;font-size:18px&quot; <span class="g">xmlns=&quot;http://www.w3.org/1999/xhtml&quot;</span> xmlns:v=&quot;urn:schemas-microsoft-com:vml&quot; xmlns<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code>xmlns=&quot;http://www.w3.org/1999/xhtml&quot;</code><span class="tagQ">qwen</span><code><span class="none">— none —</span></code></div></div></div><div class="cause"><h3>qwen detects real PII the GT never masked <span class="ct gt-gap">gt-gap</span></h3><p class="cd">The self-referential GT is only as complete as the pipeline. Real entities qwen finds that were never masked score as false positives.</p><div class="ex"><div class="extxt"><span class="mut">…</span>em
+
+&lt;sonu.kumar@motherdairy.com&gt;: host
+    <span class="q">motherdairy-com.mail.protection.outlook.com[52.101.144.3]</span> said: 550 5.4.1
+    Recipient address reject<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code><span class="none">— none —</span></code><span class="tagQ">qwen</span><code>motherdairy-com.mail.protection.outlook.com[52.101.144.3]</code></div></div><div class="ex"><div class="extxt"><span class="mut">…</span>
+
+*V. Eswar Ramkumar*
+
+Brand Marketing
+
+<span class="q">Vodafone Idea Limited</span>
+
+(formerly Idea Cellular Limited)
+
+An Adi<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code><span class="none">— none —</span></code><span class="tagQ">qwen</span><code>Vodafone Idea Limited</code></div></div></div><div class="cause"><h3>qwen's boundary is more complete than GT <span class="ct qwen-better">qwen-better</span></h3><p class="cd">qwen includes an initial or a street-type the GT clipped — a &ldquo;false positive&rdquo; that is a better span.</p><div class="ex"><div class="extxt"><span class="mut">…</span> an influencer campaign in Tirupati town.
+
+*<span class="q">V. </span><span class="q g">Eswar Ramkumar*</span>
+
+Brand Marketing
+
+Vodafone Idea Limited
+<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code>Eswar Ramkumar*</code><span class="tagQ">qwen</span><code>V. Eswar Ramkumar*</code></div></div><div class="ex"><div class="extxt"><span class="mut">…</span>   
+     
+   
+    
+     Zoho Corporation, <span class="q g">4141 Hacienda</span><span class="q"> Dr,</span> Pleasanton, CA 94588, USA.
+Toll free: +1-888<span class="mut">…</span></div><div class="exrow"><span class="tagG">GT</span><code>4141 Hacienda</code><span class="tagQ">qwen</span><code>4141 Hacienda Dr,</code></div></div></div>
+
+<h2>Attribution — what the gap actually is</h2>
+<div class="callout">
+Reading the categories together, the 0.186-vs-0.794 gap decomposes as:
+<br><br>
+<b>1. GT coarseness &amp; markup contamination (the biggest slice).</b> <b>75% of Contigo FPs</b>
+are qwen spans sitting inside a broader GT span, and <b>26% of FNs</b> are the mirror.
+<b>48% of all Contigo GT spans contain markup</b> (<code>&lt; &gt; = &quot; { }</code>) vs 10% on pii-bench.
+The self-referential diff captures whole changed regions — HTML/CSS wrappers, brackets, adjacent fields — so qwen's clean entity can never match exactly.
+<br><br>
+<b>2. GT flags non-PII that merely changed.</b> 71% of Contigo FN is &ldquo;missed,&rdquo; but
+<b>51% of those are markup / non-PII</b> (font lists, XML namespaces) that qwen correctly ignores.
+So about half the recall gap is GT noise, not a real miss.
+<br><br>
+<b>3. GT incompleteness.</b> 19% of Contigo FPs overlap no GT — many are real entities
+(companies, mail hosts) the pipeline never masked. qwen is right; the GT is short.
+<br><br>
+<b>4. The genuine part.</b> What remains — the non-markup half of &ldquo;missed&rdquo; — is a true out-of-distribution recall gap:
+brand names (<code>Kofluence</code>) and formats qwen wasn't trained on. pii-bench is in-distribution and hand-curated, so none of 1&ndash;3 apply and qwen scores 0.794.
+<br><br>
+<b>Bottom line:</b> roughly <b>two-thirds</b> of the exact-match gap is a Contigo GT-format artifact (qwen penalized for being cleaner/more complete than a diff-derived GT); about <b>one-third</b> is a genuine OOD recall gap. The exact-match number understates qwen on Contigo.
+</div>
+
+<footer>Auto-generated from <code>qwen_fpfn.json</code> by <code>gen_fpfn_html.py</code> (real predictions).
+Source: <a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwJ2T0_tnwbCHZ6AOnvtzUprv9ZEY6EfWCQuZboYzc_Us_x-Ejxg8SvQf3xKjwMSF1VNg/exec" target="_top">Exact-Match Re-scoring</a>.
+Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com).</footer>
+</main><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=qwen-gap-analysis&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pii-bench vs pii-bench-2</title><style>:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--slate-900:#0f172a;--slate-700:#334155;
+--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;
+--slate-50:#f8fafc;--white:#fff;--amber-200:#fde68a;--red-50:#fef2f2;--red-600:#dc2626;--green-700:#15803d;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1000px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:92ch}
+.legend{background:var(--white);border:1px solid var(--slate-200);border-radius:10px;padding:12px 16px;margin:14px 0;font-size:.86rem;color:var(--slate-600)}
+.legend del{background:var(--red-50);color:var(--red-600);text-decoration:line-through;border-radius:3px;padding:0 3px}
+.legend mark{background:var(--amber-200);border-radius:3px;padding:0 3px}
+.kpi{display:inline-block;background:var(--white);border:1px solid var(--slate-200);border-radius:8px;padding:4px 12px;margin:2px 6px 2px 0;font-size:.82rem;color:var(--slate-700)}
+.kpi b{color:var(--indigo-700)}
+h2{font-size:1.15rem;font-weight:600;margin:1.8em 0 .2em}
+h2 .cnt{font-size:.72rem;color:var(--slate-400);background:var(--slate-100);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.blurb{font-size:.87rem;color:var(--slate-600);margin:.1em 0 .7em;max-width:92ch}
+.ex{background:var(--white);border:1px solid var(--slate-200);border-radius:10px;padding:10px 14px;margin:8px 0}
+.txt{font-family:var(--mono);font-size:.86rem;line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.txt .ctx{color:var(--slate-400)}
+.txt del.rm{background:var(--red-50);color:var(--red-600);text-decoration:line-through;border-radius:3px;padding:0 1px;font-weight:600}
+.txt mark.kept{background:var(--amber-200);color:#7c2d12;border-radius:3px;padding:0 2px;font-weight:600}
+.txt mark.keptplain{background:#dcfce7;color:var(--green-700);border-radius:3px;padding:0 2px;font-weight:600}
+.txt .none{color:var(--slate-400);font-style:italic}
+.meta{margin-top:7px;font-size:.76rem;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{background:var(--slate-100);color:var(--slate-600);border-radius:5px;padding:1px 7px;font-family:var(--mono)}
+.chip.ty{background:#eef2ff;color:var(--indigo-700)}
+.ba{margin-left:auto;color:var(--slate-500)}.ba code{background:var(--slate-100);border-radius:4px;padding:0 4px}
+.ba code:last-child,.meta code{color:var(--green-700)}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}</style></head><body><main>
+<span class="eyebrow">Detection &middot; pii-bench &rarr; pii-bench-2</span>
+<h1>What the punctuation cleanse changed</h1>
+<p class="sub">Real span-level differences between <strong>pii-bench</strong> (original) and
+<strong>pii-bench-2</strong> (punctuation-cleaned). pii-bench-2 trims wrapping punctuation off every GT
+span so exact-span matching isn't penalised for an annotation artifact.
+<del style="background:#fef2f2;color:#dc2626;text-decoration:line-through">red strikethrough</del> = removed;
+<mark style="background:#fde68a">highlight</mark> = the kept span.</p>
+<div class="legend">
+<span class="kpi"><b>323,177</b> spans trimmed</span>
+<span class="kpi"><b>267,696</b> trailing &middot; <b>26,198</b> leading &middot; <b>29,283</b> both</span>
+<span class="kpi"><b>2,723</b> pure-punctuation dropped</span>
+<span class="kpi">of 1.36M spans &middot; 0 integrity errors</span>
+</div>
+<section><h2>Trailing punctuation trimmed <span class="cnt">8</span></h2><p class="blurb">The span absorbed a trailing comma / period / bracket from the sentence. pii-bench-2 drops it.</p><div class="ex"><div class="txt">…<span class="ctx">oyal Hospital, Anytown
+- Contact Details: </span><mark class="kept">01234 567891</mark><del class="rm">,</del><span class="ctx"> [dr.jane.smith@royalhospital.co.uk](mailt</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Phone Number</span><span class="ba"><code>01234 567891,</code> &rarr; <code>01234 567891</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">ou currently in debt? No
+
+Declaration:
+I, </span><mark class="kept">John Doe</mark><del class="rm">,</del><span class="ctx"> confirm that the information provided in </span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Full Name</span><span class="ba"><code>John Doe,</code> &rarr; <code>John Doe</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">are outlined in the document available at </span><mark class="kept">http://192.168.1.100:8080/finance/budget_outline.pdf</mark><del class="rm">.</del><span class="ctx"> The budget outline includes media channel</span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">URL/Domain/Subdomain</span><span class="ba"><code>http://192.168.1.100:8080/finance/budget_outline.pdf.</code> &rarr; <code>http://192.168.1.100:8080/finance/budget_outline.pdf</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx"> Here]
+
+**Categories/Tags:** Media, News, </span><mark class="kept">Lumina Media</mark><del class="rm">,</del><span class="ctx"> Industry Updates
+
+**Meta Description:** S</span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">Organization Name</span><span class="ba"><code>Lumina Media,</code> &rarr; <code>Lumina Media</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">ia, you can visit our official website at </span><mark class="kept">ftp://blog-files.npr.org/2023/10/latest-news-post.txt</mark><del class="rm">.</del><span class="ctx"> For any inquiries or feedback, feel free </span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">URL/Domain/Subdomain</span><span class="ba"><code>ftp://blog-files.npr.org/2023/10/latest-news-post.txt.</code> &rarr; <code>ftp://blog-files.npr.org/2023/10/latest-news-post.txt</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">feel free to reach out to ethan.gaines at </span><mark class="kept">ethan.g@lumina.com</mark><del class="rm">.</del><span class="ctx"> We value your input and are always lookin</span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">Email Address</span><span class="ba"><code>ethan.g@lumina.com.</code> &rarr; <code>ethan.g@lumina.com</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">Number**: +971 2 555 4876
+- **Location**: </span><mark class="kept">Villa 12, Street 12, Al Ain, United Arab Emirates</mark><del class="rm">,</del><span class="ctx"> 24.5924, 54.4952
+
+**2. Risk Assessment**
+</span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">Street Address</span><span class="ba"><code>Villa 12, Street 12, Al Ain, United Arab Emirates,</code> &rarr; <code>Villa 12, Street 12, Al Ain, United Arab Emirates</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">9-750-2286. The current street address is </span><mark class="kept">49 N West Rustic Road 3B</mark><del class="rm">.</del><span class="ctx"></span></div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">Street Address</span><span class="ba"><code>49 N West Rustic Road 3B.</code> &rarr; <code>49 N West Rustic Road 3B</code></span></div></div></section><section><h2>Leading punctuation trimmed <span class="cnt">8</span></h2><p class="blurb">The span started with a stray quote / bracket / separator. pii-bench-2 drops it.</p><div class="ex"><div class="txt">…<span class="ctx">              &quot;Email&quot;: &quot;UA@protonmail.com&quot;</span><del class="rm">,
+                &quot;</del><mark class="kept">Password&quot;: &quot;(;d8</mark><span class="ctx">Um.O&quot;
+            },
+            {
+       </span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Email Address</span><span class="ba"><code>,
+                &quot;Password&quot;: &quot;(;d8</code> &rarr; <code>Password&quot;: &quot;(;d8</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">d, 499, &#x27;t Pad, Westerkwartier Niebert, GR</span><del class="rm">, </del><mark class="kept">9365 TA</mark><span class="ctx">, PO 102, 19:39:19, 9408, 09/03/2060</span></div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Street Address</span><span class="ba"><code>, 9365 TA</code> &rarr; <code>9365 TA</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">ns, Suite 386&quot;
+&quot;2022-01-02&quot;,34,&quot;Rebecca&quot;, </span><del class="rm">&quot;</del><mark class="kept">205.225.6969x6713&quot;,&quot;Marie-Theres</mark><span class="ctx"> Kobelt-Adolph&quot;,&quot;9744 Antonio Junctions, S</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Full Name</span><span class="ba"><code>&quot;205.225.6969x6713&quot;,&quot;Marie-Theres</code> &rarr; <code>205.225.6969x6713&quot;,&quot;Marie-Theres</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">4567890
+:61:202108271234567890
+:23G:DEBIT
+</span><del class="rm">:</del><mark class="kept">32A:ABC Motors</mark><span class="ctx">
+:50K:VEHICLE PURCHASE
+:52A:20210827
+:53A:</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Organization Name</span><span class="ba"><code>:32A:ABC Motors</code> &rarr; <code>32A:ABC Motors</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">E
+:52A:20210827
+:53A:USD15000.00
+:57A:USD
+</span><del class="rm">:</del><mark class="kept">59F:ABC Motors/123</mark><span class="ctx"> Main St./Anytown, USA/12345
+:61:202108251</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Organization Name</span><span class="ba"><code>:59F:ABC Motors/123</code> &rarr; <code>59F:ABC Motors/123</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">CE
+:52A:20210823
+:53A:USD1000.00
+:57A:USD
+</span><del class="rm">:</del><mark class="kept">59F:Transit Inc./789</mark><span class="ctx"> Oak St./Thirdtown, USA/98765
+:62F:Credit </span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Organization Name</span><span class="ba"><code>:59F:Transit Inc./789</code> &rarr; <code>59F:Transit Inc./789</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">rties&quot;: [
+        {
+            &quot;USERNAME&quot;</span><del class="rm">: &quot;</del><mark class="kept">24rfernánd</mark><span class="ctx">ez&quot;,
+            &quot;SOCIALNUMBER&quot;: &quot;528 497 </span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Username</span><span class="ba"><code>: &quot;24rfernánd</code> &rarr; <code>24rfernánd</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">90ABC Co Ltd
+:58A:/CAD1234578901/20222222
+</span><del class="rm">:</del><mark class="kept">59:/CAD1234567890/1234567890ABC Co Ltd</mark><span class="ctx">
+:70:/1234567890/1234567890ABC Co Ltd/CA/2</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Organization Name</span><span class="ba"><code>:59:/CAD1234567890/1234567890ABC Co Ltd</code> &rarr; <code>59:/CAD1234567890/1234567890ABC Co Ltd</code></span></div></div></section><section><h2>Both ends trimmed <span class="cnt">8</span></h2><p class="blurb">Wrapping punctuation on both sides (quotes, brackets, CSV field breaks).</p><div class="ex"><div class="txt">…<span class="ctx">,&quot;phone\_number&quot;,&quot;name&quot;,&quot;street\_address&quot;
+</span><del class="rm">&quot;</del><mark class="kept">2022-01-01&quot;,32,&quot;Rebecca</mark><del class="rm">&quot;,</del><span class="ctx"> &quot;205.225.6969x6713&quot;,&quot;Marie-Theres Kobelt-</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">First Name</span><span class="ba"><code>&quot;2022-01-01&quot;,32,&quot;Rebecca&quot;,</code> &rarr; <code>2022-01-01&quot;,32,&quot;Rebecca</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">olph&quot;,&quot;9744 Antonio Junctions, Suite 386&quot;
+</span><del class="rm">&quot;</del><mark class="kept">2022-01-02&quot;,34,&quot;Rebecca</mark><del class="rm">&quot;,</del><span class="ctx"> &quot;205.225.6969x6713&quot;,&quot;Marie-Theres Kobelt-</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">First Name</span><span class="ba"><code>&quot;2022-01-02&quot;,34,&quot;Rebecca&quot;,</code> &rarr; <code>2022-01-02&quot;,34,&quot;Rebecca</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">olph&quot;,&quot;9744 Antonio Junctions, Suite 386&quot;
+</span><del class="rm">&quot;</del><mark class="kept">2022-01-04&quot;,38,&quot;Rebecca</mark><del class="rm">&quot;,</del><span class="ctx"> &quot;205.225.6969x6713&quot;,&quot;Marie-Theres Kobelt-</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">First Name</span><span class="ba"><code>&quot;2022-01-04&quot;,38,&quot;Rebecca&quot;,</code> &rarr; <code>2022-01-04&quot;,38,&quot;Rebecca</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">nstituteWiFi**.
+3. Enter the **password** </span><del class="rm">(</del><mark class="kept">River45!</mark><del class="rm">).</del><span class="ctx">
+4. If prompted, enter your account number</span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">Password (Plaintext)</span><span class="ba"><code>(River45!).</code> &rarr; <code>River45!</code></span></div></div><div class="ex"><div class="txt"><span class="ctx"></span><del class="rm">**</del><mark class="kept">BuildFusion</mark><del class="rm">**</del><span class="ctx">
+
+**Invoice**
+
+**Invoice Number:** INV-202</span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">Organization Name</span><span class="ba"><code>**BuildFusion**</code> &rarr; <code>BuildFusion</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx"> France  \n   Adresse: 390, Rue de la Gare</span><del class="rm">, </del><mark class="kept">Gondreville</mark><del class="rm">,</del><span class="ctx"> Centre-Val de Loire, 45490\n   Adresse IP</span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Street Address</span><span class="ba"><code>, Gondreville,</code> &rarr; <code>Gondreville</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">ent of Finance at (303) 336-2345 or email </span><del class="rm">[</del><mark class="kept">finance@denvergov.org](mailto:finance@denvergov.org</mark><del class="rm">).**</del><span class="ctx">
+
+**Sincerely,**
+
+**[Your Name]**
+
+**City </span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Email Address</span><span class="ba"><code>[finance@denvergov.org](mailto:finance@denvergov.org).**</code> &rarr; <code>finance@denvergov.org](mailto:finance@denvergov.org</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx"> 310
+      street: Schultz Road
+      city</span><del class="rm">: </del><mark class="kept">Damon
+      state</mark><del class="rm">:</del><span class="ctx"> TX
+      postcode: 77430
+      ip: b817:a</span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Street Address</span><span class="ba"><code>: Damon
+      state:</code> &rarr; <code>Damon
+      state</code></span></div></div></section><section><h2>Dropped — entirely punctuation <span class="cnt">8</span></h2><p class="blurb">The whole span was punctuation (a stray `:` / `>` / `"` mislabeled as an entity). pii-bench-2 removes it.</p><div class="ex"><div class="txt"><span class="ctx">bertshäuser**  
+Sexe: **H</span><del class="rm">*</del><span class="ctx">*  
+
+---
+
+Nom du patient: **Frezza**  
+Sex</span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Full Name</span><span class="ba"><code>*</code> &rarr; <span class="none">(removed)</span></span></div></div><div class="ex"><div class="txt">…<span class="ctx">t_ID&quot;: &quot;Shkelqim&quot;,
+		&quot;Sex&quot;: &quot;A&quot;,
+		&quot;Phone&quot;</span><del class="rm">:</del><span class="ctx"> &quot;+67.80 635-0238&quot;,
+		&quot;Date_of_Agreement&quot;:</span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Full Name</span><span class="ba"><code>:</code> &rarr; <span class="none">(removed)</span></span></div></div><div class="ex"><div class="txt">…<span class="ctx">p de &lt;Benedictuslaan&gt; op &lt;7e augustus 2011</span><del class="rm">&gt;.</del><span class="ctx"></span></div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Street Address</span><span class="ba"><code>&gt;.</code> &rarr; <span class="none">(removed)</span></span></div></div><div class="ex"><div class="txt">…<span class="ctx">r/51**
+   - **User:** 19R  
+   - **ID Card</span><del class="rm">:**</del><span class="ctx"> 0178233167453
+  
+8. **22/11/1973**
+   - *</span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Username</span><span class="ba"><code>:**</code> &rarr; <span class="none">(removed)</span></span></div></div><div class="ex"><div class="txt">…<span class="ctx">:ccd9:4dc1:6581:1e3f:ccb6:23e7, Karau
+2, M</span><del class="rm">,</del><span class="ctx"> Kön, November 4., 1957, 004995915-7479, D</span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Full Name</span><span class="ba"><code>,</code> &rarr; <span class="none">(removed)</span></span></div></div><div class="ex"><div class="txt">…<span class="ctx">         &quot;Sex&quot;: &quot;M&quot;,
+            &quot;Title&quot;: </span><del class="rm">&quot;</del><span class="ctx">Pad&quot;,
+            &quot;Username&quot;: &quot;wyoguttmnkj</span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Full Name</span><span class="ba"><code>&quot;</code> &rarr; <span class="none">(removed)</span></span></div></div><div class="ex"><div class="txt"><span class="ctx">ersonalDetails&gt;
+            &lt;Sex&gt;M</span><del class="rm">&lt;</del><span class="ctx">/Sex&gt;
+            &lt;Title&gt;Ab&lt;/Title&gt;
+      </span>…</div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Full Name</span><span class="ba"><code>&lt;</code> &rarr; <span class="none">(removed)</span></span></div></div><div class="ex"><div class="txt">…<span class="ctx">ERNAME: &#x27;15dianmarouan&#x27;
+    SOCIALNUMBER: </span><del class="rm">&#x27;</del><span class="ctx"></span></div><div class="meta"><span class="chip">ai4privacy_300k</span><span class="chip ty">Username</span><span class="ba"><code>&#x27;</code> &rarr; <span class="none">(removed)</span></span></div></div></section><section><h2>Preserved (contrast) — not changed <span class="cnt">8</span></h2><p class="blurb">Deliberately kept: abbreviations, internal dots, URL slashes, and leading @ / # / + on handles & phones.</p><div class="ex"><div class="txt">…<span class="ctx">dig ist. Sie können mich unter der Nummer </span><mark class="keptplain">+493-854-637.2860</mark><span class="ctx"> kontaktieren oder mir eine E-Mail an die </span>…</div><div class="meta"><span class="chip">isotonic_pii_200k</span><span class="chip ty">Phone Number</span><span class="ba"><code>+493-854-637.2860</code> &rarr; <code>+493-854-637.2860</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">ansoori@greenoasis.ae
+- **Phone Number**: </span><mark class="keptplain">+971 2 555 4876</mark><span class="ctx">
+- **Location**: Villa 12, Street 12, Al A</span>…</div><div class="meta"><span class="chip">nvidia_nemotron</span><span class="chip ty">Phone Number</span><span class="ba"><code>+971 2 555 4876</code> &rarr; <code>+971 2 555 4876</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">chiesto il 4th July. Contattare al numero </span><mark class="keptplain">+359 301 536.3945</mark><span class="ctx">. Assicurarsi che il rappresentante di Fem</span>…</div><div class="meta"><span class="chip">isotonic_pii_200k</span><span class="chip ty">Phone Number</span><span class="ba"><code>+359 301 536.3945</code> &rarr; <code>+359 301 536.3945</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx"> KS04GDV verletzt wurde. Kontaktieren Sie </span><mark class="keptplain">+521 44.221.8941</mark><span class="ctx"> oder senden Sie eine E-Mail an Opal_Heath</span>…</div><div class="meta"><span class="chip">isotonic_pii_200k</span><span class="chip ty">Phone Number</span><span class="ba"><code>+521 44.221.8941</code> &rarr; <code>+521 44.221.8941</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx">ease contact the Department of Finance at </span><mark class="keptplain">(303) 336-2345</mark><span class="ctx"> or email [finance@denvergov.org](mailto:f</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Phone Number</span><span class="ba"><code>(303) 336-2345</code> &rarr; <code>(303) 336-2345</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx"> su póliza ES ES 7179 A904, y su password </span><mark class="keptplain">#Yv~8</mark><span class="ctx">.&lt;/p&gt;</span></div><div class="meta"><span class="chip">ai4privacy_400k</span><span class="chip ty">Password (Plaintext)</span><span class="ba"><code>#Yv~8</code> &rarr; <code>#Yv~8</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx"> 12345
+Country: United States
+
+Consignee: </span><mark class="keptplain">Acme Inc.</mark><span class="ctx">
+Street Address: 789 Business Road
+City: A</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Organization Name</span><span class="ba"><code>Acme Inc.</code> &rarr; <code>Acme Inc.</code></span></div></div><div class="ex"><div class="txt">…<span class="ctx"> 2 m
+Serial Number: WGT-C-13579
+
+Carrier: </span><mark class="keptplain">Oceanic Lines Inc.</mark><span class="ctx">
+
+Equipment:
+
+- 20&#x27; Standard Dry Container</span>…</div><div class="meta"><span class="chip">gretel_finance</span><span class="chip ty">Organization Name</span><span class="ba"><code>Oceanic Lines Inc.</code> &rarr; <code>Oceanic Lines Inc.</code></span></div></div></section>
+<footer>Source: <a href="https://github.com/Mercor-io/anonymization/pull/163" target="_top">PR #163 (ANON-180)</a>
+&middot; pii-bench-2 at <code>s3://data-acq-raw-prod/_training_eval_data/detection/pii-bench-2/</code>.
+Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com).</footer>
+</main><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=piibench-diff&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

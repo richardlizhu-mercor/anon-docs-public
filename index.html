@@ -40,10 +40,24 @@
  <h2>Detection &amp; tokenizer evals</h2>
  <div class="grid">
   <a class="card" href="detection-spans.html"><span class="arw">&rarr;</span><h3>DeBERTa Detection Span Viewer</h3><p>The shipped DeBERTa-v3 scanner's spans over a 60-cell public pii-bench sample, colored by PII category.</p></a>
+  <a class="card" href="exact-match-rescoring.html"><span class="arw">&rarr;</span><h3>Exact-Match Re-scoring</h3><p>Contigo + pii-bench re-scored at span level (overlap → trim → exact). Encoders collapse to ~0 exact; qwen wins both. Quantifies the boundary drift.</p></a>
   <a class="card" href="detection-leaderboard.html"><span class="arw">&rarr;</span><h3>PII Detection Leaderboard</h3><p>Living leaderboard of PII detectors (GKE L4 runs).</p></a>
   <a class="card" href="detection-comparison.html"><span class="arw">&rarr;</span><h3>PII Detectors — 5-way Comparison</h3><p>Five detectors compared span-by-span on the same six emails.</p></a>
   <a class="card" href="tokenizer-options.html"><span class="arw">&rarr;</span><h3>PII Tokenizer Options</h3><p>Bake-off of PII detector options against the 20-type taxonomy.</p></a>
+  <a class="card" href="snapping-examples.html"><span class="arw">&rarr;</span><h3>Snapping — Before / After Examples</h3><p>Real cases showing the whitespace snap: where it recovers an incomplete span, where it over-extends qwen, and where it can't help.</p></a>
+  <a class="card" href="word-snapped.html"><span class="arw">&rarr;</span><h3>Word-Snapped Exact-Match</h3><p>Predicted spans expanded to whitespace before exact-match (fixes incomplete spans). Rescues the encoders from ~0 to 0.4–0.66 on both benchmarks.</p></a>
+  <a class="card" href="pii-bench-exact-leaderboard.html"><span class="arw">&rarr;</span><h3>pii-bench 100k — Exact-Span Leaderboard</h3><p>The 100k eval re-scored so a hit counts only if the whole span matches exactly. Encoders collapse to ~0; qwen wins (0.79). Detection/cluster/fine + per-source.</p></a>
   <a class="card" href="pii-bench-eval.html"><span class="arw">&rarr;</span><h3>pii-bench Re-run Eval</h3><p>Bake-off detectors re-run on the external pii-bench set (16-type, measured timing).</p></a>
+  <a class="card" href="pii-bench-diff.html"><span class="arw">&rarr;</span><h3>pii-bench vs pii-bench-2</h3><p>What the punctuation cleanse changed (ANON-180 / PR #163): real before→after span diffs — trailing/leading trimmed, pure-punct dropped, abbreviations &amp; handles preserved.</p></a>
+  <a class="card" href="pii-bench-gt-viewer.html"><span class="arw">&rarr;</span><h3>pii-bench — GT vs Model Viewer</h3><p>Seven detectors on the external pii-bench (typed GT): pick a model, overlay it one at a time on the ground truth, TP/wrong-type/FP/missed colored.</p></a>
+  <a class="card" href="qwen-gap.html"><span class="arw">&rarr;</span><h3>qwen Exact-Match Gap — Contigo vs pii-bench</h3><p>Why qwen scores 0.19 exact on Contigo but 0.79 on pii-bench: FP/FN categorized + attributed. ~⅔ is GT-format artifact (48% of Contigo GT has markup), ~⅓ genuine OOD recall.</p></a>
+ </div>
+ <h2>Contigo detection benchmark</h2>
+ <div class="grid">
+  <a class="card" href="contigo-gt-samples.html"><span class="arw">&rarr;</span><h3>Benchmark — GT Samples</h3><p>Browse real docs per service with the ground-truth (pipeline-masked) spans highlighted; filter by service.</p></a>
+  <a class="card" href="contigo-model-comparison.html"><span class="arw">&rarr;</span><h3>Benchmark — Model Comparison</h3><p>All six detectors span-by-span on the same docs: consensus heatmap + per-model TP/FP against GT.</p></a>
+  <a class="card" href="contigo-raw-spans.html"><span class="arw">&rarr;</span><h3>Benchmark — Raw Spans</h3><p>Audit view: every GT + detected span as raw [start,end) offsets + surface, with TP/FP verdicts. Exposes deberta boundary drift.</p></a>
+  <a class="card" href="contigo-leaderboard.html"><span class="arw">&rarr;</span><h3>Detection Benchmark — Leaderboard</h3><p>Six detectors scored on the raw kofluence ↔ Drive-anonymized diff across 7 services (self-referential GT): P/R/F1, per-service, cost.</p></a>
  </div>
  <h2>Synthetic data</h2>
  <div class="grid">

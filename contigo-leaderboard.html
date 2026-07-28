@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Anonymization Detection Benchmark</title><style>
+:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--indigo-50:#eef2ff;
+--slate-900:#0f172a;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
+--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--white:#fff;
+--green-50:#f0fdf4;--green-600:#16a34a;--green-700:#15803d;--amber-100:#fef3c7;--amber-700:#b45309;
+--red-50:#fef2f2;--red-700:#b91c1c;--sky-100:#e0f2fe;--sky-700:#0369a1;--violet-100:#ede9fe;--violet-700:#6d28d9;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1180px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:90ch}
+.note{font-size:.85rem;color:var(--slate-500);max-width:94ch;margin:10px 0 4px}
+h2{font-size:1.15rem;font-weight:600;margin:2em 0 .1em}
+.ds-blurb{font-size:.85rem;color:var(--slate-500);margin:.1em 0 .6em}
+table{border-collapse:collapse;width:100%;margin:8px 0 4px;font-size:.83rem;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--slate-200)}
+th{background:var(--slate-100);text-align:right;font-weight:600;color:var(--slate-600);padding:9px 10px;font-size:.72rem;white-space:nowrap}
+th.l,td.l{text-align:left}
+td{padding:8px 10px;border-top:1px solid var(--slate-200);color:var(--slate-700);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:hover td{background:var(--slate-50)}
+td.model{font-weight:600;color:var(--slate-900);font-family:var(--mono);font-size:.82rem}
+.rank{color:var(--slate-400);font-weight:600;width:26px}
+tr.top td{background:var(--green-50)} tr.top:hover td{background:#e7f9ed}
+tr.top .rank{color:var(--green-600)}
+td.clean{font-weight:700;color:var(--indigo-700)}
+td.svc{color:var(--slate-600)} td.svc.best{color:var(--green-700);font-weight:700}
+.bar{display:inline-block;height:7px;border-radius:4px;background:var(--indigo-600);vertical-align:middle;margin-left:6px;opacity:.8}
+.cost{font-weight:600;color:var(--green-700)}
+.badge{display:inline-block;padding:1px 7px;border-radius:999px;font-size:.7rem;font-weight:600}
+.dev-api{background:var(--red-50);color:var(--red-700)} .dev-gpu{background:var(--violet-100);color:var(--violet-700)}
+.dev-mps{background:var(--sky-100);color:var(--sky-700)} .dev-cpu{background:var(--slate-100);color:var(--slate-600)}
+.muted{color:var(--slate-400)}
+.kf{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;padding:16px 20px;margin:14px 0;font-size:.9rem;color:var(--slate-700)}
+.kf li{margin:5px 0}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+</style></head><body><main>
+<span class="eyebrow">Anonymization &middot; Detection &middot; Contigo</span>
+<h1>Anonymization Detection Benchmark</h1>
+<p class="sub">PII detectors ranked by how closely they reproduce <strong>what our anonymization
+pipeline actually masked</strong> on real customer data (kofluence / Contigo). The benchmark is
+built by diffing the <strong>raw</strong> extraction against the <strong>anonymized</strong>
+output (the ground-truth artifacts our coworker published to Google&nbsp;Drive): every word-run the
+pipeline changed becomes a ground-truth PII span, in the raw document's character offsets.
+Scoring is <strong>char-level, type-agnostic detection</strong> (a character is a hit if it falls in
+any predicted span and any GT span) &mdash; micro-averaged P&nbsp;/&nbsp;R&nbsp;/&nbsp;F1, overall and per service.</p>
+<p class="note"><strong>Ground truth is self-referential.</strong> It measures <em>agreement with the
+current pipeline</em>, not absolute correctness &mdash; a model can only score 1.0 by masking exactly
+what the pipeline masked. High precision + low recall therefore means &ldquo;more conservative than the
+pipeline,&rdquo; not necessarily &ldquo;wrong.&rdquo; Eval set: a <strong>15,223-doc balanced sample</strong>
+(cap 3,000/service, ~25% held as no-PII for false-positive signal) drawn from a
+<strong>1,680,579-doc / 7-service</strong> corpus (2.79M spans). Full corpus + eval set live at
+<code>s3://data-acq-anonymized-prod/contigo/benchmark/</code>. All models run on GKE L4 (encoders,
+$0.71/hr) or Modal (6 models total).</p>
+
+<div class="kf"><strong>What this benchmark shows</strong>
+<ul>
+<li><strong>Overall F1 falls as models get bigger</strong> &mdash; 184M deberta-v3-base tops the board
+(0.699) and 7.6B qwen is last. This <em>inverts</em> the in-distribution
+pii-bench ranking: bigger models are more <em>conservative</em> here (precision holds ~0.78&ndash;0.82,
+but recall collapses from ~0.62 to ~0.19 out-of-distribution).</li>
+<li><strong>Per-service behavior is heterogeneous &mdash; architecture matches modality.</strong>
+Every encoder collapses on <code>teams</code> (HTML-wrapped mentions); the generative <code>qwen</code>
+model uniquely leads on <code>drive</code> (OOXML docs) and <code>zoho</code>; but on tabular
+<code>mysql</code> the big deberta-v2 LoRA models win outright (xxlarge 0.82). &ldquo;Best overall&rdquo;
+&ne; &ldquo;best everywhere&rdquo; &mdash; pick the detector per service.</li>
+<li><strong>Precision is stable, recall is the differentiator.</strong> Ranking is essentially a recall
+ranking &mdash; the cheap small encoder recovers the most of what the pipeline masked.</li>
+</ul></div>
+
+<h2><code>contigo_detection</code></h2>
+<div class="ds-blurb">15,223-doc balanced eval sample &middot; 7 services &middot; char-level type-agnostic detection vs pipeline GT. Per-service = char-F1; green = that model's strongest service.</div>
+<table><tr><th class="l">#</th><th class="l">Model</th><th>params</th><th>P</th><th>R</th><th>F1</th><th>gmail</th><th>teams</th><th>jira</th><th>confl.</th><th>drive</th><th>mysql</th><th>zoho</th><th>wall s</th><th>docs/s</th><th class="l">device</th><th>cost</th></tr><tr class="top"><td class="l rank">1</td><td class="l model">deberta-v3-base</td><td class="muted">184M</td><td>0.809</td><td>0.616</td><td class="clean">0.699<span class="bar" style="width:83px"></span></td><td class="svc best">0.715</td><td class="svc">0.458</td><td class="svc">0.658</td><td class="svc">0.565</td><td class="svc">0.471</td><td class="svc">0.693</td><td class="svc">0.534</td><td>702</td><td>21.7</td><td class="l"><span class="badge dev-gpu">cuda</span></td><td><span class="cost">$0.14</span></td></tr><tr class=""><td class="l rank">2</td><td class="l model">deberta-v3-large</td><td class="muted">435M</td><td>0.800</td><td>0.523</td><td class="clean">0.633<span class="bar" style="width:75px"></span></td><td class="svc">0.645</td><td class="svc">0.481</td><td class="svc">0.686</td><td class="svc">0.551</td><td class="svc">0.306</td><td class="svc best">0.740</td><td class="svc">0.335</td><td>2054</td><td>7.4</td><td class="l"><span class="badge dev-gpu">cuda</span></td><td><span class="cost">$0.41</span></td></tr><tr class=""><td class="l rank">3</td><td class="l model">privacy-filter</td><td class="muted">1.4B</td><td>0.818</td><td>0.419</td><td class="clean">0.554<span class="bar" style="width:66px"></span></td><td class="svc">0.576</td><td class="svc">0.096</td><td class="svc">0.539</td><td class="svc">0.420</td><td class="svc">0.091</td><td class="svc best">0.588</td><td class="svc">0.293</td><td>830</td><td>18.3</td><td class="l"><span class="badge dev-gpu">cuda</span></td><td><span class="cost">$0.25</span></td></tr><tr class=""><td class="l rank">4</td><td class="l model">deberta-v2-xxlarge</td><td class="muted">1.5B</td><td>0.802</td><td>0.356</td><td class="clean">0.493<span class="bar" style="width:58px"></span></td><td class="svc">0.501</td><td class="svc">0.105</td><td class="svc">0.503</td><td class="svc">0.327</td><td class="svc">0.291</td><td class="svc best">0.815</td><td class="svc">0.540</td><td>6701</td><td>2.3</td><td class="l"><span class="badge dev-gpu">cuda</span></td><td><span class="cost">$1.32</span></td></tr><tr class=""><td class="l rank">5</td><td class="l model">deberta-v2-xlarge</td><td class="muted">885M</td><td>0.813</td><td>0.260</td><td class="clean">0.394<span class="bar" style="width:47px"></span></td><td class="svc">0.403</td><td class="svc">0.072</td><td class="svc">0.493</td><td class="svc">0.295</td><td class="svc">0.162</td><td class="svc best">0.750</td><td class="svc">0.172</td><td>3594</td><td>4.2</td><td class="l"><span class="badge dev-gpu">cuda</span></td><td><span class="cost">$0.71</span></td></tr><tr class=""><td class="l rank">6</td><td class="l model">qwen2.5-7b-qlora</td><td class="muted">7.6B</td><td>0.780</td><td>0.190</td><td class="clean">0.305<span class="bar" style="width:36px"></span></td><td class="svc">0.283</td><td class="svc">0.170</td><td class="svc">0.540</td><td class="svc">0.528</td><td class="svc best">0.623</td><td class="svc">0.391</td><td class="svc">0.566</td><td>5571</td><td>2.7</td><td class="l"><span class="badge dev-gpu">cuda</span></td><td><span class="cost">$1.70</span></td></tr></table>
+<p class="note">Services: <code>gmail</code> (42K raw docs), <code>teams</code> (1.62M),
+<code>jira</code> (11K), <code>confl.</code>=confluence (315), <code>drive</code>=google-drive OOXML (121),
+<code>mysql</code> (4.1K), <code>zoho</code> (5K). Bar &prop; overall F1. Sorted by overall F1 desc.</p>
+
+<footer>Auto-generated from <code>bench_results.jsonl</code> by <code>gen_bench_html.py</code>.
+Benchmark: raw kofluence &harr; Drive-anonymized diff &middot; self-referential detection GT.
+Companion to the in-distribution <em>PII Detection Leaderboard</em> (pii-bench).</footer>
+</main><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=contigo-detection-bench&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

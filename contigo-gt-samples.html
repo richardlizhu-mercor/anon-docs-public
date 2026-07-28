@@ -1,0 +1,385 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Contigo Benchmark — GT Samples</title><style>:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--indigo-50:#eef2ff;--indigo-100:#e0e7ff;
+--slate-900:#0f172a;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
+--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--white:#fff;--amber-200:#fde68a;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1080px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:92ch}
+.note{font-size:.85rem;color:var(--slate-500);max-width:94ch;margin:10px 0 4px}
+.controls{position:sticky;top:0;background:var(--slate-50);padding:14px 0 10px;z-index:5;border-bottom:1px solid var(--slate-200);margin:18px 0 8px}
+.fbtn{font:inherit;font-size:.8rem;font-weight:500;border:1px solid var(--slate-200);background:var(--white);color:var(--slate-600);border-radius:999px;padding:5px 13px;margin:3px 4px 3px 0;cursor:pointer;transition:all 120ms}
+.fbtn:hover{border-color:var(--indigo-100);background:var(--indigo-50)}
+.fbtn.active{background:var(--indigo-600);border-color:var(--indigo-600);color:#fff}
+.tgl{float:right;font-size:.8rem;color:var(--slate-600);user-select:none;cursor:pointer;padding-top:6px}
+.tgl input{vertical-align:middle;margin-right:5px}
+h2{font-size:1.15rem;font-weight:600;margin:1.8em 0 .1em}
+h2 .cnt{font-size:.72rem;color:var(--slate-400);font-weight:600;background:var(--slate-100);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.cap{font-size:.9rem;color:var(--slate-600);margin:.2em 0 .9em;max-width:92ch}
+.card{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;margin:0 0 12px;overflow:hidden}
+.chead{display:flex;justify-content:space-between;align-items:center;background:var(--slate-100);padding:6px 14px;font-size:.72rem}
+.did{font-family:var(--mono);color:var(--slate-500)}
+.nsp{color:var(--slate-500);font-weight:600}
+.body{padding:12px 16px;font-size:.9rem;color:var(--slate-700);white-space:pre-wrap;word-break:break-word;font-family:var(--mono);line-height:1.7}
+mark.gt{background:var(--amber-200);color:#7c2d12;border-radius:3px;padding:0 2px;font-weight:600}
+body.nohl mark.gt{background:transparent;color:inherit;font-weight:400;padding:0;outline:1px dashed var(--slate-400)}
+.masked{padding:0 16px 12px;font-size:.75rem;color:var(--slate-500)}
+.mlbl{text-transform:uppercase;letter-spacing:.05em;font-weight:600;font-size:.68rem;margin-right:6px}
+.mchip{display:inline-block;background:var(--indigo-50);color:var(--indigo-700);border-radius:6px;padding:1px 7px;margin:2px 3px 2px 0;font-family:var(--mono);font-size:.72rem}
+.muted{color:var(--slate-400)}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}</style></head><body><main>
+<span class="eyebrow">Anonymization &middot; Detection &middot; Contigo</span>
+<h1>Benchmark Ground-Truth Samples</h1>
+<p class="sub">Real documents from the Contigo / kofluence PII detection benchmark, one browser across all
+seven services. <mark class="gt">Highlighted</mark> spans are the <strong>ground truth</strong> &mdash;
+exactly what our anonymization pipeline masked, recovered by diffing the raw extraction against the
+anonymized output. Scoring is char-level and type-agnostic.</p>
+<p class="note"><strong>Self-referential GT.</strong> These spans are whatever the pipeline changed &mdash;
+person names, handles, creator URLs, and the customer's own brand (<code>Kofluence</code>) all count.
+It measures agreement with the pipeline, not absolute truth. 42 sample docs &middot; 132
+shown GT spans, drawn from the 15,223-doc eval set (1.68M-doc full corpus).</p>
+<div class="controls">
+<label class="tgl"><input type="checkbox" id="hl" checked/> highlight GT</label>
+<button class="fbtn active" data-svc="all">All (42)</button><button class="fbtn" data-svc="gmail">✉️ Gmail (6)</button><button class="fbtn" data-svc="msteams">💬 Microsoft Teams (6)</button><button class="fbtn" data-svc="jira">🎫 Jira (6)</button><button class="fbtn" data-svc="confluence">📄 Confluence (6)</button><button class="fbtn" data-svc="gdrive">📁 Google Drive (6)</button><button class="fbtn" data-svc="mysql">🗄️ MySQL (6)</button><button class="fbtn" data-svc="zoho">📊 Zoho CRM (6)</button>
+</div>
+<section class="svc" data-svc="gmail"><h2>✉️ Gmail <span class="cnt">6</span></h2><p class="cap">Gmail masks person names, email addresses (both bare and in Name &lt;addr&gt; form), phone numbers, meeting/calendar/Drive URLs, and the customer&#x27;s own brand &quot;Kofluence&quot; across email threads, Google Calendar invites, delivery-failure bounces, and OOXML-flattened incentive tables. Quirks: CRLF-joined multi-value spans (e.g. two emails split by &quot;/&quot;, a phone stitched to a signature URL block), bare first names pulled out of tabular &quot;Name &lt;X&gt;&quot; rows, and long base64 calendar-event URLs.</p><div class="card"><div class="chead"><span class="did">gmail:197e9a27b16d00e5</span><span class="nsp">3 GT spans <span class="muted">+4 more in full doc</span></span></div><div class="body">Hi <mark class="gt">Vanshita,</mark>
+
+Thank you for writing back.
+
+Yes, we can connect tomorrow. Would 12 PM work for you?
+Let us know I will share the Gmeet invite.
+
+Regards,
+
+On Tue, 8 Jul 2025 at 15:31, <mark class="gt">Vanshita Gupta &lt;vanshita.gupta@housing.com&gt;</mark>
+wrote:
+
+&gt; Hi <mark class="gt">Kaushik,</mark>
+&gt;
+&gt; Thank you for walking us through your creator dashboard on our demo call.
+&gt; I could not move this forward right away, but I am keen to restart the
+&gt; conversation.
+&gt;
+&gt; Could you please share a time tomorrow that works for you and your team in
+&gt; the first half tomorrow? My teammates will also be on the call so we can
+&gt; settle th…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Vanshita,</span> <span class="mchip">Vanshita Gupta &lt;vanshita.gupta@housing.com&gt;</span> <span class="mchip">Kaushik,</span></div></div><div class="card"><div class="chead"><span class="did">gmail:1958357279bd51e4</span><span class="nsp">1 GT span</span></div><div class="body">Department Hunters Name <mark class="gt">Shruthi</mark>
+
+
+
+Parameter Tgt (₹ Lacs) Del (₹ Lacs) Incentive Earned (₹) Pending Pending  
+Incentive (₹) Total Incentive (₹)
+
+Total ₹0 ₹12,876 ₹12,876
+
+For the Month Margin 4.0 0.00 ₹0 3.03 ₹10,603 ₹10,603
+
+New/ Reactivated Margin NA 0.00 ₹0 3.03 ₹2,272 ₹2,272
+
+Credit Limit (Rising/ Key) 10 7 ₹0 NA NA ₹0
+
+*Based on 100% Achievement
+
+Margin (L) Incentive (₹)
+
+Deal/ Campaign Stage Campaign_ID Planned Shortlisted Delivered Del % of Pl  
+Planned Shortlisted Delivered
+
+Total 3.03 3.03 0.00 0% ₹10,603 ₹10,605 ₹0
+
+#SerokeralaIG Closed Won 18058 3.03 3.03 0.0…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Shruthi</span></div></div><div class="card"><div class="chead"><span class="did">gmail:190e864df4b45293</span><span class="nsp">7 GT spans <span class="muted">+6 more in full doc</span></span></div><div class="body">This event has been updated
+Changed: Time
+
+
+Titan X <mark class="gt">Kofluence</mark>
+Thursday 25 Jul 2024 ⋅ 2:30pm – 3pm
+India Standard Time - Kolkata
+
+Join with Google Meet
+<mark class="gt">https://meet.google.com/qwc-bqjg-hjv?hs=224</mark>
+
+
+	
+Join by phone
+(US) <mark class="gt">+1 316-512-8994</mark>
+PIN: 535333500
+
+More phone numbers
+https://tel.meet/qwc-bqjg-hjv?pin=6424295248110&amp;hs=0
+
+
+Organiser
+<mark class="gt">Shree Lahari.</mark> K. A
+<mark class="gt">lahari@kofluence.com</mark>
+
+Guests
+<mark class="gt">Shree Lahari.</mark> K. A- organiser
+<mark class="gt">cstraders.titan@gmail.com
+Shruthi S D
+Aamir V</mark>
+View all guest info  
+https://calendar.google.com/calendar/event?action=VIEW&amp;eid=NDNjdjNxMmVvZWIwbjY4YTN0bm1oaT…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Kofluence</span> <span class="mchip">https://meet.google.com/qwc-bqjg-hjv?hs=224</span> <span class="mchip">+1 316-512-8994</span> <span class="mchip">Shree Lahari.</span> <span class="mchip">lahari@kofluence.com</span> <span class="mchip">Shree Lahari.</span> <span class="mchip">cstraders.titan@gmail.com
+Shruthi S D
+Aamir V</span></div></div><div class="card"><div class="chead"><span class="did">gmail:18f2dca9973e289e</span><span class="nsp">1 GT span</span></div><div class="body">…t the respective campaign owner, or for urgent matters, reach
+out to <mark class="gt">Nachappa@kofluence.com /ronald@kofluence.com</mark>
+</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Nachappa@kofluence.com /ronald@kofluence.com</span></div></div><div class="card"><div class="chead"><span class="did">gmail:19252168a5c75837</span><span class="nsp">1 GT span</span></div><div class="body">
+** Address not found **
+
+Your message wasn&#x27;t delivered to <mark class="gt">ujjwala@1stcoffee.co.in</mark> because the domain 1stcoffee.co.in couldn&#x27;t be found. Check for typos or unnecessary spaces and try again.
+
+Learn more here: https://support.google.com/mail/?p=BadRcptDomain
+
+The response was:
+
+DNS Error: DNS type &#x27;mx&#x27; lookup of 1stcoffee.co.in responded with code NXDOMAIN
+Domain name not found: 1stcoffee.co.in For more information, go to https://support.google.com/mail/?p=BadRcptDomain
+</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">ujjwala@1stcoffee.co.in</span></div></div><div class="card"><div class="chead"><span class="did">gmail:194d0544caa333a1</span><span class="nsp">6 GT spans <span class="muted">+441 more in full doc</span></span></div><div class="body"><mark class="gt">Hi Neha,</mark>
+
+Please find attached the draft agreement for your perusal and confirmation.
+
+Once confirmed we may proceed with execution of the same, kindly let me
+know in case of any concerns related to the same.
+
+Thanks and Regards,
+<mark class="gt">Nithish Rao K M
+9380483963</mark>
+
+
+On Fri, 31 Jan 2025 at 17:09, <mark class="gt">Rishabh Gambhir &lt;RishabhGambhir@avis.co.in&gt;</mark>
+wrote:
+
+&gt; <mark class="gt">++nehamittal@avis.co.in</mark>
+&gt;
+&gt;
+&gt;
+&gt; Adding <mark class="gt">Neha Mittal</mark> (Senior Marketing Manager), Please do add her in all
+&gt; the mails
+&gt;
+&gt;
+&gt;
+&gt;
+&gt; *Thank You <mark class="gt">Rishabh Gambhir</mark> | **Asst. Manager Marketing **| Avis India*
+&gt;
+&gt; *Avis India Mobility Solution…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Hi Neha,</span> <span class="mchip">Nithish Rao K M
+9380483963</span> <span class="mchip">Rishabh Gambhir &lt;RishabhGambhir@avis.co.in&gt;</span> <span class="mchip">++nehamittal@avis.co.in</span> <span class="mchip">Neha Mittal</span> <span class="mchip">Rishabh Gambhir</span></div></div></section><section class="svc" data-svc="msteams"><h2>💬 Microsoft Teams <span class="cnt">6</span></h2><p class="cap">Microsoft Teams masks person names (often inside &lt;at id=&quot;...&quot;&gt;...&lt;/at&gt; HTML mention tags), social handles/profile URLs (Instagram, YouTube) in href/title attributes, phone numbers, bank account/IFSC identifiers, and the customer&#x27;s own brand name &quot;kofluence&quot;. Content is HTML/OOXML-flavored — names sit in &lt;td&gt; table cells and &lt;span&gt; wrappers, so GT spans routinely include surrounding markup rather than the bare name.</p><div class="card"><div class="chead"><span class="did">msteams:1706689947312</span><span class="nsp">2 GT spans <span class="muted">+38 more in full doc</span></span></div><div class="body">&lt;p&gt;Hi &lt;at <mark class="gt">id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing</mark> below 10 names who has Pan India reach . Some of them are already <mark class="gt">onboarded</mark> and some of them are yet to be contacted. Few names added in this will cost us more but I have added to showcase them the good names. Please suggest if you want me to remove and other names .&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Channel Name&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Channel Link&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;State&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;vj_manoj&lt;/…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">id=&quot;0&quot;&gt;Priyadarshi&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Banerjee&lt;/at&gt;&amp;nbsp;Sharing</span> <span class="mchip">onboarded</span></div></div><div class="card"><div class="chead"><span class="did">msteams:1691989799187</span><span class="nsp">1 GT span</span></div><div class="body">&lt;p&gt;Hi <mark class="gt">Pavan</mark> payment received from below brand FYI&lt;/p&gt;
+&lt;table itemprop=&quot;copy-paste-table&quot;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEFT-CMS3494781607-CARAT LANE TRADING PRIVATE LIMITED-CARAT LANE TRADING PRIVATE LIMITED-0104SLNEFT&lt;/td&gt;
+&lt;td&gt;CR&lt;/td&gt;
+&lt;td&gt;400200&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Pavan</span></div></div><div class="card"><div class="chead"><span class="did">msteams:1706625590110</span><span class="nsp">9 GT spans <span class="muted">+5 more in full doc</span></span></div><div class="body">…ong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;LOP Days&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K007&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Balasubrahmanyam Sastri&lt;/td&gt;</mark>
+&lt;td&gt;2.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K033&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Navneet Aman&lt;/td&gt;</mark>
+&lt;td&gt;1.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K032&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Aisha Almas Shaikh&lt;/td&gt;</mark>
+&lt;td&gt;1.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K095&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Alisha Kujur&lt;/td&gt;</mark>
+&lt;td&gt;1.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K101&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Amir Vahora&lt;/td&gt;</mark>
+&lt;td&gt;1.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K110&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Dinesh Teja&lt;/td&gt;</mark>
+&lt;td&gt;1.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K132&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Nikita Shailesh&lt;/td&gt;</mark>
+&lt;td&gt;1.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K140&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Siddharth Guru&lt;/td&gt;</mark>
+&lt;td&gt;1.00&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;K146&lt;/td&gt;
+<mark class="gt">&lt;td&gt;Shagun Verma&lt;/td&gt;</mark>
+…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">&lt;td&gt;Balasubrahmanyam Sastri&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Navneet Aman&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Aisha Almas Shaikh&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Alisha Kujur&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Amir Vahora&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Dinesh Teja&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Nikita Shailesh&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Siddharth Guru&lt;/td&gt;</span> <span class="mchip">&lt;td&gt;Shagun Verma&lt;/td&gt;</span></div></div><div class="card"><div class="chead"><span class="did">msteams:1629189639867</span><span class="nsp">5 GT spans <span class="muted">+7 more in full doc</span></span></div><div class="body">…iv&gt;
+&lt;div itemprop=&quot;copy-paste-block&quot;&gt;
+
+&lt;div style=&quot;font-size:14px&quot;&gt;&lt;a <mark class="gt">href=&quot;https://www.instagram.com/varun760/&quot;</mark> rel=&quot;noreferrer noopener&quot; target=&quot;_blank&quot; <mark class="gt">title=&quot;https://www.instagram.com/varun760/&quot;&gt;https://www.instagram.com/varun760/&lt;/a&gt;&lt;br&gt;</mark>
+
+&lt;a <mark class="gt">href=&quot;https://www.instagram.com/madhu_0006/&quot;</mark> rel=&quot;noreferrer noopener&quot; target=&quot;_blank&quot; <mark class="gt">title=&quot;https://www.instagram.com/madhu_0006/&quot;&gt;https://www.instagram.com/madhu_0006/&lt;/a&gt;&lt;br&gt;</mark>
+
+&lt;a <mark class="gt">href=&quot;https://www.instagram.com/nisha_ravindra_official_/&quot;</mark> rel=&quot;noreferrer noopener&quot; target=&quot;_blank&quot; title=&quot;https://www.instagram.com/nisha_ravindra_official_/&quot;&gt;https://w…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">href=&quot;https://www.instagram.com/varun760/&quot;</span> <span class="mchip">title=&quot;https://www.instagram.com/varun760/&quot;&gt;https://www.instagram.com/varun760/&lt;/a&gt;&lt;br&gt;</span> <span class="mchip">href=&quot;https://www.instagram.com/madhu_0006/&quot;</span> <span class="mchip">title=&quot;https://www.instagram.com/madhu_0006/&quot;&gt;https://www.instagram.com/madhu_0006/&lt;/a&gt;&lt;br&gt;</span> <span class="mchip">href=&quot;https://www.instagram.com/nisha_ravindra_official_/&quot;</span></div></div><div class="card"><div class="chead"><span class="did">msteams:1766474778948</span><span class="nsp">1 GT span</span></div><div class="body">&lt;p&gt;&lt;at <mark class="gt">id=&quot;0&quot;&gt;Vishal&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Choudhary&lt;/at&gt;&amp;nbsp;shashank</mark> is checking&amp;nbsp;&lt;/p&gt;</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">id=&quot;0&quot;&gt;Vishal&lt;/at&gt;&amp;nbsp;&lt;at id=&quot;1&quot;&gt;Choudhary&lt;/at&gt;&amp;nbsp;shashank</span></div></div><div class="card"><div class="chead"><span class="did">msteams:1744195032686</span><span class="nsp">1 GT span</span></div><div class="body">&lt;p&gt;again ..the request will go to aws [another company] not <mark class="gt">kofluence&amp;nbsp;&lt;/p&gt;</mark></div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">kofluence&amp;nbsp;&lt;/p&gt;</span></div></div></section><section class="svc" data-svc="jira"><h2>🎫 Jira <span class="cnt">6</span></h2><p class="cap">Jira tickets mask the customer&#x27;s own brand name most of all — &quot;Kofluence&quot; and its white-label aliases (&quot;Kofinity&quot;, &quot;Kof&quot;/&quot;KOF&quot;, subdomains like bajaj.kofluence.com), plus corporate emails, parenthesized QA-login phone numbers, and design/staging URLs (Adobe XD, Figma, S3 presigned links, API keys inside curl multipart bodies). Spans are loose char-level and often include trailing punctuation/parens (e.g. &quot;(automationtestops@kofluence.com)&quot;, &quot;Kofluence-specific&quot;).</p><div class="card"><div class="chead"><span class="did">jira:26091</span><span class="nsp">1 GT span</span></div><div class="body">…ct creator from discover phase Api throwing 500 error
+1. Login to OCB <mark class="gt">(automationtestops@kofluence.com)</mark>
+2. Search with campaign (Test Campaign 0301)
+3. Apply for campaign (creator App)
+4.  Unable to Reject Creator from Discover phase Api throwing 500 error</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">(automationtestops@kofluence.com)</span></div></div><div class="card"><div class="chead"><span class="did">jira:17883</span><span class="nsp">3 GT spans <span class="muted">+10 more in full doc</span></span></div><div class="body">…but No Activity Yet
+Show streak count=0 with the message- “Share your <mark class="gt">Kofinity</mark> link to initiate your Streak”  
+Type 4
+New user/Existing User with Activity
+Show the streak and other daily insights
+Type 5
+Existing User who lost streak and hasn’t restarted within a week
+Show streak count= 0 with the message ‘Restart your streak by sharing your <mark class="gt">Kofinity</mark> link’  
+Type 6
+Existing user who lost streak and hasn’t restarted for days &gt; 7
+Show streak count=0 with a message- “Restart your streak by sharing your link”  
+&gt; Activity / Clicks = <mark class="gt">Kofinity</mark> Outward Clicks as mentioned in the Affise report
+Active S…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Kofinity</span> <span class="mchip">Kofinity</span> <span class="mchip">Kofinity</span></div></div><div class="card"><div class="chead"><span class="did">jira:34911</span><span class="nsp">5 GT spans <span class="muted">+35 more in full doc</span></span></div><div class="body">…he creator data is filtered according to the BFL ecosystem instead of <mark class="gt">Kofluence.</mark>
+Objective
+We are creating a dedicated white-labeled dashboard for BFL at:
+<mark class="gt">bajaj.kofluence.com</mark> → BFL dashboard (group_id = 2)
+The entire branding, creator badges, verification icons, and discovery filters must now work group-wise for a specific group like BFL else similar to <mark class="gt">kofluence.</mark>
+BFL dashboard shows BFL logo on the Login Page, Side menu, and where the <mark class="gt">kofluence</mark> logo is available [refer design]
+Creator badges/icons must change dynamically based on the creator’s group mapping
+No <mark class="gt">Kofluence</mark> verification badges sh…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Kofluence.</span> <span class="mchip">bajaj.kofluence.com</span> <span class="mchip">kofluence.</span> <span class="mchip">kofluence</span> <span class="mchip">Kofluence</span></div></div><div class="card"><div class="chead"><span class="did">jira:19368</span><span class="nsp">4 GT spans <span class="muted">+13 more in full doc</span></span></div><div class="body">Clone campaign &gt; Bd interface &gt; initiate Api giving 500 Error.
+curl <mark class="gt">&#x27;https://staging-api-ocb.kofluence.com/campaign/v2/initiate&#x27;</mark> \
+  -H &#x27;authority: <mark class="gt">staging-api-ocb.kofluence.com&#x27;</mark> \
+  -H &#x27;accept: application/json, text/plain, */*&#x27; \
+  -H &#x27;accept-language: en-US,en;q=0.9&#x27; \
+  -H &#x27;content-type: multipart/form-data; boundary=----WebKitFormBoundaryH9toJxrGEZwaLXCv&#x27; \
+  -H &#x27;origin: <mark class="gt">https://staging-campaign.kofluence.com&#x27;</mark> \
+  -H &#x27;referer: <mark class="gt">https://staging-campaign.kofluence.com/&#x27;</mark> \
+  -H &#x27;sec-ch-ua: &quot;Google Chrome&quot;;v=&quot;117&quot;, &quot;Not;A=Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;117&quot;&#x27; \
+  -H &#x27;sec-ch-ua-mobile: ?0&#x27; \
+  -H &#x27;…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">&#x27;https://staging-api-ocb.kofluence.com/campaign/v2/initiate&#x27;</span> <span class="mchip">staging-api-ocb.kofluence.com&#x27;</span> <span class="mchip">https://staging-campaign.kofluence.com&#x27;</span> <span class="mchip">https://staging-campaign.kofluence.com/&#x27;</span></div></div><div class="card"><div class="chead"><span class="did">jira:24912</span><span class="nsp">1 GT span</span></div><div class="body">…urser in between the text
+IOS iPhone mini 13 
+1. Login to creator app <mark class="gt">(8142138307)</mark>
+2. Click on Profile side panel 
+3. Click on dropdown arrow 
+4. click on Manage profile 
+5. click on &quot;+Add Profile&quot; CTA
+6.  While Enter New Profile Name , we can&#x27;t adjust the mouse courser in between the text</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">(8142138307)</span></div></div><div class="card"><div class="chead"><span class="did">jira:16894</span><span class="nsp">1 GT span</span></div><div class="body">…ed is already in use, please enter the required link&quot;
+!!
+Design Link: <mark class="gt">https://xd.adobe.com/view/ee6c1:890-a8c6-4ea1-a038-9bbbf857fe2e-bb3f/</mark></div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">https://xd.adobe.com/view/ee6c1:890-a8c6-4ea1-a038-9bbbf857fe2e-bb3f/</span></div></div></section><section class="svc" data-svc="confluence"><h2>📄 Confluence <span class="cnt">6</span></h2><p class="cap">Confluence wiki pages mask person names, contact bundles (name + email + phone run together as one span), URLs/links (Figma, Google Docs/Drive/Sheets, staging API endpoints, bit.ly short links), passwords, and the customer&#x27;s own brand name (&quot;Kofluence&quot; and its variants like &quot;Kofinity&quot;, &quot;Kof.&quot;, &quot;Kofluencer!&quot;). Text is de-HTML&#x27;d OOXML/tabular page content with lingering entities (&amp;rsquo;, &amp;amp;, &amp;nbsp;), so brand tokens carry trailing punctuation and multi-field spans span several PII types at once.</p><div class="card"><div class="chead"><span class="did">confluence:141066261</span><span class="nsp">5 GT spans <span class="muted">+30 more in full doc</span></span></div><div class="body">…Only people who&amp;rsquo;ve opted in Has Knowledge about Gupshup (Owner) <mark class="gt">Vishal</mark> C Gupshup POC Mr. <mark class="gt">Vaibhav vaibhav.gupta@gupshup.io 9650906780</mark> (Current) Mr. <mark class="gt">Nitin Marwah nitin.marwah@gupshup.io 9910699666</mark> Mr. <mark class="gt">Shubham Kumar shubham.kumar@gupshup.io 7503556170</mark> Ms. <mark class="gt">Surabhi Johari surbhi.johari@gupshup.io 8630460380</mark> Cost per Marketing WhatsApp message (one way - business sending message to the user) 1 Rs/message Cost per Utility message ~ 30 paisa/message Credentials (WhatsApp Gupshup NEW panel) Gupshup Panel is a unified dashboard to manage all WhatsApp Business API activities such as Template manage…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Vishal</span> <span class="mchip">Vaibhav vaibhav.gupta@gupshup.io 9650906780</span> <span class="mchip">Nitin Marwah nitin.marwah@gupshup.io 9910699666</span> <span class="mchip">Shubham Kumar shubham.kumar@gupshup.io 7503556170</span> <span class="mchip">Surabhi Johari surbhi.johari@gupshup.io 8630460380</span></div></div><div class="card"><div class="chead"><span class="did">confluence:88309761</span><span class="nsp">3 GT spans <span class="muted">+23 more in full doc</span></span></div><div class="body">…ocess Description: New User Overlay with Steps: Once the user&amp;rsquo;s <mark class="gt">Kofinity</mark> link is generated, show an overlay outlining the four steps for customization: Preview the audience page Add the link in the bio Promote <mark class="gt">Kofinity</mark> Increase your earnings followed by the CTA &amp;quot;Preview Audience Page&amp;quot;. Clicking on this CTA should redirect the user to the Audience page. Default Audience View: When redirected to the Audience page, show the page to users as their audience would see it. By default: User name: Displayed should be similar to their <mark class="gt">Kofinity</mark> link Profile picture: Default image Social m…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Kofinity</span> <span class="mchip">Kofinity</span> <span class="mchip">Kofinity</span></div></div><div class="card"><div class="chead"><span class="did">confluence:25264131</span><span class="nsp">3 GT spans <span class="muted">+24 more in full doc</span></span></div><div class="body">… Overview Here is an overview of the mobile onboarding process on the <mark class="gt">Kofluence</mark> influencer app: Download the app: Users can download the <mark class="gt">Kofluence</mark> app from the App Store or Google Play Store. Sign up: Users can sign up for <mark class="gt">Kofluence</mark> by creating an account using their Mobile number and OTP. Find collaborations: Once the user&#x27;s account has been verified, they can start browsing through collaboration opportunities and apply for the ones that match their preferences. Provide Personal Details: Based on campaign requirement provide the social media authentication and Personal details OS/Platforms - …</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Kofluence</span> <span class="mchip">Kofluence</span> <span class="mchip">Kofluence</span></div></div><div class="card"><div class="chead"><span class="did">confluence:16777219</span><span class="nsp">4 GT spans <span class="muted">+2 more in full doc</span></span></div><div class="body">…u can go ahead and share the brand generated content available on the <mark class="gt">Kofluence</mark> App. For any queries or questions, check the <mark class="gt">Kofluence</mark> app for the campaign guidelines and Terms &amp;amp; Conditions. So, what&#x27;s the wait, share now and start earning! 🚀💰 Regards, Team <mark class="gt">Kofluence</mark> 💛 🫔 SMS Message Created Date 31st January 2023 Content Last Update Date Received Approval 2 incomplete Content Approval Date Template ID CRM Campaign ID CRM Message Type Single A/B Test Purple Split Delivery Blue #FFEBE6 Message Content Hey, <mark class="gt">Kofluencer!</mark> Have you applied for &amp;lt;campaign name&amp;gt; yet? Apply now! We are waiting …</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Kofluence</span> <span class="mchip">Kofluence</span> <span class="mchip">Kofluence</span> <span class="mchip">Kofluencer!</span></div></div><div class="card"><div class="chead"><span class="did">confluence:4096002</span><span class="nsp">1 GT span</span></div><div class="body">…roduct Team structure remains the same. Engg. Team structure updated. <mark class="gt">Manoj Patel</mark> to share the updated Team Structure Product Discovery (PD) Dashboard flow: Ideaboard | Leadership | Requirement | Product Input &amp;rarr; PD Backlog &amp;rarr; Research &amp;rarr; Approval &amp;rarr; Product Team&amp;rsquo;s Backlog &amp;rarr; Specs &amp;rarr; Design &amp;rarr; Engg. &amp;rarr; Release.</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Manoj Patel</span></div></div><div class="card"><div class="chead"><span class="did">confluence:6062113</span><span class="nsp">2 GT spans</span></div><div class="body">…mpaign Owner BD Owner CRM Fancy Params Parameter Name Value blog_link <mark class="gt">https://www.kofluence.com/creators-corner-meet-our-performance-partners/</mark> fancy_kpi Conversions maximum_earning 15000 best_time 11AM - 7PM best_channel Instagram and Facebook deep_link <mark class="gt">https://link.kofluence.com/e8mP5GGTogiY5SERA</mark> deep_link_path e8mP5GGTogiY5SERA</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">https://www.kofluence.com/creators-corner-meet-our-performance-partners/</span> <span class="mchip">https://link.kofluence.com/e8mP5GGTogiY5SERA</span></div></div></section><section class="svc" data-svc="gdrive"><h2>📁 Google Drive <span class="cnt">6</span></h2><p class="cap">Google Drive OOXML docs mask influencer PII pulled from Kofluence&#x27;s campaign spreadsheets and contracts — Instagram/YouTube/LinkedIn handles and full profile/reel/channel URLs, person names, and business identifiers (company names, physical addresses, postal codes, GSTIN), plus the customer&#x27;s own &quot;Kofluence&quot; brand name. Format quirks: OOXML tables flatten to space-delimited runs where a single GT span often fuses a handle with its Instagram-reel and YouTube-shorts URLs across newlines, and contract docs carry self-referential clause-text masks derived from what the pipeline redacted.</p><div class="card"><div class="chead"><span class="did">gdrive:19EBlT5f6tWa7-EU51wGogKOEJP2OTMVx</span><span class="nsp">5 GT spans</span></div><div class="body">RELEASE ORDER
+Times Internet <mark class="gt">Limited</mark> RO No:-.
+Plot No. <mark class="gt">391, Udyog Vihar Phase – III,</mark> Date:- 30-07-2024 
+ Gurgaon, Haryana – <mark class="gt">122016</mark>
+GSTIN:- <mark class="gt">06AABCT1559M1Z3</mark>
+Client Details
+Company Billing Name:
+<mark class="gt">KOFLUENCE</mark> TECH PRIVATE LIMITED
+Campaign Name:
+#CaterpillarStoreLaunch
+Billing Address:
+Contact Person Name:
+PAN:
+Mobile Number:
+TAN:
+Email:
+GST:
+Deliverables:
+S. No.
+Particulars
+Qty.
+Amount
+1
+2
+3
+Total Cost: Amount + GST
+Payment terms: 
+ Authorized Signatory
+ Name:
+ Designation:
+ (Company Stamp)</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Limited</span> <span class="mchip">391, Udyog Vihar Phase – III,</span> <span class="mchip">122016</span> <span class="mchip">06AABCT1559M1Z3</span> <span class="mchip">KOFLUENCE</span></div></div><div class="card"><div class="chead"><span class="did">gdrive:1289G3lCkFybtykCSvYQF1SOrEniJeRli</span><span class="nsp">1 GT span</span></div><div class="body">… of this candidate? Liberty to work his ideas out and improvise helps <mark class="gt">Dinesh</mark> bring out his best. Likes to be heard on ideas he brings to the table. He enjoys traveling and is a good team person.
+12. Would it be fine for you to speak to one of our evaluator’s about a candidate? Yes.</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Dinesh</span></div></div><div class="card"><div class="chead"><span class="did">gdrive:1jYAojIebWlcYG6lOmXoz1lgfuGyab1Mi</span><span class="nsp">8 GT spans</span></div><div class="body">…Profile Genre State SM Subs/ Foll (K) ER (%) Cost/ Content (K)
+1 Nano <mark class="gt">sassy_shivangi</mark> Health WB IG 6 4.16 Less than 5K
+2 Micro <mark class="gt">monalisa__saha</mark> Health WB IG 22 2.15 10
+3 Micro <mark class="gt">its_ason_chang_</mark> Health WB IG 52 8.18 20
+4 Micro <mark class="gt">trips__candy__cane</mark> Health WB IG 10 4.51 5
+5 Micro <mark class="gt">anima_yws</mark> Health WB IG 15 1.6 8
+6 Micro <mark class="gt">dr.reshmakhan786</mark> Health WB IG 19 1.67 10
+7 Micro <mark class="gt">debarati_das_</mark> Health WB IG 23 2.28 12
+8 Nano <mark class="gt">my_heart_is_purple</mark> Health WB IG 7 1.3 Less than 5K</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">sassy_shivangi</span> <span class="mchip">monalisa__saha</span> <span class="mchip">its_ason_chang_</span> <span class="mchip">trips__candy__cane</span> <span class="mchip">anima_yws</span> <span class="mchip">dr.reshmakhan786</span> <span class="mchip">debarati_das_</span> <span class="mchip">my_heart_is_purple</span></div></div><div class="card"><div class="chead"><span class="did">gdrive:1WOwUSxcp-7BLni9UIqn9rVstvAlva6XP</span><span class="nsp">3 GT spans <span class="muted">+4 more in full doc</span></span></div><div class="body">…s(K) CPV Likes Comments Shares Saves Demographics data Cost
+Karnataka <mark class="gt">younusahmed_official https://www.instagram.com/reel/DK4hxZxTE2P/
+https://www.youtube.com/shorts/fbuvNA-Sruw</mark> 45822 Instagram &amp; Youtube 1500 1500 1984 1.322667 0.0315 240 1460 NA 1650 <mark class="gt">183.366936</mark> 55246 250 7499 524 Bengaluru : 42%
+ Belgum : 16%
+Basavakalyan : 11%
+Bhendwad : 11%
+Jaipur: 2% 363800
+Karnataka <mark class="gt">shree_vaishnaaaav https://www.instagram.com/reel/DLAPeHQTFiX/
+https://www.youtube.com/shorts/mRr7MpwvUhc</mark> 45825 Instagram &amp; Youtube 1300 1300 1578 1.213846 0.0259 780 1277 NA 1447 67.807351 39538 192 1372 96 Bengaluru:41%
+Mumba…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">younusahmed_official https://www.instagram.com/reel/DK4hxZxTE2P/
+https://www.youtube.com/shorts/fbuvNA-Sruw</span> <span class="mchip">183.366936</span> <span class="mchip">shree_vaishnaaaav https://www.instagram.com/reel/DLAPeHQTFiX/
+https://www.youtube.com/shorts/mRr7MpwvUhc</span></div></div><div class="card"><div class="chead"><span class="did">gdrive:11H7vEKWNCkVfTo81Ass1584JrIaC9ytE</span><span class="nsp">5 GT spans <span class="muted">+2 more in full doc</span></span></div><div class="body">…guage SM Subs/ Foll (K) EV(Vid) (K) ER (%)
+1 Micro Home &#x27;n&#x27; Much More <mark class="gt">https://www.youtube.com/channel/UC8OYS8Is3A_xFsxNsM2n0lA</mark> Home décor MH Hindi YT 237 25.4 0.027886
+2 Micro <mark class="gt">Pratibha Rani https://www.youtube.com/channel/UCEY8-vIAJA4pYW4ftLU4bbw</mark> Home décor MH Hindi YT 11.7 28.4 0.018209
+3 Micro <mark class="gt">RUCHI</mark> STYLE CORNER <mark class="gt">https://www.youtube.com/channel/UCo1Rx0-CfOuxoTmOcjiCtHQ</mark> Home décor MH HIndi YT 386 29.44 0.011498
+4 Macro Simplify Your Space <mark class="gt">https://www.youtube.com/channel/UC2GT4HiSvUipWNwcWUM7iJQ</mark> Home Décor KA English YT 1340 278 0.0261
+5 Micro CreationsToInspire https://www.youtube.com/channel/…</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">https://www.youtube.com/channel/UC8OYS8Is3A_xFsxNsM2n0lA</span> <span class="mchip">Pratibha Rani https://www.youtube.com/channel/UCEY8-vIAJA4pYW4ftLU4bbw</span> <span class="mchip">RUCHI</span> <span class="mchip">https://www.youtube.com/channel/UCo1Rx0-CfOuxoTmOcjiCtHQ</span> <span class="mchip">https://www.youtube.com/channel/UC2GT4HiSvUipWNwcWUM7iJQ</span></div></div><div class="card"><div class="chead"><span class="did">gdrive:1Ry3npc8i4tVoQZkJK4M0lSel_gocllzH</span><span class="nsp">2 GT spans <span class="muted">+12 more in full doc</span></span></div><div class="body">…g its registered office at 3rd, 307/14, Diamond Arcade, 39th A Cross, <mark class="gt">5th Block,</mark> Above smoor, Jayanagar, Bengaluru, Bengaluru Urban, Karnataka, 560041 (hereinafter referred to as “Service Recipient” which expression shall unless excluded by or repugnant to the subject or context be deemed to include its successors and assigns) of the ONE PART; 
+AND
+<mark class="gt">KOFLUENCE</mark> TECH PRIVATE LIMITED, a Company incorporated under the Companies Act, 2013 and having its registered office at 4th Floor, No. 22 #351, Salarpuria Tower-1, Hosur Road Koramangala Koramangala VI Bk Bangalore South Bangalore Karnataka 560095 …</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">5th Block,</span> <span class="mchip">KOFLUENCE</span></div></div></section><section class="svc" data-svc="mysql"><h2>🗄️ MySQL <span class="cnt">6</span></h2><p class="cap">MySQL campaign tables store CRM event-log rows whose PII lives inside JSON-value payloads: person names, DOB, city/location/gender, emails, social handles, YouTube/Instagram channel URLs, attribution links, and the customer&#x27;s own brand (&quot;Kofluence&quot;). Masking is value-level and quirky — several fields are comma-packed into a single JSON value (e.g. &quot;location,dob,gender&quot; -&gt; &quot;delhi,delhi,29-01-2004&quot;), so one GT span can cover a whole concatenated blob.</p><div class="card"><div class="chead"><span class="did">mysql:crm_event_logs:24577256</span><span class="nsp">2 GT spans</span></div><div class="body">…clined | {&quot;reason&quot;: &quot;The Youtube handle you are trying to connect via <mark class="gt">f***********4@gmail.com</mark> is already connected to a different <mark class="gt">Kofluence</mark> account as Login method.&quot;, &quot;timestamp&quot;: &quot;2025-06-07 17:01:07&quot;, &quot;SM_Platform&quot;: &quot;youtube&quot;, &quot;response_code&quot;: 400}</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">f***********4@gmail.com</span> <span class="mchip">Kofluence</span></div></div><div class="card"><div class="chead"><span class="did">mysql:crm_event_logs:24574727</span><span class="nsp">1 GT span</span></div><div class="body">…ion&quot;: &quot;v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob&quot;, &quot;parameter updated&quot;: <mark class="gt">&quot;delhi,delhi,29-01-2004&quot;}</mark></div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">&quot;delhi,delhi,29-01-2004&quot;}</span></div></div><div class="card"><div class="chead"><span class="did">mysql:crm_event_logs:24574011</span><span class="nsp">3 GT spans</span></div><div class="body">KYC Accepted | {&quot;DOB&quot;: <mark class="gt">&quot;24-02-2006&quot;,</mark> &quot;City&quot;: <mark class="gt">&quot;dhar&quot;,</mark> &quot;time&quot;: &quot;2025-06-06 18:32:06&quot;, &quot;State&quot;: &quot;madhya pradesh&quot;, &quot;KYC name&quot;: <mark class="gt">&quot;mohmmad kaif khan&quot;,</mark> &quot;DOcuments status&quot;: &quot;under_review&quot;, &quot;docs uploaded time&quot;: &quot;2025-06-05 12:14:02&quot;}</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">&quot;24-02-2006&quot;,</span> <span class="mchip">&quot;dhar&quot;,</span> <span class="mchip">&quot;mohmmad kaif khan&quot;,</span></div></div><div class="card"><div class="chead"><span class="did">mysql:crm_event_logs:24580968</span><span class="nsp">1 GT span</span></div><div class="body">…v3.1&quot;, &quot;modified_fields&quot;: &quot;location,dob,gender&quot;, &quot;parameter updated&quot;: <mark class="gt">&quot;beenjhbayala,rajasthan,11-04-2004,Male&quot;}</mark></div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">&quot;beenjhbayala,rajasthan,11-04-2004,Male&quot;}</span></div></div><div class="card"><div class="chead"><span class="did">mysql:crm_event_logs:24578239</span><span class="nsp">1 GT span</span></div><div class="body">…ign Name&quot;: &quot;personal loan for every need_IG_PMC&quot;, &quot;Attribution Link&quot;: <mark class="gt">&quot;https://shop.kof.ai/click?pid=2&amp;offer_id=8388&amp;sub1=733948&quot;,</mark> &quot;last_trigger_time&quot;: 23.0, &quot;Leader Creator Name&quot;: null, &quot;Percentage campaign consumed&quot;: 0.0, &quot;Maximum earning by Top Creator&quot;: 0}</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">&quot;https://shop.kof.ai/click?pid=2&amp;offer_id=8388&amp;sub1=733948&quot;,</span></div></div><div class="card"><div class="chead"><span class="did">mysql:crm_event_logs:24573514</span><span class="nsp">1 GT span</span></div><div class="body">Handle mentioned | {&quot;IG Mentioned&quot;: <mark class="gt">&quot;mukesh_markam_2909&quot;,</mark> &quot;enable_source&quot;: &quot;about_me_non_auth_connection_api&quot;}</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">&quot;mukesh_markam_2909&quot;,</span></div></div></section><section class="svc" data-svc="zoho"><h2>📊 Zoho CRM <span class="cnt">6</span></h2><p class="cap">Zoho CRM records are flat key-value text (Lead/Account/Deal fields) where the pipeline masks person names (lead/contact/owner/assignee), LinkedIn profile URLs, and internal team handles like &quot;FM Squad&quot;/&quot;Squad&quot;. Quirks: names are masked token-by-token so multi-word names skip middle initials (e.g. &quot;Yogeshwar S Patil&quot; -&gt; &quot;Yogeshwar&quot;+&quot;Patil&quot;), and the masked LinkedIn slug sometimes belongs to a different person than the lead.</p><div class="card"><div class="chead"><span class="did">zoho:leads:zcrm_4536924000006239132</span><span class="nsp">6 GT spans</span></div><div class="body">Last Name: <mark class="gt">Jivan Ghadei</mark>
+Lead Name: <mark class="gt">Jivan Ghadei</mark>
+Company: TutorBin
+Website: tutorbin.com
+Contact LinkedIn: <mark class="gt">https://www.linkedin.com/in/jivan-jyoti-ghadei-6b538066</mark>
+Lead Owner: <mark class="gt">Nandini Saini</mark>
+Assigned To: <mark class="gt">Nandini</mark>
+Remarks: Not answered
+Lead Source: <mark class="gt">Manju</mark></div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Jivan Ghadei</span> <span class="mchip">Jivan Ghadei</span> <span class="mchip">https://www.linkedin.com/in/jivan-jyoti-ghadei-6b538066</span> <span class="mchip">Nandini Saini</span> <span class="mchip">Nandini</span> <span class="mchip">Manju</span></div></div><div class="card"><div class="chead"><span class="did">zoho:leads:zcrm_4536924000009049715</span><span class="nsp">6 GT spans</span></div><div class="body">Last Name: <mark class="gt">Yogeshwar</mark> S <mark class="gt">Patil</mark>
+Lead Name: <mark class="gt">Yogeshwar</mark> S <mark class="gt">Patil</mark>
+Company: Greenply Industries Ltd
+Lead Owner: <mark class="gt">Chaitra</mark>
+Assigned To: <mark class="gt">Anmol</mark>
+Lead Source: 21KAGAIN</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Yogeshwar</span> <span class="mchip">Patil</span> <span class="mchip">Yogeshwar</span> <span class="mchip">Patil</span> <span class="mchip">Chaitra</span> <span class="mchip">Anmol</span></div></div><div class="card"><div class="chead"><span class="did">zoho:deals:zcrm_4536924000036283295</span><span class="nsp">7 GT spans</span></div><div class="body">Deal Name: #ITCFrozenFoodsOct
+Deal Owner: <mark class="gt">FM Squad</mark>
+Account Name: Sunfeast Mom&#x27;s magic + Dark Fantasy (ITC Limited)
+Contact Name: <mark class="gt">Ratin Duggal</mark>
+Assigned To: <mark class="gt">Tanishq</mark>
+Campaign Owner: <mark class="gt">Shivkiran</mark>
+Pod Owner: <mark class="gt">Supriya</mark>
+Next Steps: POC wants to execute a campaign using celebs integrationlike <mark class="gt">raj shamani</mark> podcast. Asked me to call on 30/09 for a meeting confirmation
+Closed Reasons: Budget Alignment
+Lead Source: Outbound
+Tag: <mark class="gt">Tanishq</mark></div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">FM Squad</span> <span class="mchip">Ratin Duggal</span> <span class="mchip">Tanishq</span> <span class="mchip">Shivkiran</span> <span class="mchip">Supriya</span> <span class="mchip">raj shamani</span> <span class="mchip">Tanishq</span></div></div><div class="card"><div class="chead"><span class="did">zoho:leads:zcrm_4536924000011491263</span><span class="nsp">7 GT spans</span></div><div class="body">Last Name: <mark class="gt">Mandeep Manocha</mark>
+Lead Name: <mark class="gt">Mandeep Manocha</mark>
+Company: Cashify
+Contact LinkedIn: <mark class="gt">http://linkedin.com/in/mandeep-manocha-baaaa86</mark>
+Lead Owner: <mark class="gt">Sameer Ali</mark>
+Assigned To: <mark class="gt">Sameer</mark>
+Remarks: <mark class="gt">Mandeep</mark> is not from Marketing asked us to connect with <mark class="gt">puneet arora</mark>
+Lead Source: Leadzen</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Mandeep Manocha</span> <span class="mchip">Mandeep Manocha</span> <span class="mchip">http://linkedin.com/in/mandeep-manocha-baaaa86</span> <span class="mchip">Sameer Ali</span> <span class="mchip">Sameer</span> <span class="mchip">Mandeep</span> <span class="mchip">puneet arora</span></div></div><div class="card"><div class="chead"><span class="did">zoho:accounts:zcrm_4536924000022253006</span><span class="nsp">1 GT span</span></div><div class="body">…GSbF_Hmtv1QLXM6w1p4iWutjk4jWb0Iecx85hBzOwNS8aAkpOEALw_
+Account Owner: <mark class="gt">Sakshi Sharma</mark>
+Lead Source: LinkedIn</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Sakshi Sharma</span></div></div><div class="card"><div class="chead"><span class="did">zoho:deals:zcrm_4536924000022262083</span><span class="nsp">1 GT span</span></div><div class="body">Deal Name: Awfis
+Deal Owner: <mark class="gt">Chaitra</mark>
+Account Name: Awfis
+Next Steps: Execution
+Lead Source: Partnerships</div><div class="masked"><span class="mlbl">masked</span> <span class="mchip">Chaitra</span></div></div></section>
+<footer>Companion to the <a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwwX88MSXYqIYRxUb_f_mmZGvefB8LuOh7xX5ujX1U6GOxUhu-j4QH_TQMyhym0nzw-/exec" target="_top">Detection Leaderboard</a>
+and the <a href="https://script.google.com/a/macros/mercor.com/s/AKfycbxvOb39jSX6tkGd7pPClp5x6iBZyaXsRZS2zf8ePckdWCYQxNDYH88IWQjSKrYb-apf2g/exec" target="_top">Model Comparison</a>. Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com).</footer>
+</main><script>
+const btns=[...document.querySelectorAll('.fbtn')], secs=[...document.querySelectorAll('.svc')];
+btns.forEach(b=>b.onclick=()=>{btns.forEach(x=>x.classList.remove('active'));b.classList.add('active');
+ const s=b.dataset.svc; secs.forEach(sec=>sec.style.display=(s==='all'||sec.dataset.svc===s)?'':'none');});
+document.getElementById('hl').onchange=e=>document.body.classList.toggle('nohl',!e.target.checked);
+</script><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=contigo-benchmark-samples&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

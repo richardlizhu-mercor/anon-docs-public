@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>pii-bench 100k — Exact-Span Leaderboard</title><style>:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--slate-900:#0f172a;--slate-700:#334155;
+--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;
+--slate-50:#f8fafc;--white:#fff;--green-50:#f0fdf4;--green-600:#16a34a;--green-700:#15803d;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1080px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:92ch}
+.callout{background:var(--white);border:1px solid var(--slate-200);border-left:3px solid var(--indigo-600);border-radius:8px;padding:14px 18px;margin:16px 0;font-size:.87rem;color:var(--slate-700);max-width:96ch}
+.callout code{background:var(--slate-100);padding:1px 5px;border-radius:4px;font-size:.85em}.callout b{color:var(--slate-900)}
+h2{font-size:1.15rem;font-weight:600;margin:1.8em 0 .3em}
+.blurb{font-size:.88rem;color:var(--slate-600);margin:.2em 0 .7em;max-width:94ch}
+table{border-collapse:collapse;width:100%;margin:8px 0 4px;font-size:.82rem;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--slate-200)}
+th{background:var(--slate-100);text-align:right;font-weight:600;color:var(--slate-600);padding:8px 9px;font-size:.7rem;white-space:nowrap;line-height:1.25}
+th .rf{font-weight:400;color:var(--slate-400)}
+th.l,td.l{text-align:left}
+td{padding:8px 9px;border-top:1px solid var(--slate-200);color:var(--slate-700);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:hover td{background:var(--slate-50)}
+td.mono{font-family:var(--mono);font-weight:700;color:var(--slate-800)}td.muted{color:var(--slate-400)}.ref{color:var(--slate-400)}
+.rank{color:var(--slate-400);font-weight:600;width:24px}
+tr.top td{background:var(--green-50)}tr.top:hover td{background:#e7f9ed}tr.top .rank{color:var(--green-600)}
+td.exact{font-weight:700;color:var(--indigo-700)}
+td.best{color:var(--green-700);font-weight:700}
+.bar{display:inline-block;height:7px;border-radius:4px;background:var(--indigo-600);vertical-align:middle;margin-left:6px;opacity:.85}
+.pr{font-family:var(--mono);color:var(--slate-500);font-size:.76rem}
+.legend{font-size:.8rem;color:var(--slate-500);margin:6px 0;max-width:96ch}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}</style></head><body><main>
+<span class="eyebrow">Detection &middot; pii-bench 100k &middot; exact span</span>
+<h1>pii-bench 100k — Exact-Span Leaderboard</h1>
+<p class="sub">The full pii-bench test eval (99,749 docs, 149,489 in-scope GT spans),
+re-scored so a detection counts <strong>only if the entire span matches exactly</strong> (identical
+<code>[start,end)</code>). Same predictions and same 16-type taxonomy as the
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycby-lVVEYygL7m45HprPXHT02Eh9fhDHn9Jmfd-y0n6Lf4YWj3Id6PZ4lJQnM0BZ4jr5XQ/exec" target="_top">official 100k leaderboard</a>
+&mdash; only the match granularity changes from char-overlap to exact-span.</p>
+<div class="callout"><b>The official 100k eval is char-overlap, not exact-span.</b> Its
+detection/cluster/fine are computed per character (a char counts if it falls in both a GT and a predicted
+span). That rewards "roughly right region." Here every metric requires the exact span.<br><br>
+<b>Result:</b> the DeBERTa encoders fall from ~0.74&ndash;0.83 char-detection F1 to
+<b>0.02&ndash;0.17 exact</b>, because they emit <em>boundary-drifted</em> spans
+(<code>Vanshita</code>&rarr;<code>shita</code>: BIO decoded per subword token, no word-snap).
+<code>qwen</code> generates the literal surface, so it holds <b>0.79</b> and wins outright.
+<code>trim&nbsp;exact &approx; EXACT</code> proves the drift is mid-word subword truncation, not whitespace.</div>
+
+<h2>Leaderboard — sorted by exact-span detection F1</h2>
+<p class="blurb">Ladder left&rarr;right: <code>char det</code> (leaderboard metric) &rarr; <code>span ovlp</code>
+(span TP if it overlaps any GT span) &rarr; <code>trim exact</code> (boundaries equal after trimming
+whitespace) &rarr; <code>EXACT det</code> (boundaries identical). <code>exact cluster</code>/<code>exact
+fine</code> additionally require the predicted cluster / fine type to match on an exact-boundary hit.</p>
+<table><tr><th class="l">#</th><th class="l">model</th><th class="l"></th><th>params</th><th>char&nbsp;det<br><span class="rf">(leaderboard)</span></th><th>span<br>ovlp</th><th>trim<br>exact</th><th>EXACT<br>det</th><th>exact<br>cluster</th><th>exact<br>fine</th><th>exact<br>P/R</th></tr><tr class="top"><td class="l rank">1</td><td class="l mono">qwen</td><td class="l muted">qwen2.5-7b-qlora</td><td class="muted">7.6B</td><td class="ref">0.868</td><td>0.915</td><td>0.794</td><td class="exact">0.794<span class="bar" style="width:90px"></span></td><td>0.790</td><td>0.788</td><td class="pr">0.78/0.81</td></tr><tr class=""><td class="l rank">2</td><td class="l mono">PF</td><td class="l muted">privacy-filter</td><td class="muted">1.4B</td><td class="ref">0.734</td><td>0.769</td><td>0.184</td><td class="exact">0.168<span class="bar" style="width:19px"></span></td><td>0.168</td><td>0.167</td><td class="pr">0.18/0.16</td></tr><tr class=""><td class="l rank">3</td><td class="l mono">xl</td><td class="l muted">deberta-v2-xlarge</td><td class="muted">885M</td><td class="ref">0.828</td><td>0.890</td><td>0.056</td><td class="exact">0.053<span class="bar" style="width:6px"></span></td><td>0.053</td><td>0.053</td><td class="pr">0.06/0.05</td></tr><tr class=""><td class="l rank">4</td><td class="l mono">xxl</td><td class="l muted">deberta-v2-xxlarge</td><td class="muted">1.5B</td><td class="ref">0.818</td><td>0.883</td><td>0.054</td><td class="exact">0.051<span class="bar" style="width:6px"></span></td><td>0.051</td><td>0.051</td><td class="pr">0.05/0.05</td></tr><tr class=""><td class="l rank">5</td><td class="l mono">large</td><td class="l muted">deberta-v3-large</td><td class="muted">435M</td><td class="ref">0.801</td><td>0.868</td><td>0.049</td><td class="exact">0.043<span class="bar" style="width:5px"></span></td><td>0.042</td><td>0.042</td><td class="pr">0.04/0.04</td></tr><tr class=""><td class="l rank">6</td><td class="l mono">base</td><td class="l muted">deberta-v3-base</td><td class="muted">184M</td><td class="ref">0.741</td><td>0.799</td><td>0.048</td><td class="exact">0.025<span class="bar" style="width:3px"></span></td><td>0.025</td><td>0.024</td><td class="pr">0.03/0.02</td></tr><tr class=""><td class="l rank">7</td><td class="l mono">scan</td><td class="l muted">deberta_scan (shipped)</td><td class="muted">ship</td><td class="ref">0.736</td><td>0.799</td><td>0.040</td><td class="exact">0.020<span class="bar" style="width:2px"></span></td><td>0.019</td><td>0.019</td><td class="pr">0.02/0.02</td></tr></table>
+<p class="legend">For <code>qwen</code>, exact det/cluster/fine are nearly equal &mdash; when it nails the
+boundary it nails the type too. For the encoders all three collapse together.</p>
+
+<h2>Per-source exact-span detection F1</h2>
+<p class="blurb">Where the exact boundaries land, by pii-bench source. Green = best model per source.</p>
+<table><tr><th class="l">model</th><th>nemotron</th><th>finance</th><th>isotonic</th><th>ai4p-300k</th><th>ai4p-400k</th><th>few_nerd</th><th>multinerd</th><th>wikiann</th><th>conll03</th></tr><tr><td class="l mono">qwen</td><td class="best">0.930</td><td class="best">0.648</td><td class="best">0.942</td><td class="best">0.138</td><td class="best">0.931</td><td class="best">0.811</td><td class="best">0.982</td><td class="best">0.853</td><td class="best">0.923</td></tr><tr><td class="l mono">PF</td><td class="">0.251</td><td class="">0.094</td><td class="">0.210</td><td class="">0.021</td><td class="">0.171</td><td class="">0.080</td><td class="">0.040</td><td class="">0.168</td><td class="">0.113</td></tr><tr><td class="l mono">xl</td><td class="">0.026</td><td class="">0.009</td><td class="">0.063</td><td class="">0.054</td><td class="">0.041</td><td class="">0.119</td><td class="">0.055</td><td class="">0.419</td><td class="">0.288</td></tr><tr><td class="l mono">xxl</td><td class="">0.026</td><td class="">0.007</td><td class="">0.061</td><td class="">0.049</td><td class="">0.039</td><td class="">0.117</td><td class="">0.055</td><td class="">0.403</td><td class="">0.286</td></tr><tr><td class="l mono">large</td><td class="">0.022</td><td class="">0.002</td><td class="">0.058</td><td class="">0.014</td><td class="">0.033</td><td class="">0.117</td><td class="">0.054</td><td class="">0.362</td><td class="">0.275</td></tr><tr><td class="l mono">base</td><td class="">0.018</td><td class="">0.001</td><td class="">0.009</td><td class="">0.002</td><td class="">0.012</td><td class="">0.095</td><td class="">0.050</td><td class="">0.266</td><td class="">0.150</td></tr><tr><td class="l mono">scan</td><td class="">0.014</td><td class="">0.000</td><td class="">0.002</td><td class="">0.002</td><td class="">0.004</td><td class="">0.076</td><td class="">0.045</td><td class="">0.252</td><td class="">0.123</td></tr></table>
+
+<footer>Auto-generated from <code>piibench_exact_results.json</code> by <code>gen_piibench_exact_html.py</code>
+(re-scored, not re-inferred). Companions:
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycby9wykrDOwwRpF0py4pTYZRME646AyIeIs6eqdL4JEeJsOkBN-sWPbuayBkINGMFD5s/exec" target="_top">pii-bench GT-vs-Model Viewer</a>,
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwJ2T0_tnwbCHZ6AOnvtzUprv9ZEY6EfWCQuZboYzc_Us_x-Ejxg8SvQf3xKjwMSF1VNg/exec" target="_top">Contigo+pii-bench Exact-Match Re-scoring</a>.
+Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com).</footer>
+</main><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=piibench-exact-leaderboard&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
