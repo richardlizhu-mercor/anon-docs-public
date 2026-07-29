@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Detection Benchmark Versions</title><style>
+:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--indigo-50:#eef2ff;--slate-900:#0f172a;--slate-700:#334155;
+--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;
+--slate-50:#f8fafc;--white:#fff;--green-50:#f0fdf4;--green-700:#15803d;--amber-100:#fef3c7;--amber-700:#b45309;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1060px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:94ch}
+h2{font-size:1.2rem;font-weight:600;margin:1.9em 0 .3em}
+.blurb{font-size:.9rem;color:var(--slate-600);margin:.1em 0 .8em;max-width:96ch}
+table{border-collapse:collapse;width:100%;margin:10px 0 6px;font-size:.83rem;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--slate-200)}
+th{background:var(--slate-100);text-align:left;font-weight:600;color:var(--slate-600);padding:9px 11px;font-size:.72rem;white-space:nowrap;vertical-align:top}
+td{padding:10px 11px;border-top:1px solid var(--slate-200);color:var(--slate-700);vertical-align:top}
+td.v{font-family:var(--mono);font-weight:700;color:var(--slate-900);white-space:nowrap}
+tr.current td{background:var(--green-50)}
+code{background:var(--slate-100);border-radius:4px;padding:1px 5px;font-size:.85em;font-family:var(--mono)}
+.tag{display:inline-block;font-size:.68rem;font-weight:700;border-radius:999px;padding:1px 8px;vertical-align:middle}
+.tag.cur{background:var(--green-50);color:var(--green-700);border:1px solid #bbf7d0}
+.tag.ext{background:var(--amber-100);color:var(--amber-700)}
+.conv{background:var(--white);border:1px solid var(--slate-200);border-left:3px solid var(--indigo-600);border-radius:8px;padding:14px 18px;margin:14px 0;font-size:.87rem;color:var(--slate-700)}
+.conv b{color:var(--slate-900)}
+.loc{font-family:var(--mono);font-size:.76rem;color:var(--slate-500);word-break:break-all}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}
+
+.hub-home{text-decoration:none;color:inherit;cursor:pointer;display:inline-block}
+.hub-home:hover h1{color:#4f46e5}
+</style></head><body><main>
+<span class="eyebrow">Data Acquisition &middot; Detection benchmarks</span>
+<a class="hub-home" href="https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec" target="_top" title="Back to all docs"><h1>Benchmark Versions &amp; Changelog</h1></a>
+<p class="sub">What each version of the <strong>Contigo</strong> and <strong>pii-bench</strong> detection
+benchmarks contains, what changed between versions, and where each lives. All under
+<code>s3://data-acq-raw-prod/_training_eval_data/detection/</code>.</p>
+
+<h2>Contigo detection benchmark</h2>
+<p class="blurb">Multi-service PII detection built by diffing raw kofluence data against the
+Drive-anonymized output (self-referential GT). <strong>Type-agnostic</strong> char-span GT (no PII types).
+7 services (gmail, msteams, jira, confluence, gdrive, mysql, zoho). Eval = 15,223-doc balanced sample.</p>
+<table>
+<tr><th>Version</th><th>What it is / what changed</th><th>Spans (eval)</th><th>Location</th></tr>
+<tr><td class="v">contigo-bench<br>(v1)</td>
+<td>Original. Raw&harr;Drive-anon word-diff &rarr; changed regions = PII spans (char offsets). Type-agnostic. Full corpus 1,680,579 docs + 15,223-doc eval.</td>
+<td>114,919</td>
+<td class="loc">…/contigo-bench/ &middot; gcs pii-eval/contigo-bench/ (+preds for 6 models)</td></tr>
+<tr class="current"><td class="v">contigo-bench-v2 <span class="tag cur">current</span></td>
+<td>Removed <b>9,061 (7.9%)</b> CSS/HTML-attribute/font-list <b>markup noise</b> the diff captured as PII (<code>Francisco,Roboto,Helvetica</code>, <code>href="…"</code>, <code>src="…"</code>, <code>box-sizing</code>, <code>xmlns</code>). Conservative — URLs + emails (incl. wrapped) KEPT (verified 18,840 emails / 29,323 URL spans / 1,603 personal LinkedIn preserved). Still type-agnostic. <b>Eval set only</b> (full corpus = follow-up).</td>
+<td>105,858</td>
+<td class="loc">…/contigo-bench-v2/ (eval_corpus + eval_gt)</td></tr>
+</table>
+
+<h2>pii-bench detection benchmark</h2>
+<p class="blurb">External <code>Pritesh-2711/pii-bench</code> (Apache-2.0). 999,940 rows (train/val/test).
+<strong>Typed</strong> GT — fine-grained (32 display types) that the 16-type SSOT scorer collapses (all ID subtypes &rarr; <code>ID</code>).</p>
+<table>
+<tr><th>Version</th><th>What it is / what changed</th><th>Spans</th><th>Location</th></tr>
+<tr><td class="v">pii-bench<br>(v1) <span class="tag ext">external</span></td>
+<td>HuggingFace source, archived. <b>Token-level BIO</b> (tokens + labels + taxonomy_labels + text). The token-BIO source of truth.</td>
+<td>~1.36M</td>
+<td class="loc">…/pii-bench/ (parquet: train/validation/test + manifest)</td></tr>
+<tr><td class="v">pii-bench-v2</td>
+<td>Char-span GT (from the SSOT extraction <code>build_fixture.row_spans</code>) with <b>leading + trailing wrapping punctuation trimmed</b> — <b>323,177 trimmed</b>, 2,723 pure-punct dropped. Preserves abbreviations/acronyms/URLs/handles; phone area-code &amp; GPS parens kept. <b>ANON-180 / PR #163 (merged).</b></td>
+<td>~1.36M</td>
+<td class="loc">…/pii-bench-v2/ (char-span JSONL: train/val/test)</td></tr>
+<tr class="current"><td class="v">pii-bench-v3 <span class="tag cur">current</span></td>
+<td>pii-bench-v2 minus <b>11,780 (0.9%)</b> non-PII spans mislabeled as <code>Organization Name</code> — generic account-TYPE descriptors (<code>Savings Account</code>, <code>Personal Loan Account</code>, …) + non-entities (<code>Corporation</code>, <code>Christian</code>, <code>Republican</code>, <code>IT Support Team</code>). All other spans unchanged.</td>
+<td>1,347,905</td>
+<td class="loc">…/pii-bench-v3/ (char-span JSONL: train/val/test)</td></tr>
+</table>
+
+<h2>Conventions (both benchmarks)</h2>
+<div class="conv">
+<b>Offsets are codepoint (CP), not byte.</b> Spans are <code>text[start:end]</code> Python slices — verified on non-ASCII (a byte read is shifted). ~6.5% of spans diverge cp&ne;byte on accented/CJK text. Use cp in Python eval; the Rust masking engine uses byte.<br><br>
+<b>doc_id (pointer).</b> Contigo: <code>service:id</code> / <code>service:table:row_id</code> (mixed, legacy). pii-bench: <code>source:parquet-row-index</code> (e.g. <code>few_nerd:0</code>) — joins to GT + all model preds. Fine-grained synthetic-world detection data uses the standardized <b>4-part</b> pointer <code>service:table:row_id:column</code> (a row has multiple PII columns; offsets are per column value).<br><br>
+<b>Brand / Product not tagged.</b> Both benchmarks fold brand/product/org into <code>Organization Name</code> (Institution cluster). An LLM pass showed the distinct Brand/Product split is ~1% of spans — not worth a separate type; the more useful finding was the mislabels fixed in v2/v3.
+</div>
+
+<h2>Companion docs</h2>
+<p class="blurb">
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycbxYVXZZxEJTPtlBX6kOUFadp9sSlQWZZOWdQjPVOESE41WgqCIhZq_efr0ZFAljHgiU/exec" target="_top">pii-bench vs pii-bench-v2 diff</a> &middot;
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwwX88MSXYqIYRxUb_f_mmZGvefB8LuOh7xX5ujX1U6GOxUhu-j4QH_TQMyhym0nzw-/exec" target="_top">Contigo detection leaderboard</a> &middot;
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycby9wykrDOwwRpF0py4pTYZRME646AyIeIs6eqdL4JEeJsOkBN-sWPbuayBkINGMFD5s/exec" target="_top">pii-bench GT-vs-model viewer</a>
+</p>
+<footer>Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com). Kept current as benchmark versions ship.</footer>
+</main><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=benchmark-versions&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
