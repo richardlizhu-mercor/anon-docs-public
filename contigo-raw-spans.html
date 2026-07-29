@@ -49,9 +49,9 @@ footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;b
 footer a{color:var(--indigo-600);text-decoration:none}
 .hub-home{text-decoration:none;color:inherit;cursor:pointer;display:inline-block}
 .hub-home:hover h1{color:#4f46e5}
-</style></head><body><main>
-<span class="eyebrow">Anonymization &middot; Detection &middot; Contigo</span>
-<a class="hub-home" href="https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec" target="_top" title="Back to all docs"><h1>Raw Ground Truth &amp; Detected Spans</h1></a>
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><main>
+<a class="hub-home" href="index.html" target="_top" title="Back to all docs"><span class="eyebrow">Anonymization &middot; Detection &middot; Contigo</span></a>
+<h1>Raw Ground Truth &amp; Detected Spans</h1>
 <p class="sub">The audit view behind the <a href="https://script.google.com/a/macros/mercor.com/s/AKfycbxvOb39jSX6tkGd7pPClp5x6iBZyaXsRZS2zf8ePckdWCYQxNDYH88IWQjSKrYb-apf2g/exec" target="_top">model comparison</a>:
 every ground-truth and detected span shown as raw <code>[start,end)</code> character offsets + the exact
 substring, so you can verify the highlighting against the text. Expand a document, then a model.</p>
@@ -424,4 +424,4 @@ Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com).</f
 const fbtns=[...document.querySelectorAll('.fbtn')],secs=[...document.querySelectorAll('.svc')];
 fbtns.forEach(b=>b.onclick=()=>{fbtns.forEach(x=>x.classList.remove('active'));b.classList.add('active');
  const s=b.dataset.svc;secs.forEach(sec=>sec.style.display=(s==='all'||sec.dataset.svc===s)?'':'none');});
-</script><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=contigo-benchmark-raw&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
+</script><!--track-beacon--><script>(function(){try{var u='index.html?log=contigo-benchmark-raw&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

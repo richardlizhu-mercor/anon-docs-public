@@ -24,9 +24,9 @@ ul{margin:6px 0;padding-left:20px} li{margin:4px 0;font-size:13px}
 
 .hub-home{text-decoration:none;color:inherit;cursor:pointer;display:inline-block}
 .hub-home:hover h1{color:#4f46e5}
-</style></head><body><div class="wrap">
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><div class="wrap">
 
-<a class="hub-home" href="https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec" target="_top" title="Back to all docs"><h1>PII detection + IR — every option, evaluated across 5 datasets</h1></a>
+<a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>PII detection + IR — every option, evaluated across 5 datasets</h1></a>
 <p class="lede">Each option run <b>inference-only</b> (no training on eval data) against five ground-truth sources. <b>Price / speed / compute are model-intrinsic</b> (shared table below); <b>accuracy varies per dataset</b> (the story). Detection headline = char-level F1 (segmentation-agnostic).</p>
 
 <div class="callout good"><b>Models in S3:</b> all three deberta detectors are under <code>s3://data-acq-raw-prod/_models/tokenization/</code>, folder names carrying the training timestamp — <code>deberta_ft_newtax_full_20260714T115509Z</code> (recommended, new taxonomy), <code>deberta_ft_newtax_20260714T082558Z</code> (slice), <code>deberta_ft_v2_20260707T112201Z</code> (original, recovered).</div>
@@ -428,4 +428,4 @@ ul{margin:6px 0;padding-left:20px} li{margin:4px 0;font-size:13px}
 <li><b>Eval-only</b>: nothing trained on any eval set here.</li>
 </ul>
 <div class="foot">Sections built from <code>/Users/richardzhu/Documents/synthetic-world-eval/harness/tok_world</code> (§1,§2), <code>/Users/richardzhu/Documents/synthetic-world-eval/harness/tok_synthprod</code> (§3), <code>/Users/richardzhu/Documents/synthetic-world-eval/harness/tok_gemdistill</code> (§4), <code>/Users/richardzhu/Documents/synthetic-world-eval/harness/tok_world5</code> (§5). Cost table = the reviewed all-options chart. §5 worlds: <code>~/Documents/synthetic-world-eval/worlds/</code>.</div>
-</div><!--track-beacon--><script>(function(){try{var u='https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec?log=synthetic-world-eval&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
+</div><!--track-beacon--><script>(function(){try{var u='index.html?log=synthetic-world-eval&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
