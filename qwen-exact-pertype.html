@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>qwen — Exact-Span by PII Type</title>
+<style>
+ :root{--indigo-600:#4f46e5;--indigo-100:#e0e7ff;--indigo-50:#eef2ff;
+  --slate-900:#0f172a;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;
+  --slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--white:#fff;
+  --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;}
+ *{box-sizing:border-box} body{margin:0;font-family:var(--font);background:var(--slate-50);
+  color:var(--slate-900);-webkit-font-smoothing:antialiased;line-height:1.6}
+ .wrap{max-width:960px;margin:0 auto;padding:64px 28px 120px}
+ .eyebrow{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+ h1{font-size:2.1rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .2em}
+ .sub{font-size:1.06rem;color:var(--slate-600);font-weight:300;max-width:70ch}
+ h2{font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);
+  font-weight:600;margin:40px 0 14px}
+ .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0}
+ .kpi{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;padding:16px 18px}
+ .kpi .v{font-size:1.5rem;font-weight:600;letter-spacing:-.02em}
+ .kpi .l{font-size:.8rem;color:var(--slate-500);margin-top:2px}
+ table{width:100%;border-collapse:collapse;background:var(--white);border:1px solid var(--slate-200);
+  border-radius:12px;overflow:hidden;font-size:.9rem}
+ thead th{text-align:left;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--slate-500);font-weight:600;padding:11px 12px;background:var(--slate-100);border-bottom:1px solid var(--slate-200)}
+ td{padding:9px 12px;border-bottom:1px solid var(--slate-100);vertical-align:middle}
+ tr:last-child td{border-bottom:none}
+ td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--slate-700)}
+ td.gap{color:var(--slate-500)}
+ .ty{font-weight:600}
+ .cl{display:block;font-weight:400;font-size:.74rem;color:var(--slate-500)}
+ .bar{position:relative;height:20px;background:var(--slate-100);border-radius:5px;min-width:120px}
+ .fill{position:absolute;left:0;top:0;bottom:0;border-radius:5px;opacity:.85}
+ .barval{position:absolute;right:6px;top:0;font-size:.78rem;line-height:20px;
+  color:var(--slate-700);font-variant-numeric:tabular-nums}
+ .note{background:var(--indigo-50);border:1px solid var(--indigo-100);border-radius:12px;
+  padding:16px 18px;font-size:.9rem;color:var(--slate-700)}
+ .note b{color:var(--slate-900)}
+ ul{margin:10px 0 0;padding-left:20px} li{margin:5px 0;color:var(--slate-700)}
+ code{background:var(--slate-100);padding:1px 5px;border-radius:4px;font-size:.85em}
+ footer{margin-top:44px;font-size:.8rem;color:var(--slate-500);border-top:1px solid var(--slate-200);padding-top:16px}
+</style></head><body><div class="wrap">
+ <span class="eyebrow">Mercor · Data Acquisition · reference</span>
+ <h1>qwen — Exact-Span Accuracy by PII Type</h1>
+ <p class="sub">How the fine-tuned <code>qwen2.5-7b-qlora</code> detector does per PII type when a
+ hit requires the <b>whole span to match exactly</b> (both boundaries), on the pii-bench 100k (typed GT)
+ (149,489 in-scope GT spans across 99,749 docs). Reference numbers only — qwen alone.</p>
+
+ <div class="cards">
+  <div class="kpi"><div class="v">0.788</div><div class="l">overall exact F1 (type-aware)</div></div>
+  <div class="kpi"><div class="v">0.771</div><div class="l">precision</div></div>
+  <div class="kpi"><div class="v">0.805</div><div class="l">recall</div></div>
+  <div class="kpi"><div class="v">12</div><div class="l">PII types</div></div>
+ </div>
+
+ <div class="note">
+  <b>How to read this.</b> <b>Exact</b> = predicted boundaries equal the GT span's exactly (char offsets).
+  <b>det-recall</b> = share of a type's GT spans qwen drew the exact boundary for, <i>regardless of the label it gave</i>.
+  <b>fine P / R / F1</b> = the stricter test: exact boundary <i>and</i> correct type. <b>mislabel gap</b> = det-recall − fine-recall,
+  i.e. the share it located but typed wrong. Scored on docs with ≥1 in-scope GT span; reconciles with the
+  100k exact leaderboard (qwen overall exact-det 0.794, exact-fine 0.788).
+ </div>
+
+ <h2>Per-type exact-span</h2>
+ <table>
+  <thead><tr><th>PII type</th><th style="text-align:right">support</th><th>det-recall (boundary)</th>
+   <th style="text-align:right">fine&nbsp;P</th><th style="text-align:right">fine&nbsp;R</th>
+   <th>fine&nbsp;F1 (exact+type)</th><th style="text-align:right">mislabel gap</th></tr></thead>
+  <tbody><tr><td class="ty">Full Name<span class="cl">Identity</span></td><td class="num">34,330</td><td><div class="bar"><div class="fill" style="width:80%;background:var(--slate-500)"></div><span class="barval">0.803</span></div></td><td class="num">0.791</td><td class="num">0.783</td><td><div class="bar"><div class="fill" style="width:79%;background:var(--indigo-600)"></div><span class="barval">0.787</span></div></td><td class="num gap">0.020</td></tr><tr><td class="ty">ID<span class="cl">Deterministic-FPR</span></td><td class="num">33,609</td><td><div class="bar"><div class="fill" style="width:86%;background:var(--slate-500)"></div><span class="barval">0.857</span></div></td><td class="num">0.836</td><td class="num">0.856</td><td><div class="bar"><div class="fill" style="width:85%;background:var(--indigo-600)"></div><span class="barval">0.846</span></div></td><td class="num gap">0.001</td></tr><tr><td class="ty">Organization Name<span class="cl">Institution</span></td><td class="num">24,798</td><td><div class="bar"><div class="fill" style="width:84%;background:var(--slate-500)"></div><span class="barval">0.837</span></div></td><td class="num">0.737</td><td class="num">0.832</td><td><div class="bar"><div class="fill" style="width:78%;background:var(--indigo-600)"></div><span class="barval">0.781</span></div></td><td class="num gap">0.005</td></tr><tr><td class="ty">Email Address<span class="cl">Identity</span></td><td class="num">12,888</td><td><div class="bar"><div class="fill" style="width:71%;background:var(--slate-500)"></div><span class="barval">0.714</span></div></td><td class="num">0.685</td><td class="num">0.713</td><td><div class="bar"><div class="fill" style="width:70%;background:var(--indigo-600)"></div><span class="barval">0.699</span></div></td><td class="num gap">0.001</td></tr><tr><td class="ty">Street Address<span class="cl">Street</span></td><td class="num">10,743</td><td><div class="bar"><div class="fill" style="width:65%;background:var(--slate-500)"></div><span class="barval">0.653</span></div></td><td class="num">0.661</td><td class="num">0.650</td><td><div class="bar"><div class="fill" style="width:66%;background:var(--indigo-600)"></div><span class="barval">0.656</span></div></td><td class="num gap">0.003</td></tr><tr><td class="ty">Username<span class="cl">Identity</span></td><td class="num">9,412</td><td><div class="bar"><div class="fill" style="width:58%;background:var(--slate-500)"></div><span class="barval">0.576</span></div></td><td class="num">0.543</td><td class="num">0.571</td><td><div class="bar"><div class="fill" style="width:56%;background:var(--indigo-600)"></div><span class="barval">0.556</span></div></td><td class="num gap">0.005</td></tr><tr><td class="ty">First Name<span class="cl">Identity</span></td><td class="num">6,315</td><td><div class="bar"><div class="fill" style="width:95%;background:var(--slate-500)"></div><span class="barval">0.950</span></div></td><td class="num">0.835</td><td class="num">0.945</td><td><div class="bar"><div class="fill" style="width:89%;background:var(--indigo-600)"></div><span class="barval">0.887</span></div></td><td class="num gap">0.005</td></tr><tr><td class="ty">URL/Domain/Subdomain<span class="cl">Web</span></td><td class="num">5,188</td><td><div class="bar"><div class="fill" style="width:98%;background:var(--slate-500)"></div><span class="barval">0.981</span></div></td><td class="num">0.935</td><td class="num">0.981</td><td><div class="bar"><div class="fill" style="width:96%;background:var(--indigo-600)"></div><span class="barval">0.957</span></div></td><td class="num gap">0.000</td></tr><tr><td class="ty">Phone Number<span class="cl">Deterministic-FPR</span></td><td class="num">5,145</td><td><div class="bar"><div class="fill" style="width:96%;background:var(--slate-500)"></div><span class="barval">0.958</span></div></td><td class="num">0.921</td><td class="num">0.954</td><td><div class="bar"><div class="fill" style="width:94%;background:var(--indigo-600)"></div><span class="barval">0.937</span></div></td><td class="num gap">0.004</td></tr><tr><td class="ty">Last Name<span class="cl">Identity</span></td><td class="num">4,684</td><td><div class="bar"><div class="fill" style="width:94%;background:var(--slate-500)"></div><span class="barval">0.935</span></div></td><td class="num">0.803</td><td class="num">0.925</td><td><div class="bar"><div class="fill" style="width:86%;background:var(--indigo-600)"></div><span class="barval">0.860</span></div></td><td class="num gap">0.010</td></tr><tr><td class="ty">Date of Birth<span class="cl">Deterministic-FPR</span></td><td class="num">1,465</td><td><div class="bar"><div class="fill" style="width:95%;background:var(--slate-500)"></div><span class="barval">0.947</span></div></td><td class="num">0.869</td><td class="num">0.947</td><td><div class="bar"><div class="fill" style="width:91%;background:var(--indigo-600)"></div><span class="barval">0.907</span></div></td><td class="num gap">0.000</td></tr><tr><td class="ty">GPS Coordinates<span class="cl">Deterministic-FPR</span></td><td class="num">912</td><td><div class="bar"><div class="fill" style="width:95%;background:var(--slate-500)"></div><span class="barval">0.951</span></div></td><td class="num">0.895</td><td class="num">0.951</td><td><div class="bar"><div class="fill" style="width:92%;background:var(--indigo-600)"></div><span class="barval">0.922</span></div></td><td class="num gap">0.000</td></tr></tbody>
+ </table>
+
+ <h2>What the numbers say</h2>
+ <ul>
+  <li><b>Errors are boundary, not type.</b> The mislabel gap is ≤0.02 for every type
+   (worst: Full Name at 0.020) — when qwen misses on exact-span it almost always drew the
+   wrong boundary, not the wrong label. det-recall ≈ fine-recall throughout.</li>
+  <li><b>Format-shaped types are strong:</b> URL/Domain/Subdomain, Phone Number, Date of Birth, GPS Coordinates all clear 0.90 exact F1 —
+   their boundaries are unambiguous (a URL, a phone, coordinates).</li>
+  <li><b>Free-text boundary types are the weak spots:</b> Username, Street Address, Email Address sit lowest
+   (Username 0.556) — where the span edge is a judgment call, exact-match punishes drift.</li>
+  <li><b>The big-support types set the overall:</b> Full Name, ID and Organization Name are ~62% of GT spans and land
+   0.79 / 0.85 / 0.78, anchoring the 0.788 overall.</li>
+ </ul>
+
+ <footer>
+  Model <code>qwen2.5-7b-qlora_20260721T191643Z</code> · pii-bench 100k (typed GT) · exact = both char boundaries match ·
+  source <code>pii-bench-eval/qwen_pertype_score.py</code> → <code>qwen_pertype_results.json</code>.
+  Internal · Mercor Data Acquisition.
+ </footer>
+</div><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

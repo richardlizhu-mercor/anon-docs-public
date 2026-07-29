@@ -51,6 +51,7 @@
   <a class="card" href="pii-bench-diff.html"><span class="arw">&rarr;</span><h3>pii-bench vs pii-bench-2</h3><p>What the punctuation cleanse changed (ANON-180 / PR #163): real before→after span diffs — trailing/leading trimmed, pure-punct dropped, abbreviations &amp; handles preserved.</p></a>
   <a class="card" href="pii-bench-gt-viewer.html"><span class="arw">&rarr;</span><h3>pii-bench — GT vs Model Viewer</h3><p>Seven detectors on the external pii-bench (typed GT): pick a model, overlay it one at a time on the ground truth, TP/wrong-type/FP/missed colored.</p></a>
   <a class="card" href="qwen-gap.html"><span class="arw">&rarr;</span><h3>qwen Exact-Match Gap — Contigo vs pii-bench</h3><p>Why qwen scores 0.19 exact on Contigo but 0.79 on pii-bench: FP/FN categorized + attributed. ~⅔ is GT-format artifact (48% of Contigo GT has markup), ~⅓ genuine OOD recall.</p></a>
+  <a class="card" href="qwen-exact-pertype.html"><span class="arw">&rarr;</span><h3>qwen — Exact-Span by PII Type</h3><p>Reference: qwen's exact-span P/R/F1 per PII type on pii-bench 100k. Strong on format types (URL/phone/GPS &gt;0.9), weak on free-text boundaries (Username 0.56); errors are boundary, not type.</p></a>
  </div>
  <h2>Contigo detection benchmark</h2>
  <div class="grid">
