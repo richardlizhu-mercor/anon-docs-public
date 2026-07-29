@@ -21,9 +21,12 @@ tr.floor td,tr.na td{background:rgba(139,152,165,.05);color:var(--dim)}
 .tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 6px;font-size:10.5px;color:var(--muted);margin-left:4px}
 ul{margin:6px 0;padding-left:20px} li{margin:4px 0;font-size:13px}
 .foot{color:var(--dim);font-size:12px;border-top:1px solid var(--line);margin-top:30px;padding-top:14px}
+
+.hub-home{text-decoration:none;color:inherit;cursor:pointer;display:inline-block}
+.hub-home:hover h1{color:#4f46e5}
 </style></head><body><div class="wrap">
 
-<h1>PII detection + IR — every option, evaluated across 5 datasets</h1>
+<a class="hub-home" href="https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec" target="_top" title="Back to all docs"><h1>PII detection + IR — every option, evaluated across 5 datasets</h1></a>
 <p class="lede">Each option run <b>inference-only</b> (no training on eval data) against five ground-truth sources. <b>Price / speed / compute are model-intrinsic</b> (shared table below); <b>accuracy varies per dataset</b> (the story). Detection headline = char-level F1 (segmentation-agnostic).</p>
 
 <div class="callout good"><b>Models in S3:</b> all three deberta detectors are under <code>s3://data-acq-raw-prod/_models/tokenization/</code>, folder names carrying the training timestamp — <code>deberta_ft_newtax_full_20260714T115509Z</code> (recommended, new taxonomy), <code>deberta_ft_newtax_20260714T082558Z</code> (slice), <code>deberta_ft_v2_20260707T112201Z</code> (original, recovered).</div>

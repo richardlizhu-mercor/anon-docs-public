@@ -41,12 +41,15 @@
   .legend{font-size:.8rem; color:var(--slate-500); margin:6px 0 0;}
   .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin:0 3px 0 10px;border:1px solid var(--slate-300);}
   footer{color:var(--slate-500); font-size:.82rem; margin-top:48px; padding-top:20px; border-top:1px solid var(--slate-200);}
+
+.hub-home{text-decoration:none;color:inherit;cursor:pointer;display:inline-block}
+.hub-home:hover h1{color:#4f46e5}
 </style>
 </head>
 <body>
 <main>
   <span class="eyebrow">Data Acquisition · Tokenizer Redesign</span>
-  <h1>PII Tokenizer — All Options Compared</h1>
+  <a class="hub-home" href="https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec" target="_top" title="Back to all docs"><h1>PII Tokenizer — All Options Compared</h1></a>
   <p class="sub">Every detector we explored, in one chart: <strong>accuracy</strong>, <strong>cost per TB</strong>, and <strong>runtime to tokenize 1 TB</strong> (≈1.32B docs). The best choice is whichever sits on the accuracy-vs-cost <strong>frontier</strong> — everything else is <em>dominated</em>.</p>
   <p class="note">Local runtime/cost = compute-ratio estimate on real GPUs (H100/L4, MFU 35%), ±2–3× pending a measured run. <code>$/TB</code> = GPU-hours × $/hr (fleet-size-independent). Gemini = verified pricing + Datadog-verified quota/deploy ceilings. Accuracy = anobench locked-test char-F1; Gemini's 0.919 is partly "home-field" (GT seeded by a Gemini-family detector) so the true local gap is likely smaller.</p>
 

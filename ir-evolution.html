@@ -92,6 +92,9 @@
   .stat .v{font-size:1.5rem; font-weight:300; color:var(--indigo-700); font-variant-numeric:tabular-nums;}
   .stat .k{font-size:.78rem; color:var(--slate-500); margin-top:2px;}
   footer{color:var(--slate-500); font-size:.82rem; margin-top:60px; padding-top:24px; border-top:1px solid var(--slate-200);}
+
+.hub-home{text-decoration:none;color:inherit;cursor:pointer;display:inline-block}
+.hub-home:hover h1{color:#4f46e5}
 </style>
 </head>
 <body>
@@ -119,7 +122,7 @@
   <main>
     <header class="doc">
       <span class="eyebrow">Data Acquisition · Anonymization · Identity Resolution</span>
-      <h1>Identity Resolution: from a single Leiden pass to a learned pairwise engine</h1>
+      <a class="hub-home" href="https://script.google.com/a/macros/mercor.com/s/AKfycbwIEW7PHxHR3sP3JqjC_5eog6o2kf-axVSkBXNJ4RiVjIZVCL8fTQ_sP2si0_f6mtEWdg/exec" target="_top" title="Back to all docs"><h1>Identity Resolution: from a single Leiden pass to a learned pairwise engine</h1></a>
       <p class="sub">Stage&nbsp;2 of the anonymization pipeline used to be one big activity that scored values by
       cosine similarity and cut the whole graph with a hand-tuned Leiden pass. We rebuilt it. The new engine
       (<code>feat/ir-eag-free-engine</code>) runs a per-type Temporal fan-out around a Qwen&nbsp;LoRA encoder, a
