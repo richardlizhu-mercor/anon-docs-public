@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Anonymization — end-to-end IR run, before → after</title>
+<title>Anonymization — end-to-end IR run, pre → post</title>
 <style>
   :root{
     --indigo:#4f46e5; --indigo-d:#3730a3; --slate:#0f172a; --muted:#64748b;
@@ -43,22 +43,27 @@
   .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
   .stat .n{font-size:24px;font-weight:700;color:var(--indigo-d);letter-spacing:-.02em}
   .stat .l{font-size:12px;color:var(--muted)}
-  .doc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14px}
-  .doc .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
-  mark.r{background:var(--raw-bg);color:var(--raw);padding:0 3px;border-radius:3px;font-weight:600}
-  mark.f{background:var(--fake-bg);color:var(--fake);padding:0 3px;border-radius:3px;font-weight:600}
+  .pp{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+  .pp>div{padding:12px 16px;font-size:14px}
+  .pp .pre{background:var(--raw-bg);border-right:1px solid var(--line)}
+  .pp .post{background:var(--fake-bg)}
+  .pp .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:6px}
+  .pp .pre .lbl{color:var(--raw)}
+  .pp .post .lbl{color:var(--fake)}
+  mark.r{background:#fee2e2;color:var(--raw);padding:0 3px;border-radius:3px;font-weight:600}
+  mark.f{background:#d1fae5;color:var(--fake);padding:0 3px;border-radius:3px;font-weight:600}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.pp{grid-template-columns:1fr}.pp .pre{border-right:none;border-bottom:1px solid var(--line)}}
   footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
-  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
 /*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style>
 </head>
 <body>
 <div class="wrap">
 
-  <a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>Anonymization — end-to-end IR run, before → after</h1></a>
+  <a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>Anonymization — end-to-end IR run, pre → post</h1></a>
   <p class="sub">A complete <code>ir/anonymize.py</code> pass on the <b>synthetic, PII-free</b> corpus —
-  <span class="mono">generate → identity-resolution → faker → replace</span>. The faker is
-  <b>Google Gemini</b> (<span class="mono">gemini-2.5-flash</span>, Vertex AI), the same model
-  the data-acq pipeline uses. Run
+  <span class="mono">generate → identity-resolution → faker → replace</span> — showing each
+  document <b>pre-anonymization</b> and <b>post-anonymization</b>. The faker is
+  <b>Google Gemini</b> (<span class="mono">gemini-2.5-flash</span>, Vertex AI). Run
   <span class="mono">anonymize.py --n 60 --seed 1 --engine llm --model gemini-2.5-flash</span>.</p>
 
   <div class="grid">
@@ -71,24 +76,42 @@
   <div class="toc">
     <b>On this page</b>
     <ul>
-      <li><a href="#stages">1 · Pipeline stages</a></li>
-      <li><a href="#beforeafter">2 · Before → after, by type</a></li>
-      <li><a href="#consistency">3 · The identity-resolution payoff</a></li>
-      <li><a href="#quality">4 · How the faker keeps quality — and privacy</a></li>
+      <li><a href="#docs">1 · Whole documents, pre → post</a></li>
+      <li><a href="#stages">2 · Pipeline stages</a></li>
+      <li><a href="#bytype">3 · Pre → post, by type</a></li>
+      <li><a href="#consistency">4 · The identity-resolution payoff</a></li>
+      <li><a href="#privacy">5 · The privacy model</a></li>
     </ul>
   </div>
 
   <div class="callout ok">
     <h3>TL;DR</h3>
-    The redesign's <code>ir/</code> pipeline runs end-to-end. Gemini <b>invents</b> each persona, but
-    the anonymization is <b>internally consistent</b> — the same person is faked identically across
-    every name variant, their username, <i>and</i> their email, because the continuity is derived
-    deterministically in-process. Gender and nationality are preserved (a Dutch woman stays a Dutch
-    woman); organizations get clean brand names. Crucially, Gemini sees <b>only an abstract spec</b>
-    (gender + nationality + kind) — never the original names or emails.
+    The redesign's <code>ir/</code> pipeline runs end-to-end. Each document goes in as its raw
+    <b>pre-anonymization</b> text and comes out <b>post-anonymization</b> with every PII span replaced
+    by a coherent fake. The anonymization is <b>internally consistent</b> — the same person is faked
+    identically across every name variant, their username, <i>and</i> their email — and gender and
+    nationality are preserved.
   </div>
 
-  <h2 id="stages">1 · Pipeline stages</h2>
+  <h2 id="docs">1 · Whole documents, pre → post</h2>
+  <p class="meta">The actual pipeline input (<span class="raw" style="padding:0 4px;border-radius:4px">pre</span>) and
+  output (<span class="fake" style="padding:0 4px;border-radius:4px">post</span>). Replaced spans are highlighted.
+  The corpus is synthetic, so it is shown in full.</p>
+
+  <div class="pp">
+    <div class="pre"><div class="lbl">Pre-anonymization</div>Team, Same as last time. Reached out to <mark class="r">Mira</mark> last week. The account owner is <mark class="r">vblum@corp.example</mark>. Appreciated,</div>
+    <div class="post"><div class="lbl">Post-anonymization</div>Team, Same as last time. Reached out to <mark class="f">Ruben Smit</mark> last week. The account owner is <mark class="f">mjones@corp.example</mark>. Appreciated,</div>
+  </div>
+  <div class="pp">
+    <div class="pre"><div class="lbl">Pre-anonymization</div>Thanks all, Assigning this to <mark class="r">UMA SHAH</mark>. Ping <mark class="r">VIKTOR MENSAH</mark> when ready. Thanks,</div>
+    <div class="post"><div class="lbl">Post-anonymization</div>Thanks all, Assigning this to <mark class="f">OLIVIA MILLER</mark>. Ping <mark class="f">JACOB MARTIN</mark> when ready. Thanks,</div>
+  </div>
+  <div class="pp">
+    <div class="pre"><div class="lbl">Pre-anonymization</div>Following up - Invoice goes to <mark class="r">tcosta</mark> this cycle. For the record. Met with <mark class="r">Mira Gill Private Limited</mark> at the offsite. Following up with <mark class="r">uma shah</mark> on the renewal. Reached out to <mark class="r">xlin</mark> last week. Cheers,</div>
+    <div class="post"><div class="lbl">Post-anonymization</div>Following up - Invoice goes to <mark class="f">ajohnson</mark> this cycle. For the record. Met with <mark class="f">Sarah Miller Private Limited</mark> at the offsite. Following up with <mark class="f">olivia miller</mark> on the renewal. Reached out to <mark class="f">jcampbell</mark> last week. Cheers,</div>
+  </div>
+
+  <h2 id="stages">2 · Pipeline stages</h2>
   <table>
     <tr><th>Stage</th><th>Output</th><th>Result</th></tr>
     <tr><td class="t">generate</td><td class="mono">documents + mentions (spans)</td><td>synthetic, PII-free corpus</td></tr>
@@ -98,14 +121,15 @@
   </table>
   <p class="meta">The faker sits behind a <code>FakeEngine</code> seam: <code>--engine llm</code> (Gemini)
   or <code>--engine library</code> (deterministic, offline). Continuity and span replacement are
-  identical either way — only <i>persona invention</i> differs.</p>
+  identical either way.</p>
 
-  <h2 id="beforeafter">2 · Before → after, by type</h2>
-  <p class="meta">The corpus is synthetic, so everything is shown <b>in full</b> — no masking needed.</p>
+  <h2 id="bytype">3 · Pre → post, by type</h2>
+  <p class="meta">Left is the <b>pre-anonymization</b> original; right is the <b>post-anonymization</b>
+  value the pipeline emits.</p>
 
   <h3>Full name — gender + nationality preserved <span class="pill">identity</span></h3>
   <table>
-    <tr><th>Before</th><th class="arrow"></th><th>After</th><th>gender</th><th>nationality</th></tr>
+    <tr><th>Pre-anonymization</th><th class="arrow"></th><th>Post-anonymization</th><th>gender</th><th>nationality</th></tr>
     <tr><td class="raw">Noor Dias</td><td class="arrow">→</td><td class="fake">Eva Vermeulen</td><td>female</td><td>dutch</td></tr>
     <tr><td class="raw">Hugo Blum</td><td class="arrow">→</td><td class="fake">Mateo Rodriguez</td><td>male</td><td>hispanic</td></tr>
     <tr><td class="raw">Kira Dubois</td><td class="arrow">→</td><td class="fake">Hannah Schneider</td><td>female</td><td>german</td></tr>
@@ -113,9 +137,9 @@
     <tr><td class="raw">Priya Vega</td><td class="arrow">→</td><td class="fake">Priya Sharma</td><td>female</td><td>indian</td></tr>
   </table>
 
-  <h3>Organization — realistic brand names <span class="pill">institution</span></h3>
+  <h3>Organization <span class="pill">institution</span></h3>
   <table>
-    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+    <tr><th>Pre-anonymization</th><th class="arrow"></th><th>Post-anonymization</th></tr>
     <tr><td class="raw">Xantara</td><td class="arrow">→</td><td class="fake">Sterling Financial</td></tr>
     <tr><td class="raw">Wexenqo</td><td class="arrow">→</td><td class="fake">Quantum Dynamics Inc.</td></tr>
     <tr><td class="raw">Femra</td><td class="arrow">→</td><td class="fake">Global Ventures Inc.</td></tr>
@@ -123,22 +147,22 @@
 
   <h3>Email &amp; username — derived from the fake name <span class="pill">continuity</span></h3>
   <table>
-    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+    <tr><th>Pre-anonymization</th><th class="arrow"></th><th>Post-anonymization</th></tr>
     <tr><td class="raw mono">vblum@corp.example</td><td class="arrow">→</td><td class="fake mono">mjones@corp.example</td></tr>
     <tr><td class="raw mono">ushah@mail.example</td><td class="arrow">→</td><td class="fake mono">omiller@mail.example</td></tr>
     <tr><td class="raw mono">ndias@example.com</td><td class="arrow">→</td><td class="fake mono">evermeulen@example.com</td></tr>
   </table>
   <p class="meta">The email <b>local-part follows the fake name</b> and the domain is preserved, so the
-  mapping stays coherent without leaking the original.</p>
+  mapping stays coherent.</p>
 
-  <h2 id="consistency">3 · The identity-resolution payoff</h2>
+  <h2 id="consistency">4 · The identity-resolution payoff</h2>
   <div class="callout ok">
     <h3>One person, one identity — everywhere</h3>
     Identity resolution tied every surface of the same real person into <b>one cluster</b>, so the
     faker renders them <b>consistently</b> — full name, single name, the shouty uppercase mention,
     the username, and the email all resolve to the same fake identity:
     <table style="margin-top:10px">
-      <tr><th>Surface</th><th>Before</th><th class="arrow"></th><th>After</th></tr>
+      <tr><th>Surface</th><th>Pre-anonymization</th><th class="arrow"></th><th>Post-anonymization</th></tr>
       <tr><td>full name</td><td class="raw">Viktor Blum</td><td class="arrow">→</td><td class="fake">Michael Jones</td></tr>
       <tr><td>first name</td><td class="raw">Viktor</td><td class="arrow">→</td><td class="fake">Michael</td></tr>
       <tr><td>surname</td><td class="raw">Blum</td><td class="arrow">→</td><td class="fake">Jones</td></tr>
@@ -146,40 +170,19 @@
       <tr><td>username</td><td class="raw mono">vblum</td><td class="arrow">→</td><td class="fake mono">mjones</td></tr>
       <tr><td>email</td><td class="raw mono">vblum@corp.example</td><td class="arrow">→</td><td class="fake mono">mjones@corp.example</td></tr>
     </table>
-    <p style="margin:10px 0 0">Gemini only ever returned the pair <span class="mono">(Michael, Jones)</span>
-    once, for the cluster; the six surfaces above are all derived from it in-process — so relationships
-    in the data survive anonymization.</p>
+    <p style="margin:10px 0 0">Gemini returned the pair <span class="mono">(Michael, Jones)</span>
+    once, for the cluster; the six surfaces above are all derived from it in-process — so
+    relationships in the data survive anonymization.</p>
   </div>
 
-  <h3>Whole documents, before → after</h3>
-  <div class="doc">
-    <div class="lbl">before</div>
-    Team, Same as last time. Reached out to <mark class="r">Mira</mark> last week. The account owner is <mark class="r">vblum@corp.example</mark>. Appreciated,
-    <div class="lbl" style="margin-top:8px">after</div>
-    Team, Same as last time. Reached out to <mark class="f">Ruben Smit</mark> last week. The account owner is <mark class="f">mjones@corp.example</mark>. Appreciated,
-  </div>
-  <div class="doc">
-    <div class="lbl">before</div>
-    Thanks all, Assigning this to <mark class="r">UMA SHAH</mark>. Ping <mark class="r">VIKTOR MENSAH</mark> when ready. Thanks,
-    <div class="lbl" style="margin-top:8px">after</div>
-    Thanks all, Assigning this to <mark class="f">OLIVIA MILLER</mark>. Ping <mark class="f">JACOB MARTIN</mark> when ready. Thanks,
-  </div>
-  <div class="doc">
-    <div class="lbl">before</div>
-    Following up - Invoice goes to <mark class="r">tcosta</mark> this cycle. For the record. Met with <mark class="r">Mira Gill Private Limited</mark> at the offsite. Following up with <mark class="r">uma shah</mark> on the renewal. Reached out to <mark class="r">xlin</mark> last week. Cheers,
-    <div class="lbl" style="margin-top:8px">after</div>
-    Following up - Invoice goes to <mark class="f">ajohnson</mark> this cycle. For the record. Met with <mark class="f">Sarah Miller Private Limited</mark> at the offsite. Following up with <mark class="f">olivia miller</mark> on the renewal. Reached out to <mark class="f">jcampbell</mark> last week. Cheers,
-  </div>
-
-  <h2 id="quality">4 · How the faker keeps quality — and privacy</h2>
+  <h2 id="privacy">5 · The privacy model</h2>
   <div class="callout">
     <h3>Gemini invents the persona; the machine keeps the continuity</h3>
     For each cluster the faker sends Gemini <b>only the abstract spec</b> — gender, nationality, and
     kind (person / organization). Gemini returns one fake name (or brand). Every downstream surface —
     username, email local-part, case variants, legal-suffix org variants — is then derived
-    <b>deterministically in-process</b>, exactly as the offline library engine does. So the LLM lifts
-    persona <i>quality</i> (real-sounding, gender/nationality-matched names; clean company brands
-    instead of gibberish) without ever touching the continuity logic.
+    <b>deterministically in-process</b>. The LLM shapes persona <i>quality</i> (real-sounding,
+    gender/nationality-matched names) without touching the continuity logic.
   </div>
   <div class="callout ok">
     <h3>No original PII leaves the machine</h3>
