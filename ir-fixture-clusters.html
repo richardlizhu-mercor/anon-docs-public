@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>IR fixture — 106 mentions → 30 clusters</title>
+<style>
+ :root{--indigo:#4f46e5;--slate900:#0f172a;--slate600:#475569;--slate300:#cbd5e1;
+   --slate100:#f1f5f9;--slate50:#f8fafc;--white:#fff;}
+ *{box-sizing:border-box}
+ body{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+   color:var(--slate900);background:var(--slate50)}
+ header{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--slate300);
+   padding:14px 20px;z-index:5}
+ h1{margin:0 0 8px;font-size:18px}
+ .stats{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;color:var(--slate600)}
+ .chip{background:var(--slate100);border-radius:999px;padding:2px 10px;white-space:nowrap}
+ .chip b{color:var(--slate900)}
+ .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+ input,select,button{font:inherit;padding:6px 10px;border:1px solid var(--slate300);
+   border-radius:8px;background:var(--white)}
+ input{flex:1;min-width:200px}
+ button{cursor:pointer}
+ button.on{background:var(--indigo);color:var(--white);border-color:var(--indigo)}
+ #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:16px 20px}
+ .card{background:var(--white);border:1px solid var(--slate300);border-left-width:4px;
+   border-radius:10px;padding:12px;overflow:hidden}
+ .card h2{margin:0 0 8px;font-size:12px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+ .fam{font-weight:700}
+ .cid{color:var(--slate600);font-weight:400;font-family:ui-monospace,monospace;font-size:11px;
+   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .surf{display:flex;flex-wrap:wrap;gap:6px}
+ .s{background:var(--slate100);border-radius:6px;padding:3px 8px;font-size:13px;max-width:100%;
+   overflow:hidden;text-overflow:ellipsis}
+ .s .t{color:var(--slate600);font-size:10px;margin-left:6px}
+ #empty{padding:40px 20px;color:var(--slate600)}
+ .warn{color:#b91c1c;font-size:11px;margin-top:6px}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body>
+<header>
+ <a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1 id="title"></h1></a>
+ <div class="stats" id="stats"></div>
+ <div class="controls">
+  <input id="q" placeholder="search id / family / surface…" autocomplete="off"/>
+  <span id="fams"></span>
+  <select id="sort">
+   <option value="size_desc">size ↓</option>
+   <option value="size_asc">size ↑</option>
+   <option value="id">id</option>
+  </select>
+ </div>
+ <div class="warn" id="warn"></div>
+</header>
+<div id="grid"></div>
+<div id="empty" hidden>no clusters match.</div>
+<script type="application/json" id="data">{"title": "IR fixture — 106 mentions → 30 clusters", "stats": {"clusters": 30, "surfaces": 95, "families": {"Identity": 20, "Street": 4, "Institution": 6}, "mean_size": 3.17, "max_size": 6}, "clusters": [{"id": "identity_0", "family": "Identity", "size": 1, "surfaces": [{"value": "Ace", "type": ""}]}, {"id": "identity_1", "family": "Identity", "size": 1, "surfaces": [{"value": "hblum@k.example", "type": ""}]}, {"id": "identity_2", "family": "Identity", "size": 1, "surfaces": [{"value": "Gus", "type": ""}]}, {"id": "identity_3", "family": "Identity", "size": 1, "surfaces": [{"value": "Bex", "type": ""}]}, {"id": "street_4", "family": "Street", "size": 1, "surfaces": [{"value": "1103 Cedar Ln", "type": ""}]}, {"id": "street_5", "family": "Street", "size": 1, "surfaces": [{"value": "8122 Maple Ave", "type": ""}]}, {"id": "street_6", "family": "Street", "size": 1, "surfaces": [{"value": "8400 Oak Blvd", "type": ""}]}, {"id": "street_7", "family": "Street", "size": 1, "surfaces": [{"value": "9726 Evergreen St", "type": ""}]}, {"id": "identity_8", "family": "Identity", "size": 1, "surfaces": [{"value": "Park", "type": ""}]}, {"id": "identity_9", "family": "Identity", "size": 1, "surfaces": [{"value": "Jae", "type": ""}]}, {"id": "identity_10", "family": "Identity", "size": 1, "surfaces": [{"value": "Lin", "type": ""}]}, {"id": "identity_11", "family": "Identity", "size": 2, "surfaces": [{"value": "Ines", "type": ""}, {"value": "Ines Park", "type": ""}]}, {"id": "institution_12", "family": "Institution", "size": 5, "surfaces": [{"value": "@miqora", "type": ""}, {"value": "MIQORA", "type": ""}, {"value": "Miqora", "type": ""}, {"value": "Miqora Inc", "type": ""}, {"value": "miqora.com", "type": ""}]}, {"id": "institution_13", "family": "Institution", "size": 5, "surfaces": [{"value": "@delxan", "type": ""}, {"value": "DELXAN", "type": ""}, {"value": "Delxan", "type": ""}, {"value": "Delxan Inc", "type": ""}, {"value": "delxan.com", "type": ""}]}, {"id": "institution_14", "family": "Institution", "size": 5, "surfaces": [{"value": "@zynapse", "type": ""}, {"value": "ZYNAPSE", "type": ""}, {"value": "Zynapse", "type": ""}, {"value": "Zynapse Inc", "type": ""}, {"value": "zynapse.com", "type": ""}]}, {"id": "institution_15", "family": "Institution", "size": 5, "surfaces": [{"value": "@kofenpri", "type": ""}, {"value": "KOFENPRI", "type": ""}, {"value": "Kofenpri", "type": ""}, {"value": "Kofenpri Inc", "type": ""}, {"value": "kofenpri.com", "type": ""}]}, {"id": "institution_16", "family": "Institution", "size": 5, "surfaces": [{"value": "@luvira", "type": ""}, {"value": "LUVIRA", "type": ""}, {"value": "Luvira", "type": ""}, {"value": "Luvira Inc", "type": ""}, {"value": "luvira.com", "type": ""}]}, {"id": "institution_17", "family": "Institution", "size": 5, "surfaces": [{"value": "@boked", "type": ""}, {"value": "BOKED", "type": ""}, {"value": "Boked", "type": ""}, {"value": "Boked Inc", "type": ""}, {"value": "boked.com", "type": ""}]}, {"id": "identity_18", "family": "Identity", "size": 4, "surfaces": [{"value": "Blum", "type": ""}, {"value": "Hugo", "type": ""}, {"value": "Hugo Blum", "type": ""}, {"value": "hblum", "type": ""}]}, {"id": "identity_19", "family": "Identity", "size": 2, "surfaces": [{"value": "ipark", "type": ""}, {"value": "ipark@k.example", "type": ""}]}, {"id": "identity_20", "family": "Identity", "size": 5, "surfaces": [{"value": "Mensah", "type": ""}, {"value": "Omar", "type": ""}, {"value": "Omar Mensah", "type": ""}, {"value": "omensah", "type": ""}, {"value": "omensah@k.example", "type": ""}]}, {"id": "identity_21", "family": "Identity", "size": 4, "surfaces": [{"value": "Jae Shah", "type": ""}, {"value": "Shah", "type": ""}, {"value": "jshah", "type": ""}, {"value": "jshah@k.example", "type": ""}]}, {"id": "identity_22", "family": "Identity", "size": 4, "surfaces": [{"value": "Kira", "type": ""}, {"value": "Kira Park", "type": ""}, {"value": "kpark", "type": ""}, {"value": "kpark@k.example", "type": ""}]}, {"id": "identity_23", "family": "Identity", "size": 4, "surfaces": [{"value": "Ali", "type": ""}, {"value": "Jae Ali", "type": ""}, {"value": "jali", "type": ""}, {"value": "jali@k.example", "type": ""}]}, {"id": "identity_24", "family": "Identity", "size": 5, "surfaces": [{"value": "Costa", "type": ""}, {"value": "Dara", "type": ""}, {"value": "Dara Costa", "type": ""}, {"value": "dcosta", "type": ""}, {"value": "dcosta@k.example", "type": ""}]}, {"id": "identity_25", "family": "Identity", "size": 4, "surfaces": [{"value": "Liam", "type": ""}, {"value": "Liam Lin", "type": ""}, {"value": "llin", "type": ""}, {"value": "llin@k.example", "type": ""}]}, {"id": "identity_26", "family": "Identity", "size": 4, "surfaces": [{"value": "Mira", "type": ""}, {"value": "Mira Lin", "type": ""}, {"value": "mlin", "type": ""}, {"value": "mlin@k.example", "type": ""}]}, {"id": "identity_27", "family": "Identity", "size": 5, "surfaces": [{"value": "Amir", "type": ""}, {"value": "Amir Khan", "type": ""}, {"value": "Khan", "type": ""}, {"value": "akhan", "type": ""}, {"value": "akhan@k.example", "type": ""}]}, {"id": "identity_28", "family": "Identity", "size": 5, "surfaces": [{"value": "Bea", "type": ""}, {"value": "Bea Vega", "type": ""}, {"value": "Vega", "type": ""}, {"value": "bvega", "type": ""}, {"value": "bvega@k.example", "type": ""}]}, {"id": "identity_29", "family": "Identity", "size": 6, "surfaces": [{"value": "Dee", "type": ""}, {"value": "Priya", "type": ""}, {"value": "Priya Reyes", "type": ""}, {"value": "Reyes", "type": ""}, {"value": "preyes", "type": ""}, {"value": "preyes@k.example", "type": ""}]}], "pii_warning": "This page may embed real PII — do not commit or share it."}</script>
+<script>
+"use strict";
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const FAMCOL = {"Identity": "#4f46e5", "Institution": "#0d9488", "Street": "#d97706"};
+const grid = document.getElementById("grid"), empty = document.getElementById("empty");
+let famFilter = null;
+
+document.getElementById("title").textContent = DATA.title;
+(function stats(){
+  const s = DATA.stats, box = document.getElementById("stats");
+  const chip = (label, val) => { const c=document.createElement("span"); c.className="chip";
+    const b=document.createElement("b"); b.textContent=String(val); c.append(label+" ", b); return c; };
+  box.append(chip("clusters", s.clusters), chip("surfaces", s.surfaces),
+             chip("mean size", s.mean_size), chip("max", s.max_size));
+  for (const [f,n] of Object.entries(s.families)) {
+    const c = chip(f, n); c.style.color = FAMCOL[f] || "#475569"; box.append(c);
+  }
+  const fams = document.getElementById("fams");
+  const mk = (label,val) => { const btn=document.createElement("button"); btn.textContent=label;
+    btn.onclick=()=>{ famFilter = (famFilter===val)?null:val;
+      [...fams.children].forEach(b=>b.classList.toggle("on", b===btn && famFilter===val)); render(); }; return btn; };
+  fams.append(mk("all",null));
+  for (const f of Object.keys(s.families)) fams.append(mk(f,f));
+  document.getElementById("warn").textContent = DATA.pii_warning;
+})();
+
+function card(c){
+  const el=document.createElement("div"); el.className="card";
+  el.style.borderLeftColor = FAMCOL[c.family] || "#94a3b8";
+  const h=document.createElement("h2");
+  const fam=document.createElement("span"); fam.className="fam"; fam.textContent=c.family+" ("+c.size+")";
+  fam.style.color = FAMCOL[c.family] || "#475569";
+  const id=document.createElement("span"); id.className="cid"; id.textContent=c.id; id.title=c.id;
+  h.append(fam,id); el.append(h);
+  const wrap=document.createElement("div"); wrap.className="surf";
+  for (const s of c.surfaces){
+    const sp=document.createElement("span"); sp.className="s"; sp.textContent=s.value; sp.title=s.value;
+    if (s.type){ const t=document.createElement("span"); t.className="t"; t.textContent=s.type; sp.append(t); }
+    wrap.append(sp);
+  }
+  el.append(wrap); return el;
+}
+
+function render(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const sort=document.getElementById("sort").value;
+  let cs = DATA.clusters.filter(c => (!famFilter || c.family===famFilter));
+  if (q) cs = cs.filter(c => c.id.toLowerCase().includes(q) || c.family.toLowerCase().includes(q)
+      || c.surfaces.some(s => s.value.toLowerCase().includes(q)));
+  cs = cs.slice().sort((a,b)=> sort==="id" ? a.id.localeCompare(b.id)
+      : sort==="size_asc" ? a.size-b.size : b.size-a.size);
+  grid.replaceChildren(...cs.map(card));
+  empty.hidden = cs.length>0;
+}
+document.getElementById("q").addEventListener("input", render);
+document.getElementById("sort").addEventListener("change", render);
+render();
+</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
