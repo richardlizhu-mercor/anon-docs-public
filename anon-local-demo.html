@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Anonymization — full local run, before → after</title>
+<title>Anonymization — end-to-end IR run, before → after</title>
 <style>
   :root{
     --indigo:#4f46e5; --indigo-d:#3730a3; --slate:#0f172a; --muted:#64748b;
@@ -43,6 +43,10 @@
   .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
   .stat .n{font-size:24px;font-weight:700;color:var(--indigo-d);letter-spacing:-.02em}
   .stat .l{font-size:12px;color:var(--muted)}
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14px}
+  .doc .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+  mark.r{background:var(--raw-bg);color:var(--raw);padding:0 3px;border-radius:3px;font-weight:600}
+  mark.f{background:var(--fake-bg);color:var(--fake);padding:0 3px;border-radius:3px;font-weight:600}
   footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
   @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
 /*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style>
@@ -50,16 +54,18 @@
 <body>
 <div class="wrap">
 
-  <a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>Anonymization — full local run, before → after</h1></a>
-  <p class="sub">A complete <code>anon:local</code> pass on the <b>kofluence</b> extraction
-  (gmail + googledrive), tokenize → identity-resolution → faker → replace. Run
-  <span class="mono">anon_20260730T035043Z_f1f5e42628a2</span>.</p>
+  <a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>Anonymization — end-to-end IR run, before → after</h1></a>
+  <p class="sub">A complete <code>ir/anonymize.py</code> pass on the <b>synthetic, PII-free</b> corpus —
+  <span class="mono">generate → identity-resolution → faker → replace</span>. The faker is
+  <b>Google Gemini</b> (<span class="mono">gemini-2.5-flash</span>, Vertex AI), the same model
+  the data-acq pipeline uses. Run
+  <span class="mono">anonymize.py --n 60 --seed 1 --engine llm --model gemini-2.5-flash</span>.</p>
 
   <div class="grid">
-    <div class="stat"><div class="n">447</div><div class="l">IR clusters</div></div>
-    <div class="stat"><div class="n">800</div><div class="l">real → fake mappings</div></div>
-    <div class="stat"><div class="n">9</div><div class="l">tables (6 gmail + 3 gdrive)</div></div>
-    <div class="stat"><div class="n">100%</div><div class="l">stages succeeded</div></div>
+    <div class="stat"><div class="n">60</div><div class="l">entities faked</div></div>
+    <div class="stat"><div class="n">239</div><div class="l">spans replaced</div></div>
+    <div class="stat"><div class="n">81</div><div class="l">documents</div></div>
+    <div class="stat"><div class="n">Gemini</div><div class="l">2.5 Flash faker</div></div>
   </div>
 
   <div class="toc">
@@ -68,128 +74,124 @@
       <li><a href="#stages">1 · Pipeline stages</a></li>
       <li><a href="#beforeafter">2 · Before → after, by type</a></li>
       <li><a href="#consistency">3 · The identity-resolution payoff</a></li>
-      <li><a href="#quirks">4 · Quality quirks worth a human eye</a></li>
+      <li><a href="#quality">4 · How the faker keeps quality — and privacy</a></li>
     </ul>
   </div>
 
   <div class="callout ok">
     <h3>TL;DR</h3>
-    The pipeline runs end-to-end and the anonymization is real and <b>internally consistent</b> —
-    the same person is faked identically across name variants <i>and</i> their email, and each
-    domain maps to one fake domain everywhere. Two quality quirks stand out: date-like fields
-    fall through to a nonsense char-scramble, and a lowercase <code>organization name</code> bucket
-    over-detects non-PII (fonts, package IDs).
+    The redesign's <code>ir/</code> pipeline runs end-to-end. Gemini <b>invents</b> each persona, but
+    the anonymization is <b>internally consistent</b> — the same person is faked identically across
+    every name variant, their username, <i>and</i> their email, because the continuity is derived
+    deterministically in-process. Gender and nationality are preserved (a Dutch woman stays a Dutch
+    woman); organizations get clean brand names. Crucially, Gemini sees <b>only an abstract spec</b>
+    (gender + nationality + kind) — never the original names or emails.
   </div>
 
   <h2 id="stages">1 · Pipeline stages</h2>
   <table>
     <tr><th>Stage</th><th>Output</th><th>Result</th></tr>
-    <tr><td class="t">ingestion</td><td class="mono">csv → parquet</td><td>gmail 6 tables, gdrive 3</td></tr>
-    <tr><td class="t">tokenize</td><td class="mono">tokenized/&lt;svc&gt;/</td><td>Gemini/Vertex detection (ADC)</td></tr>
-    <tr><td class="t">identity_resolution</td><td class="mono">identity/clusters.json</td><td><b>447 clusters</b>, schema v2</td></tr>
-    <tr><td class="t">faker</td><td class="mono">faker/flat_lookup.json</td><td><b>800</b> real→fake entries</td></tr>
-    <tr><td class="t">replace</td><td class="mono">anonymized/runecue/…/services/</td><td>30 rows/table · parquet + csv + sha256</td></tr>
+    <tr><td class="t">generate</td><td class="mono">documents + mentions (spans)</td><td>synthetic, PII-free corpus</td></tr>
+    <tr><td class="t">identity_resolution</td><td class="mono">clusters.json</td><td><b>60 clusters</b> (gold here; IR-resolved on real data)</td></tr>
+    <tr><td class="t">faker</td><td class="mono">replacement_map.json</td><td><b>Gemini</b> persona per cluster</td></tr>
+    <tr><td class="t">replace</td><td class="mono">anonymized_documents.jsonl</td><td><b>239 spans</b> across 81 docs</td></tr>
   </table>
-  <p class="meta">Fake company slug resolved to <b>runecue</b>. <code>--sample-size 30</code>
-  (rows per column) for a fast smoke; the extraction itself is ~7.5&nbsp;GB.</p>
+  <p class="meta">The faker sits behind a <code>FakeEngine</code> seam: <code>--engine llm</code> (Gemini)
+  or <code>--engine library</code> (deterministic, offline). Continuity and span replacement are
+  identical either way — only <i>persona invention</i> differs.</p>
 
   <h2 id="beforeafter">2 · Before → after, by type</h2>
-  <p class="meta">Real personal identifiers on the <span class="raw" style="padding:0 4px;border-radius:4px">before</span>
-  side are lightly masked (▪) for hosting — surnames, email local-parts, phone mid-digits. The
-  <span class="fake" style="padding:0 4px;border-radius:4px">after</span> side is shown in full
-  (it's synthetic). Org / font / package / domain / date strings are not personal PII and are shown as-is.</p>
+  <p class="meta">The corpus is synthetic, so everything is shown <b>in full</b> — no masking needed.</p>
 
-  <h3>Full name <span class="pill">22</span></h3>
+  <h3>Full name — gender + nationality preserved <span class="pill">identity</span></h3>
   <table>
-    <tr><th>Before (real)</th><th class="arrow"></th><th>After (fake)</th></tr>
-    <tr><td class="raw">Bhawna&nbsp;S▪▪▪▪▪</td><td class="arrow">→</td><td class="fake">Jahmiya Seigars</td></tr>
-    <tr><td class="raw">Sourabh&nbsp;G▪▪▪▪</td><td class="arrow">→</td><td class="fake">Latanga McElya</td></tr>
-    <tr><td class="raw">Chaitra&nbsp;V▪▪▪▪▪▪▪▪</td><td class="arrow">→</td><td class="fake">Joelynn Waltzer</td></tr>
+    <tr><th>Before</th><th class="arrow"></th><th>After</th><th>gender</th><th>nationality</th></tr>
+    <tr><td class="raw">Noor Dias</td><td class="arrow">→</td><td class="fake">Eva Vermeulen</td><td>female</td><td>dutch</td></tr>
+    <tr><td class="raw">Hugo Blum</td><td class="arrow">→</td><td class="fake">Mateo Rodriguez</td><td>male</td><td>hispanic</td></tr>
+    <tr><td class="raw">Kira Dubois</td><td class="arrow">→</td><td class="fake">Hannah Schneider</td><td>female</td><td>german</td></tr>
+    <tr><td class="raw">Liam Novak</td><td class="arrow">→</td><td class="fake">James Davies</td><td>male</td><td>british</td></tr>
+    <tr><td class="raw">Priya Vega</td><td class="arrow">→</td><td class="fake">Priya Sharma</td><td>female</td><td>indian</td></tr>
   </table>
 
-  <h3>Email address <span class="pill">121</span></h3>
-  <table>
-    <tr><th>Before (real)</th><th class="arrow"></th><th>After (fake)</th></tr>
-    <tr><td class="raw">sa▪▪▪▪▪▪@bajajfinserv.in</td><td class="arrow">→</td><td class="fake">oluwatobiloba.slavich@carbojade.in</td></tr>
-    <tr><td class="raw">bh▪▪▪▪▪▪▪▪▪@bajajfinserv.in</td><td class="arrow">→</td><td class="fake">jahmiya.seigars@carbojade.in</td></tr>
-    <tr><td class="raw">ch▪▪▪▪@kofluence.com</td><td class="arrow">→</td><td class="fake">joelynn@terabolt.com</td></tr>
-  </table>
-
-  <h3>Organization <span class="pill">21</span></h3>
+  <h3>Organization — realistic brand names <span class="pill">institution</span></h3>
   <table>
     <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
-    <tr><td class="raw">Kofluence</td><td class="arrow">→</td><td class="fake">Goldcrest</td></tr>
-    <tr><td class="raw">Kofluence Tech Private</td><td class="arrow">→</td><td class="fake">Goldcrest Tech Reef</td></tr>
-    <tr><td class="raw">IndiGo</td><td class="arrow">→</td><td class="fake">ProtoDex</td></tr>
+    <tr><td class="raw">Xantara</td><td class="arrow">→</td><td class="fake">Sterling Financial</td></tr>
+    <tr><td class="raw">Wexenqo</td><td class="arrow">→</td><td class="fake">Quantum Dynamics Inc.</td></tr>
+    <tr><td class="raw">Femra</td><td class="arrow">→</td><td class="fake">Global Ventures Inc.</td></tr>
   </table>
 
-  <h3>Phone number <span class="pill">13</span></h3>
+  <h3>Email &amp; username — derived from the fake name <span class="pill">continuity</span></h3>
   <table>
     <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
-    <tr><td class="raw">+91 88▪▪▪▪9172</td><td class="arrow">→</td><td class="fake">+91 4010070495</td></tr>
-    <tr><td class="raw">+91 82▪▪▪▪0596</td><td class="arrow">→</td><td class="fake">+91 1034318002</td></tr>
+    <tr><td class="raw mono">vblum@corp.example</td><td class="arrow">→</td><td class="fake mono">mjones@corp.example</td></tr>
+    <tr><td class="raw mono">ushah@mail.example</td><td class="arrow">→</td><td class="fake mono">omiller@mail.example</td></tr>
+    <tr><td class="raw mono">ndias@example.com</td><td class="arrow">→</td><td class="fake mono">evermeulen@example.com</td></tr>
   </table>
-
-  <h3>URL / domain <span class="pill">51</span></h3>
-  <table>
-    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
-    <tr><td class="raw">kofluence.com</td><td class="arrow">→</td><td class="fake">terabolt.com</td></tr>
-    <tr><td class="raw mono">url9050.kofluence.com/wf/open?upn=u001.stwJZ…</td><td class="arrow">→</td><td class="fake mono">metabolt.com/wf/open?upn=p686.qcxHZ…</td></tr>
-  </table>
-
-  <h3>User ID <span class="pill">57</span></h3>
-  <table>
-    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
-    <tr><td class="raw mono">b81bbec0-400b-11f1-8ff5-5254005934b4</td><td class="arrow">→</td><td class="fake mono">c28eeed1-027c-11b1-0dc2-4056797559d1</td></tr>
-    <tr><td class="raw mono">15000</td><td class="arrow">→</td><td class="fake mono">02942</td></tr>
-  </table>
+  <p class="meta">The email <b>local-part follows the fake name</b> and the domain is preserved, so the
+  mapping stays coherent without leaking the original.</p>
 
   <h2 id="consistency">3 · The identity-resolution payoff</h2>
   <div class="callout ok">
     <h3>One person, one identity — everywhere</h3>
-    Identity resolution tied every surface of the same real person into one cluster, so the faker
-    renders them <b>consistently</b>:
+    Identity resolution tied every surface of the same real person into <b>one cluster</b>, so the
+    faker renders them <b>consistently</b> — full name, single name, the shouty uppercase mention,
+    the username, and the email all resolve to the same fake identity:
     <table style="margin-top:10px">
       <tr><th>Surface</th><th>Before</th><th class="arrow"></th><th>After</th></tr>
-      <tr><td>single name</td><td class="raw">Chaitra</td><td class="arrow">→</td><td class="fake">Joelynn</td></tr>
-      <tr><td>full name (short)</td><td class="raw">Chaitra V▪</td><td class="arrow">→</td><td class="fake">Joelynn W</td></tr>
-      <tr><td>full name</td><td class="raw">Chaitra V▪▪▪▪▪▪▪▪</td><td class="arrow">→</td><td class="fake">Joelynn Waltzer</td></tr>
-      <tr><td>email</td><td class="raw">ch▪▪▪▪@kofluence.com</td><td class="arrow">→</td><td class="fake">joelynn@terabolt.com</td></tr>
+      <tr><td>full name</td><td class="raw">Viktor Blum</td><td class="arrow">→</td><td class="fake">Michael Jones</td></tr>
+      <tr><td>first name</td><td class="raw">Viktor</td><td class="arrow">→</td><td class="fake">Michael</td></tr>
+      <tr><td>surname</td><td class="raw">Blum</td><td class="arrow">→</td><td class="fake">Jones</td></tr>
+      <tr><td>uppercase</td><td class="raw">VIKTOR BLUM</td><td class="arrow">→</td><td class="fake">MICHAEL JONES</td></tr>
+      <tr><td>username</td><td class="raw mono">vblum</td><td class="arrow">→</td><td class="fake mono">mjones</td></tr>
+      <tr><td>email</td><td class="raw mono">vblum@corp.example</td><td class="arrow">→</td><td class="fake mono">mjones@corp.example</td></tr>
     </table>
-    <p style="margin:10px 0 0">Domains map 1:1 too — <span class="mono">kofluence.com → terabolt.com</span>,
-    <span class="mono">bajajfinserv.in → carbojade.in</span> — so relationships in the data survive
-    anonymization.</p>
+    <p style="margin:10px 0 0">Gemini only ever returned the pair <span class="mono">(Michael, Jones)</span>
+    once, for the cluster; the six surfaces above are all derived from it in-process — so relationships
+    in the data survive anonymization.</p>
   </div>
 
-  <h2 id="quirks">4 · Quality quirks worth a human eye</h2>
-  <div class="callout warn">
-    <h3>Dates fall through to a char-scramble</h3>
-    Strings typed <code>Date of Birth</code> that are actually date ranges / weekdays hit the
-    format-preserving fallback and come out as nonsense:
-    <table style="margin-top:10px">
-      <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
-      <tr><td class="raw">01 Apr 2026 - 31 Mar 2027</td><td class="arrow">→</td><td class="fake">99 Qtq 3852 - 07 Hrh 3173</td></tr>
-      <tr><td class="raw">Fri, 13 Feb 2026</td><td class="arrow">→</td><td class="fake">Haj, 35 Zkv 7213</td></tr>
-    </table>
+  <h3>Whole documents, before → after</h3>
+  <div class="doc">
+    <div class="lbl">before</div>
+    Team, Same as last time. Reached out to <mark class="r">Mira</mark> last week. The account owner is <mark class="r">vblum@corp.example</mark>. Appreciated,
+    <div class="lbl" style="margin-top:8px">after</div>
+    Team, Same as last time. Reached out to <mark class="f">Ruben Smit</mark> last week. The account owner is <mark class="f">mjones@corp.example</mark>. Appreciated,
   </div>
-  <div class="callout warn">
-    <h3>Lowercase <code>organization name</code> over-detects non-PII</h3>
-    The 341-entry lowercase bucket swept in things that aren't PII — font names and package IDs —
-    and faked them anyway:
-    <table style="margin-top:10px">
-      <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
-      <tr><td class="raw mono">Uber Move Text</td><td class="arrow">→</td><td class="fake mono">Perimode Move Text</td></tr>
-      <tr><td class="raw mono">com.bajaj.creatr</td><td class="arrow">→</td><td class="fake mono">com.helios.dropmorning</td></tr>
-    </table>
-    <p style="margin:10px 0 0">Harmless to privacy, but noise — exactly the kind of thing the
-    detected-entities human-eval work is meant to catch.</p>
+  <div class="doc">
+    <div class="lbl">before</div>
+    Thanks all, Assigning this to <mark class="r">UMA SHAH</mark>. Ping <mark class="r">VIKTOR MENSAH</mark> when ready. Thanks,
+    <div class="lbl" style="margin-top:8px">after</div>
+    Thanks all, Assigning this to <mark class="f">OLIVIA MILLER</mark>. Ping <mark class="f">JACOB MARTIN</mark> when ready. Thanks,
+  </div>
+  <div class="doc">
+    <div class="lbl">before</div>
+    Following up - Invoice goes to <mark class="r">tcosta</mark> this cycle. For the record. Met with <mark class="r">Mira Gill Private Limited</mark> at the offsite. Following up with <mark class="r">uma shah</mark> on the renewal. Reached out to <mark class="r">xlin</mark> last week. Cheers,
+    <div class="lbl" style="margin-top:8px">after</div>
+    Following up - Invoice goes to <mark class="f">ajohnson</mark> this cycle. For the record. Met with <mark class="f">Sarah Miller Private Limited</mark> at the offsite. Following up with <mark class="f">olivia miller</mark> on the renewal. Reached out to <mark class="f">jcampbell</mark> last week. Cheers,
+  </div>
+
+  <h2 id="quality">4 · How the faker keeps quality — and privacy</h2>
+  <div class="callout">
+    <h3>Gemini invents the persona; the machine keeps the continuity</h3>
+    For each cluster the faker sends Gemini <b>only the abstract spec</b> — gender, nationality, and
+    kind (person / organization). Gemini returns one fake name (or brand). Every downstream surface —
+    username, email local-part, case variants, legal-suffix org variants — is then derived
+    <b>deterministically in-process</b>, exactly as the offline library engine does. So the LLM lifts
+    persona <i>quality</i> (real-sounding, gender/nationality-matched names; clean company brands
+    instead of gibberish) without ever touching the continuity logic.
+  </div>
+  <div class="callout ok">
+    <h3>No original PII leaves the machine</h3>
+    The original names, emails, and handles are <b>never</b> put in the prompt — a test asserts they
+    never appear in what is sent. If Gemini returns something unusable for an entity, that entity
+    <b>falls back</b> to the deterministic library engine, so the pipeline never breaks.
   </div>
 
   <footer>
-    Run <span class="mono">anon_20260730T035043Z_f1f5e42628a2</span> ·
-    extraction <span class="mono">ext_20260604T040504Z_49f9c4b8c440</span> ·
-    services gmail, googledrive · <code>--sample-size 30</code> · fake slug <b>runecue</b>.<br>
-    Before-side personal identifiers masked for hosting; an unredacted copy is kept locally.
+    Run <code>ir/anonymize.py --n 60 --seed 1 --engine llm --model gemini-2.5-flash</code> ·
+    faker <b>Google Gemini 2.5 Flash</b> (Vertex AI, ADC) · synthetic PII-free corpus ·
+    60 clusters · 239 spans · 81 documents. See PR&nbsp;#183 (ANON-209).
   </footer>
 
 </div>
