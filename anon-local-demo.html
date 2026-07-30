@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anonymization — full local run, before → after</title>
+<style>
+  :root{
+    --indigo:#4f46e5; --indigo-d:#3730a3; --slate:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --bg:#f8fafc; --raw:#b91c1c; --fake:#047857; --amber:#b45309;
+    --card:#ffffff; --raw-bg:#fef2f2; --fake-bg:#ecfdf5; --amber-bg:#fffbeb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--slate);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;}
+  .wrap{max-width:960px;margin:0 auto;padding:40px 24px 96px}
+  h1{font-size:30px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 28px}
+  h2{font-size:21px;margin:40px 0 12px;padding-top:12px;border-top:1px solid var(--line);letter-spacing:-.01em}
+  h3{font-size:16px;margin:24px 0 8px;color:var(--indigo-d)}
+  code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  .callout{border:1px solid var(--line);border-left:4px solid var(--indigo);
+    background:var(--card);border-radius:10px;padding:14px 18px;margin:16px 0}
+  .callout.ok{border-left-color:var(--fake)}
+  .callout.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .callout h3{margin:0 0 6px;color:inherit}
+  table{width:100%;border-collapse:collapse;margin:12px 0;background:var(--card);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f1f5f9;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  .raw{color:var(--raw);background:var(--raw-bg)}
+  .fake{color:var(--fake);background:var(--fake-bg)}
+  .arrow{color:var(--muted);text-align:center;width:34px}
+  .t{font-weight:600;white-space:nowrap}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 20px;margin:0 0 8px}
+  .toc a{color:var(--indigo);text-decoration:none;font-size:14px}
+  .toc li{margin:2px 0}
+  .pill{display:inline-block;background:#eef2ff;color:var(--indigo-d);border-radius:999px;
+    padding:1px 9px;font-size:12px;font-weight:600;margin-left:6px}
+  .meta{color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .stat .n{font-size:24px;font-weight:700;color:var(--indigo-d);letter-spacing:-.02em}
+  .stat .l{font-size:12px;color:var(--muted)}
+  footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>Anonymization — full local run, before → after</h1></a>
+  <p class="sub">A complete <code>anon:local</code> pass on the <b>kofluence</b> extraction
+  (gmail + googledrive), tokenize → identity-resolution → faker → replace. Run
+  <span class="mono">anon_20260730T035043Z_f1f5e42628a2</span>.</p>
+
+  <div class="grid">
+    <div class="stat"><div class="n">447</div><div class="l">IR clusters</div></div>
+    <div class="stat"><div class="n">800</div><div class="l">real → fake mappings</div></div>
+    <div class="stat"><div class="n">9</div><div class="l">tables (6 gmail + 3 gdrive)</div></div>
+    <div class="stat"><div class="n">100%</div><div class="l">stages succeeded</div></div>
+  </div>
+
+  <div class="toc">
+    <b>On this page</b>
+    <ul>
+      <li><a href="#stages">1 · Pipeline stages</a></li>
+      <li><a href="#beforeafter">2 · Before → after, by type</a></li>
+      <li><a href="#consistency">3 · The identity-resolution payoff</a></li>
+      <li><a href="#quirks">4 · Quality quirks worth a human eye</a></li>
+    </ul>
+  </div>
+
+  <div class="callout ok">
+    <h3>TL;DR</h3>
+    The pipeline runs end-to-end and the anonymization is real and <b>internally consistent</b> —
+    the same person is faked identically across name variants <i>and</i> their email, and each
+    domain maps to one fake domain everywhere. Two quality quirks stand out: date-like fields
+    fall through to a nonsense char-scramble, and a lowercase <code>organization name</code> bucket
+    over-detects non-PII (fonts, package IDs).
+  </div>
+
+  <h2 id="stages">1 · Pipeline stages</h2>
+  <table>
+    <tr><th>Stage</th><th>Output</th><th>Result</th></tr>
+    <tr><td class="t">ingestion</td><td class="mono">csv → parquet</td><td>gmail 6 tables, gdrive 3</td></tr>
+    <tr><td class="t">tokenize</td><td class="mono">tokenized/&lt;svc&gt;/</td><td>Gemini/Vertex detection (ADC)</td></tr>
+    <tr><td class="t">identity_resolution</td><td class="mono">identity/clusters.json</td><td><b>447 clusters</b>, schema v2</td></tr>
+    <tr><td class="t">faker</td><td class="mono">faker/flat_lookup.json</td><td><b>800</b> real→fake entries</td></tr>
+    <tr><td class="t">replace</td><td class="mono">anonymized/runecue/…/services/</td><td>30 rows/table · parquet + csv + sha256</td></tr>
+  </table>
+  <p class="meta">Fake company slug resolved to <b>runecue</b>. <code>--sample-size 30</code>
+  (rows per column) for a fast smoke; the extraction itself is ~7.5&nbsp;GB.</p>
+
+  <h2 id="beforeafter">2 · Before → after, by type</h2>
+  <p class="meta">Real personal identifiers on the <span class="raw" style="padding:0 4px;border-radius:4px">before</span>
+  side are lightly masked (▪) for hosting — surnames, email local-parts, phone mid-digits. The
+  <span class="fake" style="padding:0 4px;border-radius:4px">after</span> side is shown in full
+  (it's synthetic). Org / font / package / domain / date strings are not personal PII and are shown as-is.</p>
+
+  <h3>Full name <span class="pill">22</span></h3>
+  <table>
+    <tr><th>Before (real)</th><th class="arrow"></th><th>After (fake)</th></tr>
+    <tr><td class="raw">Bhawna&nbsp;S▪▪▪▪▪</td><td class="arrow">→</td><td class="fake">Jahmiya Seigars</td></tr>
+    <tr><td class="raw">Sourabh&nbsp;G▪▪▪▪</td><td class="arrow">→</td><td class="fake">Latanga McElya</td></tr>
+    <tr><td class="raw">Chaitra&nbsp;V▪▪▪▪▪▪▪▪</td><td class="arrow">→</td><td class="fake">Joelynn Waltzer</td></tr>
+  </table>
+
+  <h3>Email address <span class="pill">121</span></h3>
+  <table>
+    <tr><th>Before (real)</th><th class="arrow"></th><th>After (fake)</th></tr>
+    <tr><td class="raw">sa▪▪▪▪▪▪@bajajfinserv.in</td><td class="arrow">→</td><td class="fake">oluwatobiloba.slavich@carbojade.in</td></tr>
+    <tr><td class="raw">bh▪▪▪▪▪▪▪▪▪@bajajfinserv.in</td><td class="arrow">→</td><td class="fake">jahmiya.seigars@carbojade.in</td></tr>
+    <tr><td class="raw">ch▪▪▪▪@kofluence.com</td><td class="arrow">→</td><td class="fake">joelynn@terabolt.com</td></tr>
+  </table>
+
+  <h3>Organization <span class="pill">21</span></h3>
+  <table>
+    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+    <tr><td class="raw">Kofluence</td><td class="arrow">→</td><td class="fake">Goldcrest</td></tr>
+    <tr><td class="raw">Kofluence Tech Private</td><td class="arrow">→</td><td class="fake">Goldcrest Tech Reef</td></tr>
+    <tr><td class="raw">IndiGo</td><td class="arrow">→</td><td class="fake">ProtoDex</td></tr>
+  </table>
+
+  <h3>Phone number <span class="pill">13</span></h3>
+  <table>
+    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+    <tr><td class="raw">+91 88▪▪▪▪9172</td><td class="arrow">→</td><td class="fake">+91 4010070495</td></tr>
+    <tr><td class="raw">+91 82▪▪▪▪0596</td><td class="arrow">→</td><td class="fake">+91 1034318002</td></tr>
+  </table>
+
+  <h3>URL / domain <span class="pill">51</span></h3>
+  <table>
+    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+    <tr><td class="raw">kofluence.com</td><td class="arrow">→</td><td class="fake">terabolt.com</td></tr>
+    <tr><td class="raw mono">url9050.kofluence.com/wf/open?upn=u001.stwJZ…</td><td class="arrow">→</td><td class="fake mono">metabolt.com/wf/open?upn=p686.qcxHZ…</td></tr>
+  </table>
+
+  <h3>User ID <span class="pill">57</span></h3>
+  <table>
+    <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+    <tr><td class="raw mono">b81bbec0-400b-11f1-8ff5-5254005934b4</td><td class="arrow">→</td><td class="fake mono">c28eeed1-027c-11b1-0dc2-4056797559d1</td></tr>
+    <tr><td class="raw mono">15000</td><td class="arrow">→</td><td class="fake mono">02942</td></tr>
+  </table>
+
+  <h2 id="consistency">3 · The identity-resolution payoff</h2>
+  <div class="callout ok">
+    <h3>One person, one identity — everywhere</h3>
+    Identity resolution tied every surface of the same real person into one cluster, so the faker
+    renders them <b>consistently</b>:
+    <table style="margin-top:10px">
+      <tr><th>Surface</th><th>Before</th><th class="arrow"></th><th>After</th></tr>
+      <tr><td>single name</td><td class="raw">Chaitra</td><td class="arrow">→</td><td class="fake">Joelynn</td></tr>
+      <tr><td>full name (short)</td><td class="raw">Chaitra V▪</td><td class="arrow">→</td><td class="fake">Joelynn W</td></tr>
+      <tr><td>full name</td><td class="raw">Chaitra V▪▪▪▪▪▪▪▪</td><td class="arrow">→</td><td class="fake">Joelynn Waltzer</td></tr>
+      <tr><td>email</td><td class="raw">ch▪▪▪▪@kofluence.com</td><td class="arrow">→</td><td class="fake">joelynn@terabolt.com</td></tr>
+    </table>
+    <p style="margin:10px 0 0">Domains map 1:1 too — <span class="mono">kofluence.com → terabolt.com</span>,
+    <span class="mono">bajajfinserv.in → carbojade.in</span> — so relationships in the data survive
+    anonymization.</p>
+  </div>
+
+  <h2 id="quirks">4 · Quality quirks worth a human eye</h2>
+  <div class="callout warn">
+    <h3>Dates fall through to a char-scramble</h3>
+    Strings typed <code>Date of Birth</code> that are actually date ranges / weekdays hit the
+    format-preserving fallback and come out as nonsense:
+    <table style="margin-top:10px">
+      <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+      <tr><td class="raw">01 Apr 2026 - 31 Mar 2027</td><td class="arrow">→</td><td class="fake">99 Qtq 3852 - 07 Hrh 3173</td></tr>
+      <tr><td class="raw">Fri, 13 Feb 2026</td><td class="arrow">→</td><td class="fake">Haj, 35 Zkv 7213</td></tr>
+    </table>
+  </div>
+  <div class="callout warn">
+    <h3>Lowercase <code>organization name</code> over-detects non-PII</h3>
+    The 341-entry lowercase bucket swept in things that aren't PII — font names and package IDs —
+    and faked them anyway:
+    <table style="margin-top:10px">
+      <tr><th>Before</th><th class="arrow"></th><th>After</th></tr>
+      <tr><td class="raw mono">Uber Move Text</td><td class="arrow">→</td><td class="fake mono">Perimode Move Text</td></tr>
+      <tr><td class="raw mono">com.bajaj.creatr</td><td class="arrow">→</td><td class="fake mono">com.helios.dropmorning</td></tr>
+    </table>
+    <p style="margin:10px 0 0">Harmless to privacy, but noise — exactly the kind of thing the
+    detected-entities human-eval work is meant to catch.</p>
+  </div>
+
+  <footer>
+    Run <span class="mono">anon_20260730T035043Z_f1f5e42628a2</span> ·
+    extraction <span class="mono">ext_20260604T040504Z_49f9c4b8c440</span> ·
+    services gmail, googledrive · <code>--sample-size 30</code> · fake slug <b>runecue</b>.<br>
+    Before-side personal identifiers masked for hosting; an unredacted copy is kept locally.
+  </footer>
+
+</div>
+<script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body>
+</html>
