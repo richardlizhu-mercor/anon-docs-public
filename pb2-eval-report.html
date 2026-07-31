@@ -124,9 +124,224 @@ footer{color:var(--slate-500);font-size:.78rem;margin-top:36px;padding-top:16px;
 .dv-legend label.sync{margin-left:auto;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 
 .dv-empty{font-family:var(--font);color:var(--slate-500);padding:24px;text-align:center}
+.pt-section { margin: 2rem 0; }
+.pt-lede {
+  color: var(--slate-600);
+  max-width: 60ch;
+  line-height: 1.55;
+  margin: 0.5rem 0 1.25rem;
+}
 
-.hub-home{text-decoration:none;color:inherit;cursor:pointer;display:inline-block}
-.hub-home:hover h1{color:#4f46e5}
+.pt-callout {
+  background: var(--indigo-50);
+  border: 1px solid var(--slate-200);
+  border-left: 3px solid var(--indigo-600);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  margin: 0 0 1.5rem;
+}
+.pt-callout-title {
+  font-weight: 700;
+  color: var(--slate-900);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+}
+.pt-callout-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--slate-700);
+  line-height: 1.55;
+}
+.pt-callout-list li + li { margin-top: 0.55rem; }
+.pt-callout-list strong { color: var(--slate-900); }
+
+.pt-num { font-family: var(--mono); font-weight: 600; color: var(--slate-900); }
+.pt-good { color: var(--green-600); font-weight: 600; }
+.pt-bad { color: var(--red-600); font-weight: 600; }
+.pt-code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--slate-100);
+  border: 1px solid var(--slate-200);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+  color: var(--slate-700);
+}
+
+.pt-table { width: 100%; }
+.pt-table td { vertical-align: middle; }
+.pt-support-h, .pt-f1-h { text-align: right; }
+.pt-support { text-align: right; white-space: nowrap; color: var(--slate-500); }
+
+.pt-swatch {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 2px;
+  vertical-align: baseline;
+  margin: 0 0.1em 0 0.15em;
+}
+.pt-swatch-deb { background: var(--indigo-600); }
+.pt-swatch-gem { background: var(--amber-600); }
+
+.pt-bars { min-width: 260px; padding: 0.35rem 0; }
+.pt-barrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1;
+}
+.pt-barrow + .pt-barrow { margin-top: 0.3rem; }
+.pt-tag {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--slate-400);
+  width: 1.9em;
+  flex: 0 0 auto;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.pt-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 7px;
+  background: var(--slate-100);
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 120px;
+}
+.pt-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+}
+.pt-bar-deb { background: var(--indigo-600); }
+.pt-bar-gem { background: var(--amber-600); }
+.pt-val {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--slate-600);
+  width: 3.2em;
+  flex: 0 0 auto;
+  text-align: right;
+}
+.pt-val-bad { color: var(--red-600); font-weight: 600; }
+
+.pt-f1 {
+  text-align: right;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  color: var(--slate-500);
+}
+.pt-f1 span { display: block; line-height: 1.5; }
+.pt-f1-zero { color: var(--amber-600); }
+
+.pt-highlight td { background: color-mix(in srgb, var(--indigo-50) 60%, var(--white)); }
+
+.pt-note {
+  margin-top: 1rem;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  color: var(--slate-600);
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: 6px;
+  line-height: 1.5;
+}
+.pt-note strong { color: var(--slate-700); }
+.typeex{
+  --te-both: var(--green-600, #16a34a);
+  --te-gem: var(--indigo-600, #4f46e5);
+  --te-deb: var(--amber-600, #d97706);
+  --te-neither: var(--slate-300, #cbd5e1);
+  font-family: var(--font, ui-sans-serif, system-ui, sans-serif);
+  color: var(--slate-900, #0f172a);
+  margin: 2.4rem 0 0;
+}
+.typeex h2{ font-size: 1.25rem; font-weight: 600; letter-spacing: -.01em; margin: 0 0 .25rem; text-wrap: balance; }
+.typeex-intro{ font-size: .9rem; line-height: 1.55; color: var(--slate-600, #475569); margin: 0 0 1.1rem; max-width: 78ch; text-wrap: pretty; }
+.typeex-intro strong{ font-weight: 600; color: var(--slate-700, #334155); }
+
+/* Controls: selector + distribution */
+.typeex-controls{
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1.25rem;
+  padding: 1rem 1.1rem; background: var(--slate-50, #f8fafc);
+  border: 1px solid var(--slate-200, #e2e8f0); border-radius: 12px; margin-bottom: 1rem;
+}
+.typeex-selwrap{ display: flex; flex-direction: column; gap: .35rem; flex: none; }
+.typeex-sellabel{ font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--slate-500, #64748b); }
+.typeex-select{
+  font-family: inherit; font-size: .9rem; color: var(--slate-900, #0f172a);
+  background: var(--white, #fff); border: 1px solid var(--slate-300, #cbd5e1);
+  border-radius: 7px; padding: .5rem .7rem; min-width: 14rem; height: 2.4rem; cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.typeex-select:focus{ outline: none; border-color: var(--indigo-600, #4f46e5); box-shadow: 0 0 0 3px var(--indigo-50, #eef2ff); }
+
+/* True-distribution hero bar + legend chips */
+.typeex-dist{ flex: 1 1 24rem; min-width: 18rem; }
+.typeex-dist-head{ display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.typeex-dist-title{ font-size: .9rem; font-weight: 600; color: var(--slate-900, #0f172a); }
+.typeex-dist-total{ font-size: .75rem; color: var(--slate-500, #64748b); font-variant-numeric: tabular-nums; }
+.typeex-bar{
+  display: flex; width: 100%; height: 22px; border-radius: 7px; overflow: hidden;
+  background: var(--slate-100, #f1f5f9); box-shadow: inset 0 0 0 1px var(--slate-200, #e2e8f0);
+}
+.typeex-seg{ height: 100%; transition: width .25s ease; }
+.typeex-seg.both{ background: var(--te-both); } .typeex-seg.gem{ background: var(--te-gem); }
+.typeex-seg.deb{ background: var(--te-deb); } .typeex-seg.neither{ background: var(--te-neither); }
+.typeex-chips{ display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; }
+.typeex-chip{ display: inline-flex; align-items: center; gap: 7px; font-size: .78rem; color: var(--slate-600, #475569); }
+.typeex-chip .dot{ width: 11px; height: 11px; border-radius: 3px; flex: none; }
+.typeex-chip.both .dot{ background: var(--te-both); } .typeex-chip.gem .dot{ background: var(--te-gem); }
+.typeex-chip.deb .dot{ background: var(--te-deb); } .typeex-chip.neither .dot{ background: var(--te-neither); }
+.typeex-chip b{ font-weight: 600; color: var(--slate-900, #0f172a); font-variant-numeric: tabular-nums; }
+.typeex-chip .pct{ color: var(--slate-400, #94a3b8); font-variant-numeric: tabular-nums; }
+
+/* Outcome filter */
+.typeex-filters{ display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: .55rem; }
+.typeex-filter{
+  font-family: inherit; font-size: .78rem; font-weight: 500; color: var(--slate-600, #475569);
+  background: var(--white, #fff); border: 1px solid var(--slate-200, #e2e8f0); border-radius: 7px;
+  padding: 5px 11px; cursor: pointer; line-height: 1.3; transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.typeex-filter:hover{ border-color: var(--slate-400, #94a3b8); }
+.typeex-filter.on{ background: var(--slate-900, #0f172a); border-color: var(--slate-900, #0f172a); color: var(--white, #fff); }
+.typeex-filter:focus-visible{ outline: 2px solid var(--indigo-600, #4f46e5); outline-offset: 1px; }
+.typeex-filter .n{ font-variant-numeric: tabular-nums; opacity: .6; margin-left: 5px; }
+
+.typeex-count{ font-size: .76rem; color: var(--slate-500, #64748b); margin-bottom: .7rem; font-variant-numeric: tabular-nums; }
+
+/* Example cards */
+.typeex-list{ display: flex; flex-direction: column; gap: 8px; max-height: 40rem; overflow-y: auto; padding-right: 4px; }
+.typeex-card{ background: var(--white, #fff); border: 1px solid var(--slate-200, #e2e8f0); border-radius: 10px; padding: 11px 14px; }
+.typeex-card-head{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; font-size: .7rem; }
+.typeex-src{ font-family: var(--mono, ui-monospace, monospace); font-weight: 600; color: var(--slate-700, #334155); background: var(--slate-100, #f1f5f9); border-radius: 5px; padding: 1px 7px; }
+.typeex-did{ font-family: var(--mono, ui-monospace, monospace); color: var(--slate-400, #94a3b8); margin-left: auto; overflow-wrap: anywhere; }
+.typeex-ctx{
+  font-family: var(--mono, ui-monospace, monospace); font-size: .84rem; line-height: 1.85;
+  background: var(--slate-50, #f8fafc); border-radius: 7px; padding: 9px 12px;
+  white-space: pre-wrap; word-break: break-word; color: var(--slate-700, #334155);
+}
+.typeex-ctx .hit{ background: var(--indigo-50, #eef2ff); color: var(--indigo-600, #4f46e5); box-shadow: inset 0 0 0 1px #c7d2fe; border-radius: 3px; font-weight: 600; padding: 0 2px; }
+.typeex-ctx .mut{ color: var(--slate-400, #94a3b8); }
+.typeex-badges{ display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.typeex-badge{ display: inline-flex; align-items: center; gap: 6px; font-size: .76rem; font-weight: 500; border-radius: 7px; padding: 3px 9px; border: 1px solid transparent; }
+.typeex-badge .who{ font-weight: 700; }
+.typeex-badge .arrow{ opacity: .7; }
+.typeex-badge .lbl{ font-family: var(--mono, ui-monospace, monospace); font-weight: 600; }
+.typeex-badge.caught{ background: #f0fdf4; border-color: #bbf7d0; color: var(--green-600, #16a34a); }
+.typeex-badge.missed{ background: #fef2f2; border-color: #fecaca; color: var(--red-600, #dc2626); }
+.typeex-empty{ font-size: .84rem; color: var(--slate-500, #64748b); background: var(--white, #fff); border: 1px dashed var(--slate-300, #cbd5e1); border-radius: 10px; padding: 18px; text-align: center; }
+
+@media (max-width: 640px){
+  .typeex-controls{ align-items: stretch; }
+  .typeex-selwrap{ width: 100%; }
+  .typeex-select{ width: 100%; }
+}
 /*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><main>
 <a class="hub-home" href="index.html" target="_top" title="Back to all docs"><span class="eyebrow">Data Acquisition · PII detection</span></a>
 <h1>deberta-pb2 vs Gemini — Detection Explorer</h1>
@@ -179,6 +394,179 @@ every detected span counts — compare deberta-vs-Gemini <i>within</i> a benchma
 <div class="viewer" id="viewer"><p class="vstat">Select a document from the list.</p></div>
 </div>
 
+<section class="pt-section">
+  <h2>Per-PII-type detection recall: deberta-pb2 vs Gemini</h2>
+  <p class="pt-lede">
+    Type-agnostic detection recall (fraction of each ground-truth type's characters the model
+    covered) on pii-bench-v2, sorted by benchmark support. The paired bars show who catches each
+    type; the fine-type F1 beneath each bar (predicted type == SSOT type) is shown as secondary
+    signal.
+  </p>
+
+  <div class="pt-callout">
+    <div class="pt-callout-title">Two things the table is hiding</div>
+    <ol class="pt-callout-list">
+      <li>
+        <strong>The aggregate recall gap is one type.</strong> deberta trails Gemini on overall
+        detection recall (<span class="pt-num">0.697</span> vs <span class="pt-num">0.768</span>),
+        but that entire deficit is the <strong>ID</strong> class: deberta detects
+        <span class="pt-bad">~1%</span> of ID characters versus Gemini's
+        <span class="pt-good">~86%</span>, and ID is ~10% of the benchmark. On nearly every
+        <em>other</em> type deberta recall is at or above Gemini.
+      </li>
+      <li>
+        <strong>Gemini's name F1 is a labeling artifact, not a detection failure.</strong> Gemini
+        detects names well (Full Name recall <span class="pt-num">0.744</span>, First
+        <span class="pt-num">0.881</span>, Last <span class="pt-num">0.964</span>) but its fine-type
+        F1 is <span class="pt-num">0.000</span> on Full / First / Last Name and GPS Coordinates —
+        the prod pipeline emits a coarse <code class="pt-code">name</code> label that never equals
+        the SSOT fine type. Read the bars, not the fine-F1, for Gemini's name and GPS ability.
+      </li>
+    </ol>
+  </div>
+
+  <table class="rt pt-table">
+    <thead>
+      <tr>
+        <th>PII type</th>
+        <th class="pt-support-h">Support (chars)</th>
+        <th>Detection recall &mdash; deberta-pb2 <span class="pt-swatch pt-swatch-deb"></span> vs Gemini <span class="pt-swatch pt-swatch-gem"></span></th>
+        <th class="pt-f1-h">Fine-type F1</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ff">Full Name</td>
+        <td class="n pt-support">30,320</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:76.5%"></span></span><span class="pt-val">0.765</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:74.4%"></span></span><span class="pt-val">0.744</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.745</span><span class="pt-f1-zero">g 0.000</span></td>
+      </tr>
+      <tr>
+        <td class="ff">Organization Name</td>
+        <td class="n pt-support">30,161</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:77.1%"></span></span><span class="pt-val">0.771</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:78.1%"></span></span><span class="pt-val">0.781</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.739</span><span>g 0.669</span></td>
+      </tr>
+      <tr class="pt-highlight">
+        <td class="ff">ID</td>
+        <td class="n pt-support">18,549</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:1.3%"></span></span><span class="pt-val pt-val-bad">0.013</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:85.9%"></span></span><span class="pt-val">0.859</span></div>
+        </td>
+        <td class="n pt-f1"><span class="pt-f1-zero">d 0.000</span><span>g 0.488</span></td>
+      </tr>
+      <tr>
+        <td class="ff">Street Address</td>
+        <td class="n pt-support">18,335</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:69.9%"></span></span><span class="pt-val">0.699</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:68.3%"></span></span><span class="pt-val">0.683</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.696</span><span>g 0.648</span></td>
+      </tr>
+      <tr>
+        <td class="ff">Email Address</td>
+        <td class="n pt-support">16,127</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:86.1%"></span></span><span class="pt-val">0.861</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:81.0%"></span></span><span class="pt-val">0.810</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.841</span><span>g 0.817</span></td>
+      </tr>
+      <tr>
+        <td class="ff">URL/Domain/Subdomain</td>
+        <td class="n pt-support">11,799</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:98.9%"></span></span><span class="pt-val">0.989</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:74.7%"></span></span><span class="pt-val">0.747</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.975</span><span>g 0.802</span></td>
+      </tr>
+      <tr>
+        <td class="ff">Username</td>
+        <td class="n pt-support">6,127</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:66.3%"></span></span><span class="pt-val">0.663</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:45.8%"></span></span><span class="pt-val">0.458</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.592</span><span>g 0.423</span></td>
+      </tr>
+      <tr>
+        <td class="ff">Phone Number</td>
+        <td class="n pt-support">3,720</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:95.2%"></span></span><span class="pt-val">0.952</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:98.9%"></span></span><span class="pt-val">0.989</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.871</span><span>g 0.648</span></td>
+      </tr>
+      <tr>
+        <td class="ff">First Name</td>
+        <td class="n pt-support">2,305</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:94.4%"></span></span><span class="pt-val">0.944</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:88.1%"></span></span><span class="pt-val">0.881</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.582</span><span class="pt-f1-zero">g 0.000</span></td>
+      </tr>
+      <tr>
+        <td class="ff">Last Name</td>
+        <td class="n pt-support">1,827</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:95.7%"></span></span><span class="pt-val">0.957</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:96.4%"></span></span><span class="pt-val">0.964</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.151</span><span class="pt-f1-zero">g 0.000</span></td>
+      </tr>
+      <tr>
+        <td class="ff">GPS Coordinates</td>
+        <td class="n pt-support">1,031</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:97.1%"></span></span><span class="pt-val">0.971</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:88.3%"></span></span><span class="pt-val">0.883</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.839</span><span class="pt-f1-zero">g 0.000</span></td>
+      </tr>
+      <tr>
+        <td class="ff">Date of Birth</td>
+        <td class="n pt-support">906</td>
+        <td class="pt-bars">
+          <div class="pt-barrow"><span class="pt-tag">deb</span><span class="pt-track"><span class="pt-bar pt-bar-deb" style="width:88.9%"></span></span><span class="pt-val">0.889</span></div>
+          <div class="pt-barrow"><span class="pt-tag">gem</span><span class="pt-track"><span class="pt-bar pt-bar-gem" style="width:89.4%"></span></span><span class="pt-val">0.894</span></div>
+        </td>
+        <td class="n pt-f1"><span>d 0.872</span><span class="pt-f1-zero">g 0.270</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="pt-note">
+    <strong>Contigo</strong> is absent here: its ground truth is type-agnostic, so it can't be split
+    by PII type. Its analog is the per-service table above.
+  </p>
+</section>
+<section class="typeex" id="typeex" aria-labelledby="typeex-h">
+  <h2 id="typeex-h">Examples by PII type</h2>
+  <p class="typeex-intro">Pick a PII type to see its <strong>true</strong> detection breakdown across the sample, then browse real ground-truth spans and whether <strong>deberta-pb2</strong> and <strong>Gemini</strong> caught each one. The distribution bar reflects all spans of the type; the cards below are a representative subset.</p>
+
+  <div class="typeex-controls">
+    <label class="typeex-selwrap">
+      <span class="typeex-sellabel">PII type</span>
+      <select id="typeex-select" class="typeex-select" aria-label="PII type"></select>
+    </label>
+    <div class="typeex-dist" id="typeex-dist" aria-live="polite"></div>
+  </div>
+
+  <div class="typeex-filters" id="typeex-filters" role="group" aria-label="Filter examples by outcome"></div>
+  <div class="typeex-count" id="typeex-count" aria-live="polite"></div>
+  <div class="typeex-list" id="typeex-list"></div>
+</section>
 
 <h2>Reference — deberta-pb2 detail</h2>
 <h3 style="font-size:.95rem;font-weight:600;margin:1.2em 0 .3em;color:var(--slate-700)">Cost &amp; time (GKE 1×L4 inference)</h3>
@@ -367,4 +755,139 @@ $('bench').querySelectorAll('button').forEach(b=>b.onclick=()=>{
 ['grp','q','dis'].forEach(id=>$(id).addEventListener('input',renderList));
 fillGroups();renderList();
 </script>
+<script id="typeex-data" type="application/json">{"Organization Name":{"counts":{"gem_only":181,"both":1143,"deb_only":179,"neither":240},"total_spans":1743,"examples":[{"doc_id":"conll2003:2557","src":"conll2003","pre":"\" They are now back in the ","hit":"YIT","post":" campus , \" an institute official who declined to be identif…","deb":false,"deb_type":null,"gem":true,"gem_type":"Organization Name","oc":"gem_only"},{"doc_id":"few_nerd:1119","src":"few_nerd","pre":"…ntrols the cement industry and is the chief supplier of the ","hit":"Merowe Dam construction firm","post":" .","deb":false,"deb_type":null,"gem":true,"gem_type":"Organization Name","oc":"gem_only"},{"doc_id":"conll2003:290","src":"conll2003","pre":"","hit":"Derbyshire","post":" , nine-wicket winners over Worcestershire , and Surrey , wh…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"few_nerd:0","src":"few_nerd","pre":"…lete , a date for oral argument is set and announced in the ","hit":"Wiener Zeitung","post":" , the Austrian government gazette .","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"gretel_finance:457","src":"gretel_finance","pre":"…ding\n\nTransportation Type: Temperature-Controlled\n\nCarrier: ","hit":"Arctic Express Shipping Inc.","post":"\nVessel: MV Polar Star\nVoyage: 001N-123456-21\n\nShipper: Fres…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"isotonic_pii_200k:1880","src":"isotonic_pii_200k","pre":"… dans l'éducation [-18.8541,-172.3383]. Il est parrainé par ","hit":"Checking Account","post":". Ils ont fait don de ₭1,2 million pour cela. Attendez-vous …","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"multinerd:566","src":"multinerd","pre":"He was twice awarded a travelling scholarship by the ","hit":"Society of Authors","post":" .","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"nvidia_nemotron:622","src":"nvidia_nemotron","pre":"…** _____________________________________\n\n**Company Name:** ","hit":"JusticeJoy Legal","post":"\n\n**Email Address:** a.omondi@justicejoylegal.co.ke\n\n**Affid…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"wikiann:440","src":"wikiann","pre":"He became a member of the ","hit":"Sigma Chi Fraternity","post":" as an undergraduate .","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"conll2003:290","src":"conll2003","pre":"Derbyshire , nine-wicket winners over Worcestershire , and ","hit":"Surrey","post":" , who thrashed Warwickshire by an innings and 164 runs , ca…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"few_nerd:819","src":"few_nerd","pre":"It was discovered by members of the ","hit":"United States Antarctic Service","post":" in flights from the `` Bear '' , February 1940 , and named …","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"gretel_finance:457","src":"gretel_finance","pre":"…Inc.\nVessel: MV Polar Star\nVoyage: 001N-123456-21\n\nShipper: ","hit":"Fresh Foods Inc.","post":"\nAddress: 1234 Fresh Foods Lane\nCity: Toronto\nPostal Code: M…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"isotonic_pii_200k:7815","src":"isotonic_pii_200k","pre":"Miss Ledner, hai ricevuto $356759.61 da ","hit":"Swaniawski, Blanda and Huels","post":". Per il programma Investor Marketing Agent del 6/00. Congra…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"multinerd:2140","src":"multinerd","pre":"He attended secondary school first at ","hit":"Nayland College","post":" , where he played hooker , and then , from 2000 to 2001 , N…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"…*Parties Involved:**\n\n- **Customer:**\n  - **Company Name:** ","hit":"Tunis Telecom Solutions","post":"\n  - **Customer ID:** CUS492187\n  - **Email:** imen723@tunis…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"wikiann:1991","src":"wikiann","pre":"","hit":"Brighton Institute of Modern Music","post":"","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"conll2003:290","src":"conll2003","pre":"Derbyshire , nine-wicket winners over ","hit":"Worcestershire","post":" , and Surrey , who thrashed Warwickshire by an innings and …","deb":true,"deb_type":"Full Name","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"few_nerd:3863","src":"few_nerd","pre":"He is an honorary fellow at ","hit":"the Foreign Policy Associatio","post":" n .","deb":true,"deb_type":"Organization Name","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"conll2003:1369","src":"conll2003","pre":"Rapeseed extraction was 3,850 rupees FOR ","hit":"Bedibunder","post":" and was 3,800-3,825 rupees FOR Bhavnagar .","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"few_nerd:8330","src":"few_nerd","pre":"…the BFBS3 TV channel , which already carried a selection of ","hit":"ITV","post":" programmes .","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"gretel_finance:873","src":"gretel_finance","pre":"…ical records and personal health information. It applies to ","hit":"health plans","post":", healthcare clearinghouses, and healthcare providers that c…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"Full Name":{"counts":{"gem_only":124,"both":1607,"deb_only":192,"neither":402},"total_spans":2325,"examples":[{"doc_id":"ai4privacy_300k:12471","src":"ai4privacy_300k","pre":"…a - Jerez de la Frontera - Andalucía - 11592\nF - ES - 278 - ","hit":"Camino","post":" de Burgos - Huérmeces - CL - 9150\nPrefiero no revelar - ES …","deb":false,"deb_type":null,"gem":true,"gem_type":"Street Address","oc":"gem_only"},{"doc_id":"ai4privacy_300k:6518","src":"ai4privacy_300k","pre":"…iente laboral: Muy positiva\n\n6. Participante: M, odilçatalde","hit":"gir","post":"m07\n- Nivel de satisfacción: Bajo\n- Opinión sobre el reconoc…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"conll2003:748","src":"conll2003","pre":"4. ","hit":"Dionne Rose","post":" ( Jamaica ) 12.88","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"few_nerd:658","src":"few_nerd","pre":"","hit":"Guy","post":" was the widower of his father 's cousin Sibylla of Jerusale…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:422","src":"gretel_finance","pre":"…olicy Number  | 1234567890             |\n| Policy Holder  | ","hit":"Maria Eriksson","post":"        |\n| Policy Type    | Fastighetsförsäkring   |\n| Stat…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"isotonic_pii_200k:72","src":"isotonic_pii_200k","pre":"Hi ","hit":"Miss","post":" Abshire, we've noticed that there have been several attempt…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"multinerd:1130","src":"multinerd","pre":"Former teammate ","hit":"Jamie Redknapp","post":" described him as \" ultra competitive and probably the most …","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"wikiann:102","src":"wikiann","pre":"","hit":"Robinson , Agnes Mary Frances","post":" ( 1897 ) .","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"ai4privacy_300k:24893","src":"ai4privacy_300k","pre":"…Full Name:** Heiress\n- **Sex:** Female\n- **Date of Birth:** ","hit":"December","post":" 10th, 1959\n- **Email:** 68KBP@protonmail.com\n- **Social Sec…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"conll2003:1276","src":"conll2003","pre":"In a speech in parliament on Tuesday , ","hit":"Khadga","post":" challenged the Maoist communists to \" win the people 's con…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"few_nerd:658","src":"few_nerd","pre":"Guy was the widower of his father 's cousin ","hit":"Sibylla","post":" of Jerusalem and was trying to retain the kingship of Jerus…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:541","src":"gretel_finance","pre":"… Franco Isle, South Valerie~\nN4*South Valerie*CA*A1B2C3*CA~\n","hit":"PER*PI*Name:*Friedhelm Lindner*~","post":"\nDTM*011:*20021025~\nITD*1*20*EA~\nIT1*1*EA*1*1.0000*20.00*IN*…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"isotonic_pii_200k:72","src":"isotonic_pii_200k","pre":"Hi Miss ","hit":"Abshire","post":", we've noticed that there have been several attempts to gai…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"multinerd:1678","src":"multinerd","pre":"Her great-grandmother was philanthropist ","hit":"Phoebe Hearst","post":" .","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"wikiann:1076","src":"wikiann","pre":"","hit":"Ilinka Mitreva","post":" ( 2002-2006 )","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"ai4privacy_300k:56074","src":"ai4privacy_300k","pre":"…ci-dessous:\n\n1. Patient: H  \n   Nom d'utilisateur: stoil.jam","hit":"hou","post":"r  \n   Numéro de sécurité sociale: 756-9546-80","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"conll2003:13265","src":"conll2003","pre":"","hit":"SANTIAGO","post":" 1996-12-05","deb":true,"deb_type":"Full Name","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"few_nerd:10666","src":"few_nerd","pre":"…` Khorāsān `` , in collaboration with Hossein Ardebili , `` ","hit":"Nou-bahār","post":" `` ( New Spring ) , and `` Tāzeh-bahār `` ( Fresh Spring ) …","deb":true,"deb_type":"Organization Name","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"ai4privacy_300k:1084","src":"ai4privacy_300k","pre":"…ITY, STATE, POSTCODE, SECADDRESS, IP, GIVENNAME, RESULTS\n1, ","hit":"Non-binary, Al","post":"derperson, senaid.litvin@gmail.com, M912589421174, 303061843…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"conll2003:5167","src":"conll2003","pre":"In a filing with the Securities and Exchnage Commission , ","hit":"Buffett","post":" said he bought 62,900 additional common shares of the Bosto…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"few_nerd:4214","src":"few_nerd","pre":"","hit":"Almuñécar","post":" 's coat of arms , which shows the turbaned heads of three B…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"gretel_finance:1506","src":"gretel_finance","pre":"…--------|-------\nEinkauf bei | 15.03.2022 | 50,00 € | EUR | ","hit":"Bezahlt","post":" | 50,00 €\n\"Lebensmittel\" | | | | |\nOnline-Einkauf | 20.03.2…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"ID":{"counts":{"gem_only":947,"both":12,"deb_only":4,"neither":59},"total_spans":1022,"examples":[{"doc_id":"ai4privacy_400k:197","src":"ai4privacy_400k","pre":"…della campagna. Puoi inviarmi la tua temporanea? La mia era ","hit":")kY6","post":"`.","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"gretel_finance:1506","src":"gretel_finance","pre":"…teninhaber: Manu María Olivera\nGültig bis: 05/23\nSwift-BIC: ","hit":"EWFPGBBM042","post":"\n\nAdresse: Granvägen 9, 12345 Berlin, Deutschland\n\nAbrechnun…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"isotonic_pii_200k:72","src":"isotonic_pii_200k","pre":"…everal attempts to gain unauthorised access to your account ","hit":"03432277","post":". The user agent Mozilla/5.0 (compatible; MSIE 10.0; Windows…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"nvidia_nemotron:863","src":"nvidia_nemotron","pre":"…ment Invoice**\n\n**Order Number:** #472983\n\n**Customer ID:** ","hit":"CL0034822","post":"\n\n**Customer Details:**\n- **First Name:** Justo\n- **Last Nam…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"ai4privacy_400k:8574","src":"ai4privacy_400k","pre":"…:4e:66. Coinvolgimento di Sarkaft (Maschio). Protezione con ","hit":"Hr*m;|N19","post":". Contatto telefonico: +990-229 599 0082.","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"gretel_finance:2052","src":"gretel_finance","pre":"…ent\n\nMontant demandé : 150,00 €\nNuméro de compte bancaire : ","hit":"848679526","post":"\n\nJe, soussigné(e), certifie que les informations fournies d…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"isotonic_pii_200k:72","src":"isotonic_pii_200k","pre":"… For your protection, please change your account's password ","hit":"3eyW51uQv9tH","post":".","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"nvidia_nemotron:863","src":"nvidia_nemotron","pre":"…8\n- For direct bank transfers, use the bank routing number: ","hit":"011234567","post":".","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"ai4privacy_400k:12010","src":"ai4privacy_400k","pre":"…e Schwierigkeiten mich einzuloggen. Hier ist mein Passwort: ","hit":"~B.p9c_TT","post":". Kannst du das überprüfen?","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"gretel_finance:2962","src":"gretel_finance","pre":"…ederland\n\nCoördinator Klantrelaties\n\n[bank_routing_number]: ","hit":"316343507","post":"\n[local_latlng]: Lat: -7.1390485, Long: 61","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"isotonic_pii_200k:103","src":"isotonic_pii_200k","pre":"…l needs to fill out the form and get an individual PIN like ","hit":"2552","post":" in person at 59886.","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"…ompany Name:** Tunis Telecom Solutions\n  - **Customer ID:** ","hit":"CUS492187","post":"\n  - **Email:** imen723@tunistelecom.tn\n  - **Phone Number:*…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"ai4privacy_400k:19760","src":"ai4privacy_400k","pre":"…ir mit den Planungen? Denke daran, die Anmeldeinformationen ","hit":"M^\"2m`03pS","post":" und die IBAN DE21 Z1XZ IRBV B4SN LRQX M1 in unserer Datenba…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"gretel_finance:3967","src":"gretel_finance","pre":"…into these Corporate Governance Guidelines:\n\n- Customer ID: ","hit":"F9433185","post":"\n- IBAN: IT19W6974427360501127206199\n- Name: Iain Kieran Wal…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"isotonic_pii_200k:757","src":"isotonic_pii_200k","pre":"Could you please send me the password ","hit":"Ig4KWWsSARo3","post":" to access the materials for our next online trauma-counseli…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"…om Solutions and the customer identified by the customer ID ","hit":"CUS492187","post":". The dispute involves the customer's internet service, spec…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"ai4privacy_400k:30201","src":"ai4privacy_400k","pre":"…ncaire à PKB Privatbank AG. Utilise un mot de passe du type ","hit":"N9gI\\J@g","post":".","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"gretel_finance:3967","src":"gretel_finance","pre":"…ate Governance Guidelines:\n\n- Customer ID: F9433185\n- IBAN: ","hit":"IT19W6974427360501127206199","post":"\n- Name: Iain Kieran Walton\n- Street Address: 706 Laura unio…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"isotonic_pii_200k:1343","src":"isotonic_pii_200k","pre":"…bitte in Libyan Dinar auf unsere Litecoin-Brieftasche unter ","hit":"Mse2ACUzhnKLCULf1KCEjHPcMkMRPAXvM","post":".","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"…com.tn.\n\n**Service Agreement Details:**\n\n- **Customer ID:** ","hit":"CUS492187","post":"\n- **Service Type:** Internet\n- **Language:** Arabic\n\n**Reso…","deb":false,"deb_type":null,"gem":true,"gem_type":"ID","oc":"gem_only"},{"doc_id":"gretel_finance:10279","src":"gretel_finance","pre":"…erten Notfall-Vorsorgeleitfaden zukommen zu lassen. Wir bei ","hit":"BKGFUSCN633","post":" sind stets darum bemüht, Ihnen die bestmögliche Unterstützu…","deb":true,"deb_type":"Organization Name","gem":true,"gem_type":"Organization Name","oc":"both"},{"doc_id":"nvidia_nemotron:48150","src":"nvidia_nemotron","pre":"…you have the following:\n\n- User Name: Thilina88\n- Password: ","hit":"Sunrise@WhaleDolphin","post":"\n- A valid email address: t.p@lankaid.com\n- A device capable…","deb":true,"deb_type":"Email Address","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"ai4privacy_400k:6599","src":"ai4privacy_400k","pre":"Hey Contract, update your ","hit":"9v*}~,72MsM","post":" and also, send over the NCMEUSQHQRW details for the upcomin…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"Username":{"counts":{"gem_only":58,"both":151,"deb_only":7,"neither":90},"total_spans":306,"examples":[{"doc_id":"ai4privacy_300k:4433","src":"ai4privacy_300k","pre":"ername\":\"","hit":"CP3030","post":"\",\n         \"Email\":\"CP30@hotmail.com\",\n         \"SocialNumb…","deb":false,"deb_type":null,"gem":true,"gem_type":"Username","oc":"gem_only"},{"doc_id":"ai4privacy_400k:1081","src":"ai4privacy_400k","pre":"Hallo ","hit":"iori","post":", vergeet je IMEI 358383712442811 morgen niet. We hebben een…","deb":false,"deb_type":null,"gem":true,"gem_type":"Username","oc":"gem_only"},{"doc_id":"isotonic_pii_200k:16735","src":"isotonic_pii_200k","pre":"…s.org. Faites-nous savoir si vous rencontrez des problèmes, ","hit":"Jeramy.Hammes","post":".","deb":false,"deb_type":null,"gem":true,"gem_type":"Identity*","oc":"gem_only"},{"doc_id":"nvidia_nemotron:89397","src":"nvidia_nemotron","pre":"…ment document for Al Bayan Technologies is being drafted by ","hit":"abdullahalthani","post":", who is a medical health services manager.  The document wi…","deb":false,"deb_type":null,"gem":true,"gem_type":"Username","oc":"gem_only"},{"doc_id":"ai4privacy_300k:8986","src":"ai4privacy_300k","pre":"… à la dépendance émotionnelle. \\n\\n\n\n- Nom d'utilisateur: 83","hit":"evangeline.evdokimov \\n\n- Té","post":"léphone: +14.23702 2498 \\n\n- Risques identifiés liés à l'éta…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"ai4privacy_400k:197","src":"ai4privacy_400k","pre":"","hit":"1975shayana.bauersima","post":", ho dimenticato la password per accedere al portale della c…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"gretel_finance:14518","src":"gretel_finance","pre":"…oë\nLast Name: Weijters\nDate of Birth: 03.12.1988\nUser Name: ","hit":"gcanales","post":"\n\nContact Information:\nStreet Address: 11, chemin Suzanne Th…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"isotonic_pii_200k:6405","src":"isotonic_pii_200k","pre":"…es Curriculum zu überprüfen. Ihr einzigartiger Login lautet ","hit":"Enrico_Schmitt92","post":" und das Passwort lautet sGLr4ibTYLfC.","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"nvidia_nemotron:2567","src":"nvidia_nemotron","pre":"…initial deployment environment.\n   - **Responsible Party**: ","hit":"l.juliao","post":"\n   - **Due Date**: 05.08.2026\n   - **Completion Status**: P…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"ai4privacy_300k:12027","src":"ai4privacy_300k","pre":"ristova-nikolova, ","hit":"voermans19","post":", mohaneswary.polácek, IP und canio.hlavka30, die jeweils wi…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"ai4privacy_400k:2297","src":"ai4privacy_400k","pre":"Le présent accord a été conclu entre Edson et ","hit":"wrjxhqqxtkwqj72862","post":" pour des services logistiques. Les responsabilités sont déf…","deb":true,"deb_type":"Username","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"gretel_finance:34426","src":"gretel_finance","pre":"…l Name: Carolyn S. Day\n\nEmployee ID: B-305609-Z\n\nUser Name: ","hit":"andrea.branch","post":"\n\nStreet Address: 79344 Lisa Forges\n\nContact Information:\n\n*…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"isotonic_pii_200k:6675","src":"isotonic_pii_200k","pre":"Non riesco ad accedere al test di ","hit":"Victor15","post":". Bloccato all'indirizzo fae7:301f:becd:e8bf:a4ec:fa05:5a02:…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2567","src":"nvidia_nemotron","pre":"…stem with the provided API key.\n   - **Responsible Party**: ","hit":"l.juliao","post":"\n   - **API Key**: A9mBk2pQsT1jV4xW7zLrY5eCfN8tM3hV\n   - **D…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"ai4privacy_300k:12027","src":"ai4privacy_300k","pre":"ristova-nikolova, voermans19, ","hit":"mohaneswary.polácek","post":", IP und canio.hlavka30, die jeweils wichtige Einsichten und…","deb":true,"deb_type":"Username","gem":true,"gem_type":"Username","oc":"both"},{"doc_id":"ai4privacy_300k:12027","src":"ai4privacy_300k","pre":"ristova-nikolova, voermans19, mohaneswary.polácek, ","hit":"IP","post":" und canio.hlavka30, die jeweils wichtige Einsichten und Ans…","deb":true,"deb_type":"Username","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"ai4privacy_300k:1107","src":"ai4privacy_300k","pre":"ve à ces évaluations. ","hit":"09GS","post":" a joué un rôle clé en fournissant des données précieuses po…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"ai4privacy_400k:36931","src":"ai4privacy_400k","pre":"Salut ","hit":"LRS","post":", on utilise toujours 0x449f851e0b0fa8fe4a8cd475abd5b656fd70…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"gretel_finance:11653","src":"gretel_finance","pre":"…e>\n <us-gaap:DateOfBirth>1940-07-20</us-gaap:DateOfBirth>\n <","hit":"us-gaap:UserName>frederick9367</us-gaap:UserName","post":">\n <us-gaap:StreetAddress>713 Hamilton Walk</us-gaap:StreetA…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"nvidia_nemotron:49412","src":"nvidia_nemotron","pre":"…biometric_type,authentication_status,device_id,biometric_id\n","hit":"2023-03-18T22:32:12,yelena_ivanov,facial","post":" recognition,success,302784592176835,BIO-5728146934\n```","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"ai4privacy_300k:1409","src":"ai4privacy_300k","pre":"…** 24/02/1997\n     - **Username:** 31parvati\n  2. **Rescuer ","hit":"B:**\n     - **Date","post":" of Birth:** februari/99\n     - **Username:** wunderwald26\n …","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"ai4privacy_300k:1409","src":"ai4privacy_300k","pre":"…\n     - **Username:** wunderwald26\n  3. **Rescuer C:**\n     ","hit":"- **Date of Birth","post":":** 1956-01-22T00:00:00\n     - **Username:** aiqhtvzqkjwhp78…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"Street Address":{"counts":{"gem_only":58,"both":425,"deb_only":70,"neither":122},"total_spans":675,"examples":[{"doc_id":"ai4privacy_300k:7500","src":"ai4privacy_300k","pre":"…oductivity.\"\n\n**Participant 2:**  \n- **Location:** 544, Aebi","hit":"weg, Len","post":"k, BE, 3775, Cabin 52  \n- \"That sounds like a great initiati…","deb":false,"deb_type":null,"gem":true,"gem_type":"Street Address","oc":"gem_only"},{"doc_id":"ai4privacy_400k:12339","src":"ai4privacy_400k","pre":"E-Mail: 12dawod.serna@tutanota.com. Adresse: ","hit":"Morgental","post":" 1.1, 8125 CH. Alter: 8. Organisation: Ackermann LLC. Termin…","deb":false,"deb_type":null,"gem":true,"gem_type":"Street Address","oc":"gem_only"},{"doc_id":"ai4privacy_300k:1084","src":"ai4privacy_300k","pre":"…d.litvin@gmail.com, M912589421174, 303061843, US, 931, West ","hit":"Rita Street","post":", Wichita, KS, 67209-3260, Barracks 537, 78a7:5c11:5708:c2d:…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"ai4privacy_400k:1648","src":"ai4privacy_400k","pre":"…lo assicurativo per cliente 8 anni</form><p>Indirizzo: 1.2, ","hit":"Strickhof","post":", 8372</p><p>Numero Carta: 2400182186</p><p>Ethereum: 0x750a…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"gretel_finance:422","src":"gretel_finance","pre":"…------------------------------- |\n| Property Address      | ","hit":"Sankt Eriksgatan 1, 112 34 Stockholm","post":"    |\n| Property Type         | Bostadshus                  …","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"isotonic_pii_200k:5595","src":"isotonic_pii_200k","pre":"…rammée pour démarrer à 01 le 5th January dans le cabinet de ","hit":"Heron Close","post":". Une facture de C$260.5200k peut être payée en espèces ou p…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"nvidia_nemotron:863","src":"nvidia_nemotron","pre":"…er:** 551-471-8954\n- **Country:** USA\n- **Street Address:** ","hit":"185 Brinkley Road","post":"\n\n**Invoice Date:** 15/07/2026\n\n**Itemized List of Products:…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"ai4privacy_300k:4923","src":"ai4privacy_300k","pre":"…00\\\",\\\"756 2410 6331 55\\\",\\\"2050233099\\\",\\\"CH\\\",\\\"117\\\",\\\"Ob","hit":"bortstrasse\\","post":"\",\\\"Glarus Süd\\\",\\\"GL\\\",\\\"8783\\\",\\\"Cabin 354\\\",\\\"eaa7:1a2a:1…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"ai4privacy_400k:6553","src":"ai4privacy_400k","pre":"…eug-ID LK54JDFP0HYLA0DPE, um mit den Gemeinschaften auf der ","hit":"Ratheimer Straße","post":" zu arbeiten.</p>","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"gretel_finance:541","src":"gretel_finance","pre":"…name: Friedhelm Lindner (in PER segment)\n- street\\_address: ","hit":"523 Franco Isle, South Valerie","post":" (in N3 segment)","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"isotonic_pii_200k:13631","src":"isotonic_pii_200k","pre":"La Foire du Bien-être sera installée au ","hit":"4617","post":", Suite 325. J'espère vous y voir, Chauncey!","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"nvidia_nemotron:3760","src":"nvidia_nemotron","pre":"… provider shall provide services to the property located at ","hit":"10 Downing Street","post":", Great Yarmouth, NR3 3ED, United Kingdom.\n\n**2. PROPERTY DE…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"ai4privacy_300k:5216","src":"ai4privacy_300k","pre":"s: 641 ","hit":"Chemin des Pradas","post":"  \\n   Stad: Les Mées  \\n   Staat: PAC  \\n   Postcode: 4190\\…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"ai4privacy_400k:9408","src":"ai4privacy_400k","pre":"…, wir haben festgestellt, dass deine Adresse auf der Straße ","hit":"Sandstraße","post":" nicht aktuell ist. ","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"gretel_finance:978","src":"gretel_finance","pre":"…nvestment opportunity.\n\nII. Issuing Entity\n\nXYZ Corporation\n","hit":"18358 Denise Cliffs","post":"\nEtobicoke, ON M9W 6E6\nCanada\n\nIII. Terms of the Offering\n\nW…","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"isotonic_pii_200k:13631","src":"isotonic_pii_200k","pre":"La Foire du Bien-être sera installée au 4617, ","hit":"Suite 325","post":". J'espère vous y voir, Chauncey!","deb":true,"deb_type":"Street Address","gem":true,"gem_type":"Street Address","oc":"both"},{"doc_id":"ai4privacy_300k:38597","src":"ai4privacy_300k","pre":"{","hit":"Nuova Strada del Passo del San Gottardo","post":"}}, {{Airolo}}, {{TI}}, {{6780}}\n\n2. Objectifs du Programme:…","deb":true,"deb_type":"Street Address","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"gretel_finance:2508","src":"gretel_finance","pre":"…Date: 20230215\n59-MatchNum: 1\n60-MaxShow: 1000\n96-TraderID: ","hit":"0 Nystigen, Luleå","post":"\n\nEndMsg","deb":true,"deb_type":"Street Address","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"ai4privacy_300k:462","src":"ai4privacy_300k","pre":"…ING\": \"49\",\n            \"STREET\": \"Wachlange\",\n            \"","hit":"CITY\": \"Spring","post":"e\",\n            \"STATE\": \"NI\",\n            \"POSTCODE\": \"3183…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"gretel_finance:817","src":"gretel_finance","pre":"… [Your State or Province], with its head office located at [","hit":"Your Address","post":"] (hereinafter referred to as the \"Insured\"), and [Our Compa…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"isotonic_pii_200k:6956","src":"isotonic_pii_200k","pre":"… is not as expected recently. Do you have all the data from ","hit":"307","post":"? Maybe it can give some insights.","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"ai4privacy_300k:1922","src":"ai4privacy_300k","pre":"…    País: [ES]\nEdificio: [377]     Calle: [Camino a Cogollos","hit":"]\nCiudad: [Cogollos","post":" de Guadix]     Provincia: [AN]     Código Postal: [18518]\n\n…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"Date of Birth":{"counts":{"gem_only":1,"both":79,"deb_only":1,"neither":5},"total_spans":86,"examples":[{"doc_id":"gretel_finance:66127","src":"gretel_finance","pre":"… Paix\n92130 Issy-les-Moulineaux\nFrance\n\nDATE DE NAISSANCE : ","hit":"30/11/1920","post":"\n\nDÉSIGNATION DES MARCHANDISES : \nMarchandises diverses\n\nNUM…","deb":false,"deb_type":null,"gem":true,"gem_type":"Date of Birth","oc":"gem_only"},{"doc_id":"gretel_finance:1951","src":"gretel_finance","pre":"…ween América Conde-Batlle, a person with a date of birth of ","hit":"1993-09-23","post":" and having an email address of [khill@cline.biz](mailto:khi…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:3018","src":"nvidia_nemotron","pre":"Kofi Agyei, born on ","hit":"1945-04-16","post":", with the medical record number 000834671, has the followin…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:3683","src":"gretel_finance","pre":"…mith\nAddress: 123 Maple Street, Anytown, USA\nDate of Birth: ","hit":"01/01/1980","post":"\nMember ID: 123456789\nGroup ID: ABC123\n\nHealthcare Provider …","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:3830","src":"nvidia_nemotron","pre":"…d number 1234-56-7890 pertains to Oliver Hendricks, born on ","hit":"2006-10-14","post":". The specimen was received for microscopic examination. The…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:11842","src":"gretel_finance","pre":"…ntact Information:**\n- Name: Margot Clémence Lejeune\n- DOB: ","hit":"2018-08-01","post":"\n- Address: 24134 Marquez Course, Apt. 2034\n- Email: [margot…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:6928","src":"nvidia_nemotron","pre":"Julian Galvis, born on ","hit":"1990-09-11","post":", filed a Worker's Compensation Claim on 2025-01-06T15:38:08…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:14518","src":"gretel_finance","pre":"…Weijters\nFirst Name: Zoë\nLast Name: Weijters\nDate of Birth: ","hit":"03.12.1988","post":"\nUser Name: gcanales\n\nContact Information:\nStreet Address: 1…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:7044","src":"nvidia_nemotron","pre":"…trakul, with a medical record number 1837-42-53-99, born on ","hit":"1982-08-30","post":". Pongsak is covered under the health plan beneficiary numbe…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:32564","src":"gretel_finance","pre":"…Der **Versicherungsnehmer** \\[\"Hugo Mustermann\", geboren am ","hit":"01.01.1980","post":", Wohnort: Musterstraße 1, 12345 Musterstadt\\], schließt mit…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:9329","src":"nvidia_nemotron","pre":"This Healthcare Authorization Form is for Lorenzo, born on ","hit":"1964-05-26","post":". The authorization includes the biometric identifier BIO-57…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:40916","src":"gretel_finance","pre":"…oan Application\n\nFull Name: John Michael Doe\nDate of Birth: ","hit":"01/10/1985","post":"\nContact Address: 123 Maple Street, Toronto, ON, Canada\nEmai…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:10329","src":"nvidia_nemotron","pre":"…192.168.1.100:8080/shared-access-docs. The user was born on ","hit":"1942-07-13","post":" and has the account number C78925634.\n\n2. **Access Levels**…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:49332","src":"gretel_finance","pre":"…e completo: Jessica Bartlett-Gray\n   - Fecha de nacimiento: ","hit":"18/08/1989","post":"\n   - Dirección: 770, boulevard Monique Guilbert\n\n2. Informa…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:10329","src":"nvidia_nemotron","pre":"…he user's account number is C78925634. The user was born on ","hit":"1942-07-13","post":".\n\n6. **Access Control**: Access to shared resources is cont…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:50925","src":"gretel_finance","pre":"…\n\nPatient Information\n\nFull Name: John Smith\nDate of Birth: ","hit":"01/01/1950","post":"\nSocial Security Number: 123-45-6789\nDate of Diagnosis: 01/0…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:12752","src":"nvidia_nemotron","pre":"Daniel Greene was born on ","hit":"1973-02-27","post":", and resides at 11 Casper Dr. His medical record number is …","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:51804","src":"gretel_finance","pre":"---\nCredit Application\n\nFull Name: John Doe\nDate of Birth: ","hit":"01/01/1980","post":"\n\nContact Details:\nAddress: 45, Baker Street, London, NW1 6X…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:13026","src":"nvidia_nemotron","pre":"…                                 |\n| Date of Birth        | ","hit":"1956-09-10","post":"                                      |\n| Email             …","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:63851","src":"gretel_finance","pre":"…ormation**\n\nFull Name: Johnathan Michael Doe\nDate of Birth: ","hit":"08/12/1980","post":"\nSocial Security Number: 123-45-6789\nContact Address: 123 Ma…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"nvidia_nemotron:14177","src":"nvidia_nemotron","pre":"…Personal Information**\n- First Name: Layla\n- Date of Birth: ","hit":"2002-09-11","post":"\n- Street Address: Villa 12, Al Safa Street\n\n**Identificatio…","deb":true,"deb_type":"Date of Birth","gem":true,"gem_type":"Date of Birth","oc":"both"},{"doc_id":"gretel_finance:541","src":"gretel_finance","pre":"…ument includes the following PII values:\n- date\\_of\\_birth: ","hit":"2002-10-25","post":" (in DTM segment)\n- user\\_name: barrett32 (used as the Inter…","deb":true,"deb_type":"Date of Birth","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"gretel_finance:11653","src":"gretel_finance","pre":"…\n <us-gaap:AnalysisDate>2022-01-31</us-gaap:AnalysisDate>\n <","hit":"us-gaap:DateOfBirth>1940-07-20</us-gaap:DateOfBirth","post":">\n <us-gaap:UserName>frederick9367</us-gaap:UserName>\n <us-g…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"First Name":{"counts":{"gem_only":0,"both":347,"deb_only":19,"neither":3},"total_spans":369,"examples":[{"doc_id":"gretel_finance:3407","src":"gretel_finance","pre":"…lease provide the following information:\n\n1. **Full Name:** ","hit":"Alyssa","post":" Lucia Giulietta Sraffa\n2. **Mailing Address:** 21253 Christ…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:622","src":"nvidia_nemotron","pre":"…nowledgement\n\n**Affiant's Information:**\n\n**Printed Name:** ","hit":"Atong","post":" Omondi\n\n**Signature:** ____________________________________…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:21030","src":"gretel_finance","pre":"… MEDICINE CLAIM FORM**\n\nPatient Information:\n\n* First Name: ","hit":"Klaus-Dieter","post":"\n* Last Name: Harris\n* Address: 94844 Julia Groves, 24151, W…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:622","src":"nvidia_nemotron","pre":"…dress:** a.omondi@justicejoylegal.co.ke\n\n**Affidavit:**\n\nI, ","hit":"Atong","post":" Omondi, of the country of Kenya, being first duly sworn on …","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:24047","src":"gretel_finance","pre":"…k ISDA Definition, the following definitions shall apply:\n\n\"","hit":"Benito","post":"\" shall mean the individual named Benito.\n\n\"Chelsea May\" sha…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:863","src":"nvidia_nemotron","pre":"…er ID:** CL0034822\n\n**Customer Details:**\n- **First Name:** ","hit":"Justo","post":"\n- **Last Name:** Freire\n- **Email:** justofreire1992@yahoo.…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:24047","src":"gretel_finance","pre":"…ions shall apply:\n\n\"Benito\" shall mean the individual named ","hit":"Benito","post":".\n\n\"Chelsea May\" shall mean the individual named Chelsea May…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:1977","src":"nvidia_nemotron","pre":"The project, as designed by ","hit":"Jennifer","post":" Martin of BuildFusion, includes detailed engineering plans …","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:24047","src":"gretel_finance","pre":"…tions, or political conditions in any jurisdiction in which ","hit":"Benito","post":", Chelsea May, or any of their respective affiliates, subsid…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:1977","src":"nvidia_nemotron","pre":"…uring the design phase. The designer information, including ","hit":"Jennifer","post":" Martin's details, is included for reference.","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:35977","src":"gretel_finance","pre":"…urrency Exchange Rate Sheet\n\nDate: 01/01/2023\nPrepared for: ","hit":"Angelica","post":"\nAddress: Idrottsgränd 95\n\nInflation-Adjusted Exchange Rates…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2310","src":"nvidia_nemotron","pre":"Hi, my name is ","hit":"Jacobs","post":". I am a volunteer from Georgia, USA. I am a massage therapi…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:35977","src":"gretel_finance","pre":"… unit of the target currency.\n* This sheet was prepared for ","hit":"Angelica","post":" and is intended for use at the provided address.","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2709","src":"nvidia_nemotron","pre":"**Case Number:** 2023-1234\n\n**Witness Name:** ","hit":"Sok","post":" Chum\n\n**Date of Testimony:** 15.08.2023\n\n**Court Location:*…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:38263","src":"gretel_finance","pre":"…Ergebnisse ist.\n\nAnlagebeispiel\n--------------\n\nAngenommen, ","hit":"Agathe","post":" Johan P","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2709","src":"nvidia_nemotron","pre":"…\n\n**Transcribed Record of Statements:**\n\n1. **Oath:**\n   I, ","hit":"Sok","post":" Chum, hereby swear under oath that the statements I am abou…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:53441","src":"gretel_finance","pre":"…gress\n\nAssigned To: John Doe\n\n**User Details**\n\nFirst Name: ","hit":"Eligia","post":"\nLast Name: N/A\nContact Number: N/A\nEmail Address: [eligia.e…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2709","src":"nvidia_nemotron","pre":"…nd belief.\n\n2. **Personal Information:**\n   My full name is ","hit":"Sok","post":" Chum. My national id is 1200213004865. I am a Kampuchea Khm…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:55716","src":"gretel_finance","pre":"… übermitteln wir Ihnen die Kreditkartenabrechnung für Herrn ","hit":"Hugh","post":" Kerstin E. Holmberg für den Zeitraum 01.01.2023 - 31.01.202…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:3018","src":"nvidia_nemotron","pre":"","hit":"Kofi","post":" Agyei, born on 1945-04-16, with the medical record number 0…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:65816","src":"gretel_finance","pre":"…E TAX RETURN**\n\n**FISCAL YEAR 2021**\n\n**Corporation Name:** ","hit":"Juri","post":" Marie Benoît Blondel Consulting Inc.\n\n**Mailing Address:** …","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:7044","src":"nvidia_nemotron","pre":"… a medical record number 1837-42-53-99, born on 1982-08-30. ","hit":"Pongsak","post":" is covered under the health plan beneficiary number M4T5-LI…","deb":true,"deb_type":"First Name","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"gretel_finance:51253","src":"gretel_finance","pre":"…>\n                  <underlyingAsset>\n                     <","hit":"underlyingAssetName>Alfred</underlyingAssetName","post":">\n                     <underlyingAssetType>Equity</underlyi…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"Last Name":{"counts":{"gem_only":4,"both":269,"deb_only":3,"neither":3},"total_spans":279,"examples":[{"doc_id":"gretel_finance:50260","src":"gretel_finance","pre":"…eriod>\n </xbrli:context>\n <stakeholdercomm:content>Dear Mr. ","hit":"Booth","post":", We are pleased to share our 2021 annual report with you. O…","deb":false,"deb_type":null,"gem":true,"gem_type":"Identity*","oc":"gem_only"},{"doc_id":"gretel_finance:1996","src":"gretel_finance","pre":"…es données d'identification, telles que le nom de famille : ","hit":"Stoffelsz","post":"\n\n2. UTILISATION DES DONNÉES\n\nNous utilisons vos données pou…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:622","src":"nvidia_nemotron","pre":"…gement\n\n**Affiant's Information:**\n\n**Printed Name:** Atong ","hit":"Omondi","post":"\n\n**Signature:** _____________________________________\n\n**Co…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:63810","src":"gretel_finance","pre":"…202'\nNAD+BY+5555555555:1234567890::9'\nNAD+SU+91+rue Patrick ","hit":"Robert^Svensson","post":"'\nLIN+1++9999999999:1:1000:EA:10.50:10.50'\nMOA+10.50:10.50'\n…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:622","src":"nvidia_nemotron","pre":"…** a.omondi@justicejoylegal.co.ke\n\n**Affidavit:**\n\nI, Atong ","hit":"Omondi","post":", of the country of Kenya, being first duly sworn on oath, d…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:70921","src":"gretel_finance","pre":"…dge, Jamesmouth\n3. Phone Number: 353-581-5504\n4. Last Name: ","hit":"Zaragoza","post":"\n5. Email Address: \n6. Date of Birth: \n7. Social Security Nu…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:863","src":"nvidia_nemotron","pre":"…ustomer Details:**\n- **First Name:** Justo\n- **Last Name:** ","hit":"Freire","post":"\n- **Email:** justofreire1992@yahoo.com\n- **Phone Number:** …","deb":true,"deb_type":"Last Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:80387","src":"gretel_finance","pre":"…411:55:12:333\\\n:25:FITBXXX:\\\n:28C:863155\\\n:50K:/FI2TBXXX:\\\n:","hit":"52A:Fajardo","post":", Emin Hans-Werner Hermann:898 Lotweg, 7002LD, Geersdijk:IT:…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:1977","src":"nvidia_nemotron","pre":"The project, as designed by Jennifer ","hit":"Martin","post":" of BuildFusion, includes detailed engineering plans which c…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"gretel_finance:85371","src":"gretel_finance","pre":"…751, serving as the Chief Executive Officer and Director.\n- ","hit":"Keudel","post":", serving as the Chief Financial Officer and Director.\n\n2. C…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:1977","src":"nvidia_nemotron","pre":"… design phase. The designer information, including Jennifer ","hit":"Martin's","post":" details, is included for reference.","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2709","src":"nvidia_nemotron","pre":"**Case Number:** 2023-1234\n\n**Witness Name:** Sok ","hit":"Chum","post":"\n\n**Date of Testimony:** 15.08.2023\n\n**Court Location:** Phn…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2709","src":"nvidia_nemotron","pre":"…Transcribed Record of Statements:**\n\n1. **Oath:**\n   I, Sok ","hit":"Chum","post":", hereby swear under oath that the statements I am about to …","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:2709","src":"nvidia_nemotron","pre":"…elief.\n\n2. **Personal Information:**\n   My full name is Sok ","hit":"Chum","post":". My national id is 1200213004865. I am a Kampuchea Khmer an…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:3018","src":"nvidia_nemotron","pre":"Kofi ","hit":"Agyei","post":", born on 1945-04-16, with the medical record number 0008346…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:3830","src":"nvidia_nemotron","pre":"…r the medical record number 1234-56-7890 pertains to Oliver ","hit":"Hendricks","post":", born on 2006-10-14. The specimen was received for microsco…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:3830","src":"nvidia_nemotron","pre":"…s received for microscopic examination. The patient, Oliver ","hit":"Hendricks","post":", is 18 years old and has a blood type of A positive. The sp…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:5208","src":"nvidia_nemotron","pre":"…FENDANT:**\n\n**CASE NUMBER:** 784632\n\n**SUBPOENA**\n\nTO: Luis ","hit":"Toribio","post":", an individual\n\nYOU ARE COMMANDED to appear at the hearing …","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:5608","src":"nvidia_nemotron","pre":"…9812743650 |\n|---|---|\n| First Name | Nadir |\n| Last Name | ","hit":"Bensalem","post":" |\n| Email | bensalem@algeriabiopharma.dz |\n| Phone Number |…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:6205","src":"nvidia_nemotron","pre":"…stry, and we are proud to share the testimonial from Tushar ","hit":"Singh","post":", a customer service representative, who has had a transform…","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:6205","src":"nvidia_nemotron","pre":"…mer Background**\n\n- **First Name**: Tushar\n- **Last Name**: ","hit":"Singh","post":"\n- **Occupation**: customer service representative\n- **Educa…","deb":true,"deb_type":"First Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:6205","src":"nvidia_nemotron","pre":"…or's degree\n- **Company Name**: Harvest Media Group\n\nTushar ","hit":"Singh","post":", a customer service representative at Harvest Media Group, …","deb":true,"deb_type":"Full Name","gem":true,"gem_type":"Identity*","oc":"both"},{"doc_id":"nvidia_nemotron:9462","src":"nvidia_nemotron","pre":"…mation**\n\n    - **First Name:** Angela\n    - **Last Name:** ","hit":"Laursen","post":"\n    - **Social Security Number:** 396-22-4455\n    - **Stree…","deb":true,"deb_type":"Full Name","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"gretel_finance:80387","src":"gretel_finance","pre":"…0000000313C5:\\\n:57A:FITBXXX:\\\n:59:/CNST/IT/EUR:123456.78:\\\n:","hit":"70:/1234567890/Fajardo","post":", Emin Hans-Werner Hermann:898 Lotweg, 7002LD, Geersdijk:IT:…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"Email Address":{"counts":{"gem_only":17,"both":402,"deb_only":55,"neither":76},"total_spans":550,"examples":[{"doc_id":"ai4privacy_300k:19401","src":"ai4privacy_300k","pre":"…           \"email\": \"LG@outlook.com\",\n            \"phone\": \"","hit":"0031-92-798 6536","post":"\"\n         },\n         \"identification\": {\n            \"pass…","deb":false,"deb_type":null,"gem":true,"gem_type":"Phone Number","oc":"gem_only"},{"doc_id":"ai4privacy_300k:1084","src":"ai4privacy_300k","pre":"…RESS, IP, GIVENNAME, RESULTS\n1, Non-binary, Alderperson, sen","hit":"aid.litvin@gmail.com, M91","post":"2589421174, 303061843, US, 931, West Rita Street, Wichita, K…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"ai4privacy_400k:4310","src":"ai4privacy_400k","pre":"…f 89974586576406</li><li>License: 0449850558</li><li>Email: ","hit":"nepe.zebary@outlook.com","post":"</li><li>URL : https://www.corpataux.com/</li>","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"gretel_finance:1104","src":"gretel_finance","pre":"…Sincerely,\n\n[Your Company Name]\nPayroll Services Department\n","hit":"contact@yourcompanyname.com","post":"\n1-800-123-4567 (toll-free)","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"isotonic_pii_200k:5595","src":"isotonic_pii_200k","pre":"…60.5200k peut être payée en espèces ou par carte. Contactez ","hit":"Milan43@yahoo.com","post":" pour toute assistance supplémentaire.","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"nvidia_nemotron:622","src":"nvidia_nemotron","pre":"…___\n\n**Company Name:** JusticeJoy Legal\n\n**Email Address:** ","hit":"a.omondi@justicejoylegal.co.ke","post":"\n\n**Affidavit:**\n\nI, Atong Omondi, of the country of Kenya, …","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"ai4privacy_300k:1107","src":"ai4privacy_300k","pre":"…s pour analyser les impacts potentiels sur la biodiversité. ","hit":"09GS@hotmail.com","post":" a assuré une communication efficace tout au long du process…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"ai4privacy_400k:6490","src":"ai4privacy_400k","pre":"…eträgt 0.715m Fr. Gültig für Schweiz. Kontaktinformationen: ","hit":"NA18@hotmail.com","post":".</p>","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"gretel_finance:10524","src":"gretel_finance","pre":"…ently on the Acme Cloud Basic plan, and my account email is ","hit":"john.doe@example.com","post":".\n\n2023-03-21 10:06:30 - A: Thank you for providing the deta…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"isotonic_pii_200k:7810","src":"isotonic_pii_200k","pre":"…l'application 'Échange Buddy' en utilisant le lien envoyé à ","hit":"Brad.Schmitt40@hotmail.com","post":".","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"nvidia_nemotron:863","src":"nvidia_nemotron","pre":"… **First Name:** Justo\n- **Last Name:** Freire\n- **Email:** ","hit":"justofreire1992@yahoo.com","post":"\n- **Phone Number:** 551-471-8954\n- **Country:** USA\n- **Str…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"ai4privacy_300k:4433","src":"ai4privacy_300k","pre":"ername\":\"CP3030\",\n         \"Email\":\"","hit":"CP30@hotmail.com","post":"\",\n         \"SocialNumber\":\"934517082\",\n         \"IDCard\":\"V…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"ai4privacy_400k:7337","src":"ai4privacy_400k","pre":"Hey hmnknem25667, hast du meine neue ","hit":"hmnknem25667@gmail.com","post":" notiert? Ich brauche 9-5718 Zugang für den heutigen Verwalt…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"gretel_finance:10875","src":"gretel_finance","pre":"…ted Kingdom\n\nPhone Number: +44 20 1234 5678\n\nEmail Address: ","hit":"wr@tradarts.co.uk","post":"\n\nWebsite: <http://www.tradarts.co.uk>\n\n1. Cultural Signific…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"isotonic_pii_200k:9773","src":"isotonic_pii_200k","pre":"…tal https://portly-spume.com. Bei Fragen wenden Sie sich an ","hit":"Sophia_Buckridge64@yahoo.com","post":" oder 0584 66511928. Beste Grüße, Oral","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"…com Solutions\n  - **Customer ID:** CUS492187\n  - **Email:** ","hit":"imen723@tunistelecom.tn","post":"\n  - **Phone Number:** 52 97 229 828\n\n- **Service Provider:*…","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"ai4privacy_300k:6322","src":"ai4privacy_300k","pre":"… 31/03/2069. Laten we de roll call doen:\\n\\n-  Gebruiker A: ","hit":"krishanth1990@protonmail.com","post":"  \\n   NL  \\n   909  \\n   Kazemat  \\n   Zaltbommel  \\n   GE …","deb":true,"deb_type":"Email Address","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"ai4privacy_300k:2198","src":"ai4privacy_300k","pre":"…te>Oktober 7., 1953</birthDate>\n         <email>52deljan.sab","hit":"@gmail.com</email>\n         <social","post":"Number>78.07.10.53.S20.1</socialNumber>\n         <driverLice…","deb":true,"deb_type":"Email Address","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"gretel_finance:1951","src":"gretel_finance","pre":"…date of birth of 1993-09-23 and having an email address of [","hit":"khill@cline.biz](mailto:khill@cline.biz","post":") (the \"Collateral Provider\") and [Company Name], a corporat…","deb":true,"deb_type":"Email Address","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"ai4privacy_300k:6289","src":"ai4privacy_300k","pre":"…cord>\n        <CurrentLandUse>\n            <Email>zllulay@tu","hit":"tanota.com</Email>\n            <Social","post":"Number>56.19.05.45.L24.2</SocialNumber>\n        </CurrentLan…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"gretel_finance:23373","src":"gretel_finance","pre":"…n, please contact us at [customer service phone number] or [","hit":"customer service email","post":"]. Our customer service representatives are available to ass…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"},{"doc_id":"ai4privacy_300k:6289","src":"ai4privacy_300k","pre":"…       <ProposedLandUse>\n            <Email>1958kadar.vauche","hit":"ret@yahoo.com</Email>\n            <SocialNum","post":"ber>571973053</SocialNumber>\n        </ProposedLandUse>\n ","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"Phone Number":{"counts":{"gem_only":9,"both":260,"deb_only":1,"neither":2},"total_spans":272,"examples":[{"doc_id":"gretel_finance:31790","src":"gretel_finance","pre":"…lein 20, 1012 AB Amsterdam\n\nVoor schadeclaims:\n\n- Telefoon: ","hit":"0800-0123 4568","post":" (gratis)\n- E-mail: schade@nereusverzekeringen.nl\n\nVoor leve…","deb":false,"deb_type":null,"gem":true,"gem_type":"Phone Number","oc":"gem_only"},{"doc_id":"gretel_finance:1104","src":"gretel_finance","pre":"…me]\nPayroll Services Department\ncontact@yourcompanyname.com\n","hit":"1-800-123-4567","post":" (toll-free)","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:3891","src":"isotonic_pii_200k","pre":"… nel documento protetto da password HWDXY3d0Lrc1. Chiama il ","hit":"7185-483-5402","post":" per eventuali chiarimenti.","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"nvidia_nemotron:863","src":"nvidia_nemotron","pre":"…\n- **Email:** justofreire1992@yahoo.com\n- **Phone Number:** ","hit":"551-471-8954","post":"\n- **Country:** USA\n- **Street Address:** 185 Brinkley Road\n…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"gretel_finance:2540","src":"gretel_finance","pre":"… [sclark@abcchemicals.com](mailto:sclark@abcchemicals.com), ","hit":"+1 123 456 7890","post":"\nEmergency contact: +1 800 111 2222\n\nSection 2: Hazard(s) id…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:9773","src":"isotonic_pii_200k","pre":"…Fragen wenden Sie sich an Sophia_Buckridge64@yahoo.com oder ","hit":"0584 66511928","post":". Beste Grüße, Oral","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"… - **Email:** imen723@tunistelecom.tn\n  - **Phone Number:** ","hit":"52 97 229 828","post":"\n\n- **Service Provider:**\n  - **Company Name:** Tunis Teleco…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"gretel_finance:2540","src":"gretel_finance","pre":"…clark@abcchemicals.com), +1 123 456 7890\nEmergency contact: ","hit":"+1 800 111 2222","post":"\n\nSection 2: Hazard(s) identification\nClassification: Harmfu…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:11243","src":"isotonic_pii_200k","pre":"…eisungen sind online mit den Zugangsdaten abrufbar: E-Mail: ","hit":"93-921052-437742-2","post":" und Passwort: uehEj381_mTq.","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Email Address","oc":"both"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"…d has contacted Tunis Telecom Solutions at the phone number ","hit":"52 97 229 828","post":" and via email imen723@tunistelecom.tn.\n\n**Service Agreement…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"gretel_finance:4934","src":"gretel_finance","pre":"…striepark 25, 1234 AB, Amsterdam, Nederland\nTelefoonnummer: ","hit":"+31 20 123 4567","post":"\nE-mail: [info@gevlamchemie.nl](mailto:info@gevlamchemie.nl)…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:19974","src":"isotonic_pii_200k","pre":"…i mancati inviati al tuo numero di cellulare registrato con ","hit":"39-531104-693154-3","post":". Controlla e assicurati che tutti i compiti siano consegnat…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"nvidia_nemotron:1072","src":"nvidia_nemotron","pre":"…ccount using the customer ID CUS492187 and the phone number ","hit":"52 97 229 828","post":".\n3. **Technical Support:** Technical support was provided, …","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"gretel_finance:5021","src":"gretel_finance","pre":"…ns or concerns, please contact the Excise Tax Department at ","hit":"+31-800-0813","post":".\n\nSincerely,\nBelastinginspectie\nExcise Tax Department","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:24438","src":"isotonic_pii_200k","pre":"…ung-Initiativen in Basel-Stadt werfen? Melden Sie sich über ","hit":"81-298503-587253-0","post":".","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"nvidia_nemotron:2310","src":"nvidia_nemotron","pre":"… opportunities. If you need to reach me, you can call me at ","hit":"423-709-2881","post":". My fax number is the same, 423-709-2881.\n\nOne suggestion I…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"gretel_finance:10875","src":"gretel_finance","pre":"…ostal Code: SE1 2EH\n\nCountry: United Kingdom\n\nPhone Number: ","hit":"+44 20 1234 5678","post":"\n\nEmail Address: wr@tradarts.co.uk\n\nWebsite: <http://www.tra…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:24860","src":"isotonic_pii_200k","pre":"…ser un appel à 8:12am aujourd'hui. Veuillez prendre note de ","hit":"72-766254-532297-5","post":" pour référence pendant l'appel.","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:2310","src":"nvidia_nemotron","pre":"…you can call me at 423-709-2881. My fax number is the same, ","hit":"423-709-2881","post":".\n\nOne suggestion I have for improvement is to provide more …","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"gretel_finance:11898","src":"gretel_finance","pre":"…do not hesitate to contact us. You can reach us by phone at ","hit":"1-800-123-4567","post":" or by email at [support@insurance.com](mailto:support@insur…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:27734","src":"isotonic_pii_200k","pre":"…articipate in teacher's performance evaluation. Kindly call ","hit":"034 0845303","post":". Note: This call needs authentication. Your secret code is …","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"nvidia_nemotron:3223","src":"nvidia_nemotron","pre":"…nse plate 925 BK 14. The consignee can reach the carrier at ","hit":"319-831-9469","post":" for any inquiries or updates regarding the shipment. The go…","deb":true,"deb_type":"Phone Number","gem":true,"gem_type":"Phone Number","oc":"both"},{"doc_id":"isotonic_pii_200k:78702","src":"isotonic_pii_200k","pre":"… rund um Operations und den Technologieverantwortlichen mit ","hit":"25-973095-280443-3","post":" ist für den Arbeitsbereich Program entscheidend. Die Konnek…","deb":true,"deb_type":"Phone Number","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"gretel_finance:41059","src":"gretel_finance","pre":"… personal data we collect may include name, address, email, ","hit":"phone number","post":", and payment information. We use this data to provide and i…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"URL/Domain/Subdomain":{"counts":{"gem_only":1,"both":126,"deb_only":69,"neither":4},"total_spans":200,"examples":[{"doc_id":"isotonic_pii_200k:35706","src":"isotonic_pii_200k","pre":"Test-Webportal aktiv unter ","hit":"https://bland-plowman.info/","post":". Zugriff mit Cielo_Dibbert55 und fKXwFRsyJnYY.","deb":false,"deb_type":null,"gem":true,"gem_type":"URL/Domain/Subdomain","oc":"gem_only"},{"doc_id":"isotonic_pii_200k:3287","src":"isotonic_pii_200k","pre":"…u share your feedback about the last session on our website ","hit":"https://worst-hydrolyse.com/","post":", it will be helpful for other clients.","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"nvidia_nemotron:2567","src":"nvidia_nemotron","pre":"…y the deployment status on the specified URL.\n   - **URL**: ","hit":"http://deployments.checklist:8080/tech","post":"\n   - **Responsible Party**: l.juliao\n   - **Due Date**: 05.…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"isotonic_pii_200k:9546","src":"isotonic_pii_200k","pre":"Questionnaire d'expertise en soins infirmiers sur ","hit":"https://buzzing-act.net/","post":". Complétez-le en utilisant Emerald_Wyman et KUi9jvG3QQuW.","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"nvidia_nemotron:3582","src":"nvidia_nemotron","pre":"…iled feedback. Also, you can check out the feedback form at ","hit":"https://cinemapulse.com/film-promotion/feedback/","post":".  Feel free to share your thoughts directly with me at tali…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"isotonic_pii_200k:9773","src":"isotonic_pii_200k","pre":"…en? Alle Details finden Sie auf unserem neuen Online-Portal ","hit":"https://portly-spume.com","post":". Bei Fragen wenden Sie sich an Sophia_Buckridge64@yahoo.com…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"nvidia_nemotron:4526","src":"nvidia_nemotron","pre":"… further details, refer to the policy document available at ","hit":"https://documents.logistics.com/cargo-insurance-policy","post":".","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"isotonic_pii_200k:17134","src":"isotonic_pii_200k","pre":"Ho visto l'iniziativa sanitaria su ","hit":"https://musty-cornet.org/","post":". Ho deciso di contribuire in North Korean Won tramite 1TZZw…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"nvidia_nemotron:5311","src":"nvidia_nemotron","pre":"…lutions, who is a part-time employee, presented a report at ","hit":"https://storage.solarcity.com/technology","post":", highlighting the advancements in energy storage systems. T…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"isotonic_pii_200k:17727","src":"isotonic_pii_200k","pre":"…pproved your request for medical imaging. Please head on to ","hit":"https://unrealistic-vise.com","post":" to confirm your 9/29 appointment. The payment amount will b…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"nvidia_nemotron:5641","src":"nvidia_nemotron","pre":"…event for HarvestGold Farms. The conference, accessible via ","hit":"https://reports.agriculture.org/2023-conference","post":", brought together industry leaders and researchers to discu…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"isotonic_pii_200k:35111","src":"isotonic_pii_200k","pre":"…ttstelle von Menschenrechten und Militärcode' ist sie unter ","hit":"https://monthly-carnival.org","post":" verfügbar. Verwenden Sie bitte Ihr gY2l9NVUh1cP, um Zugriff…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"nvidia_nemotron:6337","src":"nvidia_nemotron","pre":"…must comply with the security standards outlined in the URL ","hit":"https://ciscosecurity.com","post":". Regular audits will be conducted to ensure compliance.\n\n**…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"isotonic_pii_200k:39505","src":"isotonic_pii_200k","pre":"… importante in corso. Si prega di esaminare la questione su ","hit":"https://familiar-importance.info/","post":".","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"nvidia_nemotron:7149","src":"nvidia_nemotron","pre":"…s and financial statements, please visit the following URL: ","hit":"https://bankofamerica.com/reports/revenue/2023-Q2","post":".","deb":true,"deb_type":"URL/Domain/Subdomain","gem":true,"gem_type":"URL/Domain/Subdomain","oc":"both"},{"doc_id":"isotonic_pii_200k:13513","src":"isotonic_pii_200k","pre":"Notre site web, ","hit":"https://suburban-badge.name/","post":", peut ne pas être correctement accessible depuis des adress…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"nvidia_nemotron:1278","src":"nvidia_nemotron","pre":"…7f31:5e7f::a5e1:79f2. The report can be accessed at the URL ","hit":"http://192.168.1.1:8080/reports/network-traffic","post":". The peak usage times were noted, and the incident logs wer…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"isotonic_pii_200k:16735","src":"isotonic_pii_200k","pre":"Pour obtenir un accès en ligne, utilisez ce lien ","hit":"https://burdensome-address.org","post":". Faites-nous savoir si vous rencontrez des problèmes, Jeram…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"nvidia_nemotron:1931","src":"nvidia_nemotron","pre":"…y released its latest Energy Supply Forecast, accessible at ","hit":"https://iea.org/reports/energy-supply-forecast","post":". The report provides a comprehensive analysis of the energy…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"isotonic_pii_200k:24027","src":"isotonic_pii_200k","pre":"…30.5254,-3.2451] statt. Genaue Anweisungen finden Sie unter ","hit":"https://puzzling-trance.biz","post":".","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"nvidia_nemotron:13897","src":"nvidia_nemotron","pre":"…**: 15/07/2026\n\n**Promotional Terms**\n\n- **Promotion URL**: ","hit":"https://shopify.com/legal/promotion-agreement","post":"\n\n**Payment Structures**\n\n- **Payment Method**: Credit Debit…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"isotonic_pii_200k:38567","src":"isotonic_pii_200k","pre":"… che viviamo come Director, dare un'occhiata a risorse come ","hit":"https://kooky-overcoat.org","post":" può essere davvero una grande salvagente.","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"nvidia_nemotron:14195","src":"nvidia_nemotron","pre":"…s. The detailed breakdown of these costs can be accessed at ","hit":"https://manufacturinginsights.com/reports/cost-analysis","post":". This report includes a thorough analysis of the procuremen…","deb":true,"deb_type":"URL/Domain/Subdomain","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"isotonic_pii_200k:31640","src":"isotonic_pii_200k","pre":"…ments en transit, vérifiez la commande en utilisant l'URL : ","hit":"https://early-rug.com/","post":".","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]},"GPS Coordinates":{"counts":{"gem_only":0,"both":43,"deb_only":4,"neither":1},"total_spans":48,"examples":[{"doc_id":"gretel_finance:26510","src":"gretel_finance","pre":"…operational risks due to its specific geographical location ","hit":"(82.167097 N, 59.935377 E)","post":". The extreme weather conditions and remote location may imp…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:1278","src":"nvidia_nemotron","pre":"…malies. The network traffic was monitored at the coordinate ","hit":"36.77826,-119.41793","post":". An email notification was sent to breanne_cochran51@gmail.…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"gretel_finance:44647","src":"gretel_finance","pre":"…nummern: (02973) 42799\n\n2.1.2 Für geografische Koordinaten: ","hit":"76.687381, -14.867624","post":"\n\n2.1.3 Für Vertragsparteien: Ann Hansson, wohnhaft unter In…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:4852","src":"nvidia_nemotron","pre":"…mary\nAgroBulgaria Farms, located in Bulgaria, at coordinate ","hit":"42.654321,23.012345","post":", is committed to sustainable agriculture practices. This cr…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"gretel_finance:69754","src":"gretel_finance","pre":"…rsson\nIndirizzo: 0 Danny turnpike, East Sarahland\nLocalità: ","hit":"69.124209, -80.718181","post":"\n\nDati di contatto:\nCodice PIN del conto: 2712\n\nInformazioni…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:4852","src":"nvidia_nemotron","pre":"…on\nAgroBulgaria Farms is situated in Bulgaria at coordinate ","hit":"42.654321,23.012345","post":". The farm spans over 500 hectares and is equipped with mode…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:5641","src":"nvidia_nemotron","pre":"The 2028 Agricultural Conference, held at coordinate ","hit":"36.1734 -95.9928","post":", was a pivotal event for HarvestGold Farms. The conference,…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:11947","src":"nvidia_nemotron","pre":"…*Street Address:** Khreshchatyk Street 26\n- **Coordinate:** ","hit":"49.232751,28.671548","post":"\n\n**Permit Information:**\n- **Permit Type:** Commercial\n- **…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:12862","src":"nvidia_nemotron","pre":"…---|---------------------------|\n| BioBliss Labs          | ","hit":"34.1289, -80.5444","post":"          |\n\n**Market Share Analysis**\n\n| Competitor | Marke…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:17768","src":"nvidia_nemotron","pre":"…A-ENG-309145 to a commercial building located at coordinate ","hit":"38.8894 -77.0090","post":". This certificate signifies that the building meets the str…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:18491","src":"nvidia_nemotron","pre":"…Tverskaya, 23, Belogorsk, 675042, Russia\n- **Coordinates**: ","hit":"50.185693, 130.123456","post":"\n- **Features**:\n  - Square Footage: 1,500 sq ft\n  - Bedroom…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:19569","src":"nvidia_nemotron","pre":"…gin and Destination Information:**\n- **Origin Coordinate:** ","hit":"40.123456, -78.654321","post":"\n- **Destination City:** Durham\n\n**Consignee Information:**\n…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:24306","src":"nvidia_nemotron","pre":"…prehensive safety protocols for the project site located at ","hit":"44.9438 N, 85.6875 W.","post":" This document serves as a guide for all personnel, includin…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:24449","src":"nvidia_nemotron","pre":"On the date of 2023-09-15, the city of Kandy, located at ","hit":"7.3456 N, 80.6789 E","post":", hosted a significant agricultural event. The event was org…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:27489","src":"nvidia_nemotron","pre":"…m, led by employee MKT-6529, will convene at the coordinate ","hit":"40.7128, -74.0060","post":" to discuss the project's next steps. Our company is a stron…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:29865","src":"nvidia_nemotron","pre":"…gather data and compile reports. The company's coordinates, ","hit":"42.194587,24.344646","post":", have been pivotal in locating the most promising biomass s…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:29935","src":"nvidia_nemotron","pre":"…primary planting activities will commence at the coordinate ","hit":"47.8384, 35.1395","post":". The detailed planting and harvesting schedules will be fin…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:29988","src":"nvidia_nemotron","pre":"… **IPv4 Address**: 194.23.78.122\n- **Location Coordinate**: ","hit":"44.573822,-89.673125","post":"\n\n**Tools Used:**\n- Network scanning tools\n- Packet sniffing…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:34851","src":"nvidia_nemotron","pre":"…oved by the change control board. The geographic coordinate ","hit":"49.438251, 87.234896","post":" is used to track the physical location of the server.\n\n####…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:41047","src":"nvidia_nemotron","pre":"…rd Construction Group\n\nLocation: Wayne County\n\nCoordinates: ","hit":"40.712783,-74.005974","post":"\n\nScale: 1:100\n\nNorth Arrow: [Insert North Arrow Symbol]\n\nDa…","deb":true,"deb_type":"GPS Coordinates","gem":true,"gem_type":"ID","oc":"both"},{"doc_id":"nvidia_nemotron:2567","src":"nvidia_nemotron","pre":"…ployment at the specified coordinates.\n   - **Coordinate**: ","hit":"Latitude: 36.7783, Longitude: -119.4179","post":"\n   - **Responsible Party**: l.juliao\n   - **Due Date**: 05.…","deb":true,"deb_type":"GPS Coordinates","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"nvidia_nemotron:37898","src":"nvidia_nemotron","pre":"…iftMile Logistics\n\n**Consignee Information:**\n- Coordinate: ","hit":"Latitude: 33.9416, Longitude: -84.3870","post":"\n\n**Freight Details:**\n\n| Description of Goods | Quantity | …","deb":true,"deb_type":"GPS Coordinates","gem":false,"gem_type":null,"oc":"deb_only"},{"doc_id":"gretel_finance:82991","src":"gretel_finance","pre":"…0102/1234567890/1234567890/DEUTDEFFXXX0000000023\n:62F:CRED\n:","hit":"86:/41.8148435,-93.170638/DOC/20181222/SHIPPING","post":" AGENT/CONTAINER 1234567890\n\n{50K:TEST}\n:95:/\n:96A:/\n:97A:/\n…","deb":false,"deb_type":null,"gem":false,"gem_type":null,"oc":"neither"}]}}</script>
+<script>(function () {
+  var DATA = JSON.parse(document.getElementById("typeex-data").textContent);
+  var TYPES = Object.keys(DATA);
+  if (!TYPES.length) return;
+
+  var OUTCOMES = [
+    { key: "both", label: "Both caught", cls: "both" },
+    { key: "gem_only", label: "Only Gemini", cls: "gem" },
+    { key: "deb_only", label: "Only deberta", cls: "deb" },
+    { key: "neither", label: "Both missed", cls: "neither" }
+  ];
+  var FILTERS = [{ key: "all", label: "All" }].concat(
+    OUTCOMES.map(function (o) { return { key: o.key, label: o.label }; })
+  );
+
+  var selectEl = document.getElementById("typeex-select");
+  var distEl = document.getElementById("typeex-dist");
+  var filtersEl = document.getElementById("typeex-filters");
+  var countEl = document.getElementById("typeex-count");
+  var listEl = document.getElementById("typeex-list");
+
+  function countsOf(t) {
+    var c = (DATA[t] && DATA[t].counts) || {};
+    return { both: c.both || 0, gem_only: c.gem_only || 0, deb_only: c.deb_only || 0, neither: c.neither || 0 };
+  }
+  function totalOf(c) { return c.both + c.gem_only + c.deb_only + c.neither; }
+
+  function pickDefault() {
+    if (TYPES.indexOf("ID") >= 0) return "ID";
+    var best = TYPES[0], bestShare = -1;
+    TYPES.forEach(function (t) {
+      var c = countsOf(t), tot = totalOf(c);
+      var share = tot ? c.gem_only / tot : 0;
+      if (share > bestShare) { bestShare = share; best = t; }
+    });
+    return best;
+  }
+
+  var state = { type: pickDefault(), filter: "all" };
+
+  selectEl.innerHTML = TYPES.map(function (t) {
+    return '<option value="' + esc(t) + '">' + esc(t) + " (" + totalOf(countsOf(t)) + ")</option>";
+  }).join("");
+  selectEl.value = state.type;
+
+  function segBar(c) {
+    var tot = totalOf(c);
+    if (!tot) return '<span class="typeex-seg neither" style="width:100%"></span>';
+    return OUTCOMES.map(function (o) {
+      var n = c[o.key];
+      return n
+        ? '<span class="typeex-seg ' + o.cls + '" style="width:' + (n / tot * 100).toFixed(3) +
+          '%" title="' + esc(o.label) + ": " + n + '"></span>'
+        : "";
+    }).join("");
+  }
+
+  function renderDist() {
+    var c = countsOf(state.type), tot = totalOf(c);
+    var chips = OUTCOMES.map(function (o) {
+      var n = c[o.key], pct = tot ? Math.round(n / tot * 100) : 0;
+      return '<span class="typeex-chip ' + o.cls + '"><span class="dot"></span>' +
+        esc(o.label) + ' <b>' + n + '</b> <span class="pct">' + pct + '%</span></span>';
+    }).join("");
+    distEl.innerHTML =
+      '<div class="typeex-dist-head"><span class="typeex-dist-title">' + esc(state.type) +
+      ' &mdash; true outcome mix</span><span class="typeex-dist-total">' + tot +
+      ' span' + (tot === 1 ? "" : "s") + ' in sample</span></div>' +
+      '<div class="typeex-bar">' + segBar(c) + '</div>' +
+      '<div class="typeex-chips">' + chips + '</div>';
+  }
+
+  function renderFilters() {
+    var exs = (DATA[state.type].examples) || [];
+    filtersEl.innerHTML = FILTERS.map(function (f) {
+      var n = f.key === "all" ? exs.length : exs.filter(function (e) { return e.oc === f.key; }).length;
+      return '<button type="button" class="typeex-filter' + (f.key === state.filter ? " on" : "") +
+        '" data-filter="' + f.key + '" aria-pressed="' + (f.key === state.filter) + '">' +
+        esc(f.label) + '<span class="n">' + n + '</span></button>';
+    }).join("");
+  }
+
+  function badge(who, caught, type) {
+    if (caught) {
+      return '<span class="typeex-badge caught"><span class="who">' + esc(who) +
+        '</span> caught <span class="arrow">&rarr;</span> <span class="lbl">' +
+        esc(type || "in scope") + '</span></span>';
+    }
+    return '<span class="typeex-badge missed"><span class="who">' + esc(who) + '</span> missed</span>';
+  }
+
+  function card(e) {
+    return '<div class="typeex-card"><div class="typeex-card-head">' +
+      '<span class="typeex-src">' + esc(e.src) + '</span>' +
+      '<span class="typeex-did">' + esc(e.doc_id) + '</span></div>' +
+      '<div class="typeex-ctx"><span class="mut">' + esc(e.pre) + '</span>' +
+      '<span class="hit">' + esc(e.hit) + '</span>' +
+      '<span class="mut">' + esc(e.post) + '</span></div>' +
+      '<div class="typeex-badges">' +
+      badge("deberta", e.deb, e.deb_type) +
+      badge("Gemini", e.gem, e.gem_type) +
+      '</div></div>';
+  }
+
+  function renderList() {
+    var exs = (DATA[state.type].examples) || [];
+    var shown = state.filter === "all" ? exs : exs.filter(function (e) { return e.oc === state.filter; });
+    countEl.textContent = "Showing " + shown.length + " of " + exs.length +
+      " sampled example" + (exs.length === 1 ? "" : "s");
+    listEl.innerHTML = shown.length
+      ? shown.map(card).join("")
+      : '<div class="typeex-empty">No sampled examples with this outcome for ' + esc(state.type) +
+        ". The distribution above still reflects all spans of this type.</div>";
+    listEl.scrollTop = 0;
+  }
+
+  function render() { renderDist(); renderFilters(); renderList(); }
+
+  selectEl.addEventListener("change", function () {
+    state.type = selectEl.value;
+    state.filter = "all";
+    render();
+  });
+
+  filtersEl.addEventListener("click", function (ev) {
+    var b = ev.target.closest(".typeex-filter");
+    if (!b) return;
+    state.filter = b.getAttribute("data-filter");
+    renderFilters();
+    renderList();
+  });
+
+  render();
+})();</script>
 <!--track-beacon--><script>(function(){try{var u='index.html?log=pb2-eval-report&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
