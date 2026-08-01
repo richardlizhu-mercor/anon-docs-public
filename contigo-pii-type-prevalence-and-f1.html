@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>Contigo PII-type prevalence & F1 — identity / street / institution</title><style>
+*{box-sizing:border-box}body{font:15px/1.55 -apple-system,Inter,Segoe UI,sans-serif;color:#1e293b;margin:0;background:#f8fafc}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:19px;margin:32px 0 10px;border-bottom:2px solid #e2e8f0;padding-bottom:6px}
+h3{font-size:14px;margin:14px 0 6px}.sub{color:#64748b;margin:0 0 14px}code{background:#eef2ff;padding:1px 5px;border-radius:4px;font-size:.9em}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0}
+th,td{border:1px solid #e2e8f0;padding:6px 9px;text-align:center}th{background:#f1f5f9;font-weight:600}
+td:first-child,th:first-child{text-align:left}.f{font-weight:700;background:#f5f3ff}.svc{font-weight:700}
+.tl{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 18px;margin:16px 0}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.fact{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px}
+.fact b{display:block;font-size:18px;color:#4338ca}
+.chip{display:inline-block;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:2px 7px;margin:2px;font:12px ui-monospace,monospace}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><div class=wrap>
+<a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>Contigo-bench: PII cluster types &mdash; prevalence &amp; detection F1</h1></a>
+<p class=sub>Every GT span (v3.1 diff + v3.2 mapping) and every <code>deberta-v3-base-pb2-fixdrop</code> prediction was typed into
+the taxonomy's cluster types &mdash; <b style='color:#4338ca'>identity</b>,
+<b style='color:#0f766e'>street</b>, <b style='color:#b45309'>institution</b>, other.</p>
+
+<div class=tl><b>How spans were typed.</b> Pattern-obvious surfaces mapped deterministically (email&rarr;identity, URL/IP/ID&rarr;other,
+v3.2 mapping-source hints); the <b>14,076 semantic-ambiguous surfaces</b> (name vs org vs product vs street vs word) were
+classified <b>agentically</b> (47 parallel agents) per the taxonomy definitions &mdash; 23,215 unique surfaces typed in total.
+<b>Taxonomy:</b> identity = person name / nickname / username / email; street = street-address line only; institution =
+brand / product / organization (incl. legal entity, DBA, ticker).</div>
+
+<h2>Overall prevalence (full corpus)</h2>
+<p class=sub><b>Identity dominates.</b> Street is rare in this influencer/CRM/messaging data; institution ~7&ndash;8%.
+v3.1 (diff) carries far more <b>other</b> (markup/URL/ID scaffolding it over-labels); v3.2 (mapping) is nearly all real PII.</p>
+<table>
+<tr><th colspan=5 style='background:#eef2ff'>full corpus — 6,835,948 v3.1 / 5,099,156 v3.2 spans</th></tr>
+<tr><th>type</th><th>v3.1 spans</th><th>v3.1 % spans</th><th>v3.2 spans</th><th>v3.2 % spans</th></tr>
+<tr><td class=svc style='color:#4338ca'>identity</td><td>2,180,504</td><td class='f'>31.9%</td><td>3,764,014</td><td class='f'>73.82%</td></tr>
+<tr><td class=svc style='color:#0f766e'>street</td><td>14,581</td><td class='f'>0.21%</td><td>4,637</td><td class='f'>0.09%</td></tr>
+<tr><td class=svc style='color:#b45309'>institution</td><td>510,926</td><td class='f'>7.47%</td><td>427,612</td><td class='f'>8.39%</td></tr>
+<tr><td class=svc style='color:#94a3b8'>other</td><td>4,129,937</td><td class='f'>60.41%</td><td>902,893</td><td class='f'>17.71%</td></tr>
+</table>
+
+<h2>Detection F1 by type &mdash; deberta-pb2</h2>
+<p class=sub>Type-aware detection (a hit = a predicted span of the same cluster type overlaps a GT span of that type) on the
+shared 18k eval sample. <b>Identity ≈ 0.65 char-F1</b> (names/emails); <b>institution weak (~0.15&ndash;0.18)</b>;
+<b>street near-zero</b> (and very few GT spans, so noisy).</p>
+<table>
+<tr><th colspan=6 style='background:#eef2ff'>v3.1 ground truth</th></tr>
+<tr><th>type</th><th>GT spans</th><th>char&nbsp;P</th><th>char&nbsp;R</th><th>char&nbsp;F1</th><th>span&nbsp;F1 (IoU≥.5)</th></tr>
+<tr><td class=svc style='color:#4338ca'>identity</td><td>13,617</td><td>0.611</td><td>0.683</td><td class='f'>0.645</td><td>0.585</td></tr>
+<tr><td class=svc style='color:#0f766e'>street</td><td>124</td><td>0.034</td><td>0.061</td><td class='f'>0.044</td><td>0.059</td></tr>
+<tr><td class=svc style='color:#b45309'>institution</td><td>4,405</td><td>0.203</td><td>0.155</td><td class='f'>0.176</td><td>0.252</td></tr>
+<tr><th colspan=6 style='background:#eef2ff'>v3.2 ground truth</th></tr>
+<tr><th>type</th><th>GT spans</th><th>char&nbsp;P</th><th>char&nbsp;R</th><th>char&nbsp;F1</th><th>span&nbsp;F1 (IoU≥.5)</th></tr>
+<tr><td class=svc style='color:#4338ca'>identity</td><td>20,401</td><td>0.619</td><td>0.687</td><td class='f'>0.651</td><td>0.517</td></tr>
+<tr><td class=svc style='color:#0f766e'>street</td><td>46</td><td>0.018</td><td>0.157</td><td class='f'>0.033</td><td>0.009</td></tr>
+<tr><td class=svc style='color:#b45309'>institution</td><td>2,947</td><td>0.108</td><td>0.219</td><td class='f'>0.144</td><td>0.213</td></tr>
+</table>
+<div class=facts>
+<div class=fact><b>0.645</b>identity char-F1 (v3.1)</div>
+<div class=fact><b>0.176</b>institution char-F1 (v3.1)</div>
+<div class=fact><b>0.044</b>street char-F1 (v3.1)</div>
+</div>
+
+<h2>What got typed as what (top surfaces)</h2>
+<p class=sub>Sanity-check the classification &mdash; the most frequent surfaces in each cluster type.</p>
+<h3 style='color:#4338ca'>identity &mdash; 8,263 distinct surfaces</h3><div><span class=chip>mirza@kofluence.com</span> <span class=chip>Roman</span> <span class=chip>Nisha</span> <span class=chip>Mirza Fawaaz Baig</span> <span class=chip>shruthi@kofluence.com</span> <span class=chip>Francisco</span> <span class=chip>Sangameshwar Daduvai</span> <span class=chip>Mirza</span> <span class=chip>Chaitra</span> <span class=chip>sangameshwar@kofluence.com</span> <span class=chip>Shruthi S D</span> <span class=chip>Dedeepya</span> <span class=chip>Anmol</span> <span class=chip>Ankita</span> <span class=chip>ronald@kofluence.com</span> <span class=chip>Nandini</span> <span class=chip>Nithish Rao K</span> <span class=chip>FM Squad</span></div>
+<h3 style='color:#0f766e'>street &mdash; 303 distinct surfaces</h3><div><span class=chip>Aptos</span> <span class=chip>office/2004/12/omml&quot; xmlns=&quot;http://www.w3.org/TR/REC-html40</span> <span class=chip>Swasti</span> <span class=chip>/i.postimg.cc/L5JW4D4L</span> <span class=chip>/www.instagram.com/</span> <span class=chip>//i.postimg.cc/J0S2sXtg</span> <span class=chip>//i.postimg.cc/gkkVhj3t/icon-</span> <span class=chip>.instagram</span> <span class=chip>.com/wp-content/uploads/</span> <span class=chip>//www.instagram.com/kofluence&quot; target=</span> <span class=chip>//fonts.gstatic.com/s/i/googlematerialicons/security/v6/gm_grey-18dp/</span> <span class=chip>Dr Rajkumar Rd</span> <span class=chip>BowlDigest</span> <span class=chip>Lindqvist</span> <span class=chip>//www.factors.ai/</span> <span class=chip>//plugin.markaimg.com/public/c</span> <span class=chip>Praveen Sreekumar</span> <span class=chip>calendar/event?action=RESPOND&amp;amp;eid=MmNsaTNqbThtZDhwcW5ncnI3bjFkcmlsOTkgbWlyemFAa29mbHVlbmNlLmNvbQ</span></div>
+<h3 style='color:#b45309'>institution &mdash; 1,029 distinct surfaces</h3><div><span class=chip>Kofluence</span> <span class=chip>kofluence</span> <span class=chip>Automation_kofTeam</span> <span class=chip>//api.atlassian.com/ex/</span> <span class=chip>Kofinity</span> <span class=chip>automation_kof_ops</span> <span class=chip>Kof</span> <span class=chip>://teams.microsoft.com/l/message/</span> <span class=chip>J0S2sXtg/kof-logo.png</span> <span class=chip>Kofluence.com &lt;https://www.kofluence.com</span> <span class=chip>Kofluence.</span> <span class=chip>//www.kofluence.com/?utm_source=Email%20Footer&amp;utm_campaign=Email&gt;</span> <span class=chip>shruthi@kofluence.com&quot; target=&quot;_blank&quot;&gt;shruthi@kofluence.com</span> <span class=chip>sangameshwar@kofluence.com&quot; target=&quot;_blank&quot;&gt;sangameshwar@kofluence.com</span> <span class=chip>nithish@kofluence.com&quot; target=&quot;_blank&quot;&gt;nithish@kofluence.com</span> <span class=chip>vd@kofluence.com&quot; target=&quot;_blank&quot;&gt;vd@kofluence.com</span> <span class=chip>/www.kofluence.com/?utm_source=Email%20Footer&amp;utm_campaign=Email&gt;</span> <span class=chip>kof</span></div>
+<h3 style='color:#94a3b8'>other &mdash; 13,620 distinct surfaces</h3><div><span class=chip>max-width</span> <span class=chip>app.kofluence.com</span> <span class=chip>www.kofluence.com</span> <span class=chip>@media</span> <span class=chip>com</span> <span class=chip>media.kofluence.com</span> <span class=chip>.</span> <span class=chip>/</span> <span class=chip>resolution</span> <span class=chip>-</span> <span class=chip>True</span> <span class=chip>fluence</span> <span class=chip>https</span> <span class=chip>0</span> <span class=chip>3ZrjIaV</span> <span class=chip>mail.gmail</span> <span class=chip>_</span> <span class=chip>gt</span></div>
+</div><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
