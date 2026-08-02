@@ -1,0 +1,425 @@
+<!doctype html><html><head><meta charset="utf-8"><title>ai4privacy → Anonymization SSOT</title><style>
+body{font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;margin:0;background:#f4f5f7;color:#0f172a}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 24px 70px}
+h2{font-size:16px;margin:26px 0 10px;color:#1e293b}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.cardhead{background:#1e293b;color:#fff;padding:6px 14px;font-size:12px;font-weight:600}
+.cardhead .id{color:#94a3b8;font-weight:400}
+.body{padding:12px 15px;font-size:13.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word}
+.k{border-radius:3px;padding:0 2px;cursor:help}.k.Identity{background:#e0e7ff;border-bottom:2px solid #6366f1}.k.Street{background:#dcfce7;border-bottom:2px solid #16a34a}.k.Institution{background:#fce7f3;border-bottom:2px solid #db2777}
+.d{color:#94a3b8;border-bottom:1px dotted #cbd5e1;cursor:help}
+.hide-dropped .d{color:inherit;border:none;cursor:auto}
+.legend{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin:8px 0 4px;font-size:13px;position:sticky;top:0;z-index:5}
+.legend .k{border:1px solid;margin-right:8px;padding:1px 7px}
+.legend .d{margin-left:6px}
+table.stat,table.xwalk{border-collapse:collapse;font-size:12.5px;background:#fff;border:1px solid #e2e8f0;border-radius:8px}
+table.stat td,table.stat th,table.xwalk td,table.xwalk th{padding:4px 12px;border-bottom:1px solid #eef2f7;text-align:left}
+table.stat td:last-child{text-align:right;font-weight:600}
+table.xwalk tr.drop td{color:#94a3b8}
+.cols{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+code{background:#f1f5f9;padding:1px 4px;border-radius:3px;font-size:11.5px}
+label.tog{font-size:12.5px;color:#475569;cursor:pointer;user-select:none}
+.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body>
+<section style="max-width:1080px;margin:0 auto;padding:34px 24px 4px">
+<a href="?page=index" target="_top" style="text-decoration:none;color:#4f46e5;font-size:.85rem;font-weight:600">&larr; Anonymization Docs</a>
+<div style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#4f46e5;font-weight:600;margin-top:18px">Data Acquisition · Anonymization</div>
+<a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1 style="font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.2em 0 .18em">ai4privacy &rarr; Anonymization SSOT</h1></a>
+<p style="font-size:1.08rem;color:#475569;font-weight:300;max-width:70ch;margin:0 0 12px">The public <b>ai4privacy/pii-masking-300k</b> corpus relabeled to our detection SSOT — <b>Identity / Street / Institution</b> families — with the <b>N/A</b> cluster (phone, DoB, IDs, URL, IP, MAC, GPS) and out-of-scope labels dropped. This viewer shows the mapping applied to real validation rows so you can audit it.</p>
+<p style="color:#475569;max-width:74ch;font-size:.95rem;line-height:1.7;margin:0 0 4px">Kept spans are colored by SSOT family; dropped spans are muted with the drop reason on hover. Source is synthetic (no real PII). SSOT per <code>detection/detection_output.schema.yaml</code> (<code>family ∈ {Identity, Street, Institution}</code>). <b>Note:</b> ai4privacy carries no org/brand/product labels, so Institution coverage is 0.</p>
+</section>
+<div class="wrap">
+<div class="legend"><b>Kept (by family):</b> <span class="k Identity" style="background:#e0e7ff;border-color:#6366f1">Identity</span> <span class="k Street" style="background:#dcfce7;border-color:#16a34a">Street</span> <span class="k Institution" style="background:#fce7f3;border-color:#db2777">Institution</span> <span class="d">dropped (N/A + out-of-scope)</span>
+&nbsp;&nbsp;<label class="tog"><input type="checkbox" id="hd" onchange="document.body.classList.toggle('hide-dropped',this.checked)"> hide dropped</label></div>
+
+<h2>Crosswalk &amp; counts <span style="font-weight:400;color:#64748b;font-size:12px">(spans, train+val)</span></h2>
+<div class="cols">
+<table class="xwalk"><tr><th>ai4privacy label</th><th>SSOT attribute</th><th>family</th></tr><tr><td><code>GIVENNAME1</code></td><td>First Name</td><td><b>Identity</b></td></tr><tr><td><code>GIVENNAME2</code></td><td>Middle Name</td><td><b>Identity</b></td></tr><tr><td><code>LASTNAME1</code></td><td>Last Name</td><td><b>Identity</b></td></tr><tr><td><code>LASTNAME2</code></td><td>Last Name</td><td><b>Identity</b></td></tr><tr><td><code>LASTNAME3</code></td><td>Last Name</td><td><b>Identity</b></td></tr><tr><td><code>USERNAME</code></td><td>Username</td><td><b>Identity</b></td></tr><tr><td><code>EMAIL</code></td><td>Email Address</td><td><b>Identity</b></td></tr><tr><td><code>STREET</code></td><td>Street Address</td><td><b>Street</b></td></tr><tr><td><code>BUILDING</code></td><td>Street Address</td><td><b>Street</b></td></tr><tr><td><code>SECADDRESS</code></td><td>Street Address</td><td><b>Street</b></td></tr><tr class="drop"><td><code>IDCARD</code></td><td colspan="2">dropped · N/A:ID</td></tr><tr class="drop"><td><code>SOCIALNUMBER</code></td><td colspan="2">dropped · N/A:ID</td></tr><tr class="drop"><td><code>PASSPORT</code></td><td colspan="2">dropped · N/A:ID</td></tr><tr class="drop"><td><code>DRIVERLICENSE</code></td><td colspan="2">dropped · N/A:ID</td></tr><tr class="drop"><td><code>PASS</code></td><td colspan="2">dropped · N/A:ID(password)</td></tr><tr class="drop"><td><code>TEL</code></td><td colspan="2">dropped · N/A:Phone Number</td></tr><tr class="drop"><td><code>BOD</code></td><td colspan="2">dropped · N/A:Date of Birth</td></tr><tr class="drop"><td><code>DATE</code></td><td colspan="2">dropped · N/A:Date of Birth</td></tr><tr class="drop"><td><code>GEOCOORD</code></td><td colspan="2">dropped · N/A:GPS Coordinates</td></tr><tr class="drop"><td><code>IP</code></td><td colspan="2">dropped · N/A:IP Address</td></tr><tr class="drop"><td><code>CITY</code></td><td colspan="2">dropped · oos:City</td></tr><tr class="drop"><td><code>STATE</code></td><td colspan="2">dropped · oos:State</td></tr><tr class="drop"><td><code>COUNTRY</code></td><td colspan="2">dropped · oos:Country</td></tr><tr class="drop"><td><code>POSTCODE</code></td><td colspan="2">dropped · oos:Postal Code</td></tr><tr class="drop"><td><code>TIME</code></td><td colspan="2">dropped · oos:Time</td></tr><tr class="drop"><td><code>SEX</code></td><td colspan="2">dropped · oos:Sex</td></tr><tr class="drop"><td><code>TITLE</code></td><td colspan="2">dropped · oos:Title/honorific</td></tr><tr class="drop"><td><code>CARDISSUER</code></td><td colspan="2">dropped · oos:Card issuer</td></tr></table>
+<div><table class="stat"><tr><th>kept attribute</th><th>spans</th></tr><tr><td>Street Address</td><td>136,505</td></tr><tr><td>Last Name</td><td>91,428</td></tr><tr><td>Username</td><td>82,612</td></tr><tr><td>Email Address</td><td>74,538</td></tr><tr><td>First Name</td><td>61,096</td></tr><tr><td>Middle Name</td><td>16,154</td></tr></table><div style="height:10px"></div><table class="stat"><tr><th>family</th><th>spans</th></tr><tr><td>Identity</td><td>325,828</td></tr><tr><td>Street</td><td>136,505</td></tr></table></div>
+<div><table class="stat"><tr><th>dropped (reason)</th><th>spans</th></tr><tr><td>N/A:ID</td><td>294,934</td></tr><tr><td>N/A:Date of Birth</td><td>119,700</td></tr><tr><td>oos:Time</td><td>113,245</td></tr><tr><td>N/A:IP Address</td><td>65,834</td></tr><tr><td>oos:Sex</td><td>60,594</td></tr><tr><td>N/A:Phone Number</td><td>59,011</td></tr><tr><td>oos:City</td><td>58,823</td></tr><tr><td>oos:Postal Code</td><td>57,476</td></tr><tr><td>oos:State</td><td>56,532</td></tr><tr><td>oos:Title/honorific</td><td>51,848</td></tr><tr><td>oos:Country</td><td>50,734</td></tr><tr><td>N/A:ID(password)</td><td>48,599</td></tr><tr><td>N/A:GPS Coordinates</td><td>5,841</td></tr><tr><td>oos:Card issuer</td><td>67</td></tr></table></div>
+</div>
+
+<h2>Sample rows <span style="font-weight:400;color:#64748b;font-size:12px">(36 of 47,728 validation rows)</span></h2>
+<div class="card"><div class="cardhead">English · <span class="id">40770A</span></div><div class="body">On the video sharing platform for educational content, a lively discussion unfolded among users from different locales within the UK.
+
+The comment thread began with <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">paaltwvkjuijwbj957</span> expressing admiration for the video&#x27;s insightful content, followed by <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">2005zheng.monckton</span> adding a clarification on a complex topic. <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">43CU</span> chimed in with a question for clarification, an</div></div><div class="card"><div class="cardhead">English · <span class="id">40770B</span></div><div class="body">d <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">wsfdkmi9214</span> shared personal experiences related to the video&#x27;s theme.
+
+Meanwhile, <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">lyxmvtinlajlq99997</span> and <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">ylhhhrmivzz90</span> engaged in a friendly debate, each presenting well-supported arguments. <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">maria-rosaria.amardi1962</span> shared a thought-provoking analogy, sparking further discussion among the users.
+
+The conversation took a formal turn as <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">20jey.malov</span> and <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">D</span> addressed e</div></div><div class="card"><div class="cardhead">English · <span class="id">40770C</span></div><div class="body">ach other respectfully in their comments. <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">yeganeh-afchar</span> and <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">ylhhhrmivzz90</span> shared additional resources related to the video&#x27;s topic, enriching the discussion further.
+
+Throughout the interaction, the diverse perspectives and insights shared by individuals added depth and richness to the educational dialogue on the platform.
+
+BACKGROUND: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">22:41</span> on December 21st, 1966</div></div><div class="card"><div class="cardhead">English · <span class="id">40780A</span></div><div class="body">{
+	&quot;participants&quot;: [{
+			&quot;participant_id&quot;: &quot;<span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">HR37827HB</span>&quot;,
+			&quot;gender&quot;: &quot;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Female</span>&quot;,
+			&quot;username&quot;: &quot;<span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">1942lili-anne.poppke</span>&quot;,
+			&quot;personal_info&quot;: {
+				&quot;given_name&quot;: &quot;<span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Lili-Anne</span>&quot;,
+				&quot;last_name&quot;: &quot;<span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Poppke</span>&quot;,
+				&quot;country&quot;: &quot;<span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">United Kingdom</span>&quot;,
+				&quot;building&quot;: &quot;<span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">617</span>&quot;,
+				&quot;street&quot;: &quot;<span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Holme Wood Lane</span>&quot;,
+				&quot;city&quot;: &quot;<span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Doncaster</span>&quot;,
+				&quot;state&quot;: &quot;<span class="d" title="dropped · oos:State  (ai4privacy: STATE)">ENG</span>&quot;,
+				&quot;postcode&quot;: &quot;<span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">DN3 3EH, DN3 3EQ</span>&quot;
+			},
+			&quot;time&quot;: &quot;<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">13:54</span>&quot;,
+			&quot;additional_info&quot;</div></div><div class="card"><div class="cardhead">English · <span class="id">40780B</span></div><div class="body">: {
+				&quot;ip_address&quot;: &quot;<span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">ad9c:3ab:583d:f4f1:2704:1543:6a6a:85ed</span>&quot;,
+				&quot;passport&quot;: &quot;<span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">32BV67680</span>&quot;,
+				&quot;driver_license&quot;: &quot;<span class="d" title="dropped · N/A:ID  (ai4privacy: DRIVERLICENSE)">LILI--456302-9-483</span>&quot;,
+				&quot;bic&quot;: &quot;YXNNUS94ROP&quot;,
+				&quot;amount&quot;: &quot;751.53k&quot;,
+				&quot;balance&quot;: &quot;0.119m&quot;
+			}
+		},
+		{
+			&quot;participant_id&quot;: &quot;<span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">EP78982MJ</span>&quot;,
+			&quot;gender&quot;: &quot;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Masculine</span>&quot;,
+			&quot;username&quot;: &quot;<span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">linardos10</span>&quot;,
+			&quot;personal_info&quot;: {
+				&quot;given_name&quot;: &quot;<span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Ishak</span>&quot;,
+				&quot;last_name&quot;: &quot;<span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Linardos</span>&quot;,
+				&quot;country&quot;: &quot;<span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">GB</span>&quot;,</div></div><div class="card"><div class="cardhead">English · <span class="id">40780C</span></div><div class="body">
+				&quot;building&quot;: &quot;<span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">535</span>&quot;,
+				&quot;street&quot;: &quot;<span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Margaret Woods Road</span>&quot;,
+				&quot;city&quot;: &quot;<span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Chelmsford Great Waltham</span>&quot;,
+				&quot;state&quot;: &quot;<span class="d" title="dropped · oos:State  (ai4privacy: STATE)">ENG</span>&quot;,
+				&quot;postcode&quot;: &quot;<span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">CM3</span>&quot;
+			},
+			&quot;time&quot;: &quot;<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">7</span>&quot;,
+			&quot;additional_info&quot;: {
+				&quot;ip_address&quot;: &quot;<span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">f7c4:269c:e998:936d:5cdc:4c32:af97:c896</span>&quot;,
+				&quot;passport&quot;: &quot;<span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">79HN36345</span>&quot;,
+				&quot;driver_license&quot;: &quot;<span class="d" title="dropped · N/A:ID  (ai4privacy: DRIVERLICENSE)">ISHAK 905109 9 778</span>&quot;,
+				&quot;bic&quot;: &quot;ANIYUSF4MY6&quot;,
+				&quot;amount&quot;: &quot;164,171.96&quot;,
+				&quot;balance&quot;: &quot;0.88m&quot;
+			}
+		}
+	]
+}</div></div><div class="card"><div class="cardhead">Dutch · <span class="id">67020B</span></div><div class="body">dent:**
+
+1. Student: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Lipperini</span>
+   Geslacht: <span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">A</span>
+   Gebruikersnaam: <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">gnmyrqxcxf6067</span>
+   E-mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">gnmyrqxcxf6067@protonmail.com</span>
+   Burgerservicenummer: <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">232637523</span>
+   Identiteitskaartnummer: <span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">BXY</span>
+   Paspoortnummer: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">HV</span>
+   Wachtwoord: <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">vS*8?t*p</span>
+
+2. Student: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Druga</span>
+   Geslacht: <span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Anders</span>
+   Identiteitskaartnummer: <span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">ERL</span>
+   Paspoortnummer: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">KU</span>
+
+...en verder voor alle vermelde</div></div><div class="card"><div class="cardhead">Dutch · <span class="id">67024B</span></div><div class="body">atie: Universiteit van Amsterdam, Amsterdam, Nederland
+Datum: <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">12h</span>
+
+Programma:
+09:00 - Registratie begint
+<span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">mei 23e, 2000</span>
+<span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">vcfyihovytj1534</span>
+<span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">2000B@protonmail.com</span>
+<span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">DipBra23I434DWS</span>
+<span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">QFZ167807W</span>
+<span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">JX5413988</span>
+<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">9h</span>
+
+10:00 - Openingsspeech door Prof. Jansen
+11:00 - Workshop &#x27;Innovatie in het Onderwijs&#x27; met Dr. De Vries
+12:00 - Lunchpauze en Netwerksessie
+13:00 - Paneldiscussie &#x27;De Toekomst van Onderwijs&#x27; met prominente sprekers
+14:30 - </div></div><div class="card"><div class="cardhead">Dutch · <span class="id">67029B</span></div><div class="body">X&gt;M#ir en de locatie <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Postelein</span>.
+4. <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">35ef:ee05:e65a:1813:66:5144:6edc:1ad7</span> heeft voorgesteld om meer nadruk te leggen op academische prestaties bij de toelatingsprocedure. De authenticatie werd uitgevoerd met <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">}Sx5Xy</span> en de situatie vond plaats op <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">02/12/2010</span>.
+5. <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">31c0:1e52:c84e:bfea:b1d8:5442:200e:e56b</span> benadrukte het belang van transparantie in het gehele toelatingsproces. Het wachtwoord <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">rJ_v;=+5X~_7</span> werd gebruikt bij de evaluatie, met een achtergrond van het adres <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Postelein</span>.
+6. fc5d:688d:2</div></div><div class="card"><div class="cardhead">Dutch · <span class="id">67029D</span></div><div class="body"> was <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">c4KG:&gt;y?bq</span> en het adres van de locatie was <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Postelein</span>.
+9. <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">63.0.126.83</span> suggereerde de implementatie van geautomatiseerde beoordelingen om de doorlooptijd van de aanmeldingsprocedure te verkorten. De inloggegevens omvatten <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">\VCX@Z30mjs</span> en de achtergrond was de straatnaam <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Postelein</span>.
+10. <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">2550:9552:bbff:6bc3:f6b:703f:9388:b585</span> gaf aan dat het gebruik van mobiele aanmeldingsapps de toegankelijkheid zou verbeteren. De toegangscode was <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">`%8kJWv</span> en de gebeurtenis vond plaats op <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">02/12/2010</span>.</div></div><div class="card"><div class="cardhead">Dutch · <span class="id">67037B</span></div><div class="body">
+1. Zunilda Greku:
+   - E-mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">zunilda.greku@tutanota.com</span>
+   - IP-adres: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">3eba:e809:1250:6ca0:3eef:f8f6:bd76:5c00</span>
+
+2. 78B:
+   - E-mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">78B@yahoo.com</span>
+   - IP-adres: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">121.249.13.104</span>
+
+3. IA15:
+   - E-mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">IA15@yahoo.com</span>
+   - IP-adres: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">213.97.248.244</span>
+
+4. 09AHS:
+   - E-mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">09AHS@protonmail.com</span>
+   - IP-adres: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">ec3b:587:a24f:3f13:6822:ac70:a5eb:5150</span>
+
+5. nhbfufvwdkmuybyi35274:
+   - E-mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">nhbfufvwdkmuybyi35274@aol.com</span>
+   - IP-ad</div></div><div class="card"><div class="cardhead">Dutch · <span class="id">67045A</span></div><div class="body">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Opleidingscursus&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Online Cursusontwikkeling&lt;/h1&gt;
+    &lt;p&gt;Welkom bij de online cursusontwikkeling. Laten we beginnen!&lt;/p&gt;
+    
+    &lt;h2&gt;Deelnemer 1&lt;/h2&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;strong&gt;Naam:&lt;/strong&gt; <span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Mickel</span> <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Aramburu</span>&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Gebruikersnaam:&lt;/strong&gt; <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">mickel2001</span>&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Titel:&lt;/strong&gt; <span class="d" title="dropped · oos:Title/honorific  (ai4privacy: TITLE)">Kon</span>&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;ID-nummer:&lt;/strong&gt; <span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">JKM</span>&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Identificatienummer:&lt;/strong&gt; 6827</div></div><div class="card"><div class="cardhead">French · <span class="id">2A</span></div><div class="body">Le salon de jeux &quot;Éducation et Partage&quot; est fier d&#x27;accueillir de nouveaux membres dans sa communauté dynamique et diversifiée. Les adhérents sont invités à se connecter pour explorer un monde virtuel d&#x27;apprentissage et de divertissement.
+
+**Détails des joueurs:**
+
+1. Joueur: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Tripodo</span>  
+   Numéro de sécurité sociale: <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">2-63-09-50682-879-09</span>  
+   Téléphone: <span class="d" title="dropped · N/A:Phone Number  (ai4privacy: TEL)">+437 28-075.3546</span>  
+
+2. Joueur: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Karajkovic</span>  
+   Numéro de sécurité sociale:</div></div><div class="card"><div class="cardhead">French · <span class="id">2B</span></div><div class="body"> <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">2 89 02 83214 601 56</span>  
+   Téléphone: <span class="d" title="dropped · N/A:Phone Number  (ai4privacy: TEL)">009-2242-4104</span>  
+
+3. Joueur: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Mansor</span>  
+   Numéro de sécurité sociale: <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">144031681168800</span>  
+   Téléphone: <span class="d" title="dropped · N/A:Phone Number  (ai4privacy: TEL)">013359552.5763</span>  
+
+4. Joueur: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Micioni</span>  
+   Numéro de sécurité sociale: <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">1-75-05-30677-760-14</span>  
+   Téléphone: <span class="d" title="dropped · N/A:Phone Number  (ai4privacy: TEL)">0066.83524 1678</span>  
+
+5. Joueur: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Krasa</span>  
+   Numéro de sécurité sociale: <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">154102579971249</span>  
+   Téléphone: <span class="d" title="dropped · N/A:Phone Number  (ai4privacy: TEL)">030-4596953 </span>  
+
+6. Joueur: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Zamuda</span>  
+   Numéro de sécurité sociale: 1-48-02-50838-8</div></div><div class="card"><div class="cardhead">French · <span class="id">13A</span></div><div class="body">```yaml
+Documents:
+  - Date_A: <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">14 janvier 2031</span>
+    Time_A: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">7:53</span>
+    Individuals:
+      - SecNum_A: <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">2 66 04 46135 644 57</span>
+        Country_A: <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">France</span>
+        Building_A: <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">886</span>
+        Street_A: <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Rue Louis Murville</span>
+        City_A: <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Perpignan</span>
+        State_A: <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">Occitanie</span>
+        Postcode_A: <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">66000</span>
+        SecAddress_A: <span class="k Street" title="Street · Street Address  (ai4privacy: SECADDRESS)">None</span>
+        Time_A: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">11:03</span>
+        Givenname_A: <span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Andrei-Robert</span>
+   </div></div><div class="card"><div class="cardhead">French · <span class="id">13B</span></div><div class="body">     Givenname2_A: <span class="k Identity" title="Identity · Middle Name  (ai4privacy: GIVENNAME2)">Isabel-Maria</span>
+      - SecNum_A: <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">157082416764884</span>
+        Country_A: <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">France</span>
+        Building_A: <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">112</span>
+        Street_A: <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Impasse du Mas</span>
+        City_A: <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Saint-Clément-les-Places</span>
+        State_A: <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">Auvergne-Rhône-Alpes</span>
+        Postcode_A: <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">69930</span>
+        SecAddress_A: <span class="k Street" title="Street · Street Address  (ai4privacy: SECADDRESS)">Terrace 264</span>
+        Time_A: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">15:27</span>
+        Givenname_A: <span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Ambroise</span>
+        Givenname2_A: <span class="k Identity" title="Identity · Middle Name  (ai4privacy: GIVENNAME2)">Julien</span>
+```</div></div><div class="card"><div class="cardhead">French · <span class="id">15A</span></div><div class="body">&lt;admission_agreement&gt;
+    &lt;student&gt;
+        &lt;personal_information&gt;
+            &lt;sex&gt;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">H</span>&lt;/sex&gt;
+            &lt;title&gt;<span class="d" title="dropped · oos:Title/honorific  (ai4privacy: TITLE)">Chambellan</span>&lt;/title&gt;
+            &lt;email&gt;<span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">surinder@gmail.com</span>&lt;/email&gt;
+            &lt;passport&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">86OC21401</span>&lt;/passport&gt;
+            &lt;country&gt;<span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">France</span>&lt;/country&gt;
+            &lt;address&gt;
+                &lt;building&gt;<span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">524</span>&lt;/building&gt;
+                &lt;street&gt;<span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Chapendu</span>&lt;/street&gt;
+                &lt;city&gt;<span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Raddon-et-Chapendu</span>&lt;/city&gt;
+                &lt;state&gt;<span class="d" title="dropped · oos:State  (ai4privacy: STATE)">BFC</span>&lt;/s</div></div><div class="card"><div class="cardhead">French · <span class="id">15C</span></div><div class="body">        &lt;email&gt;<span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">erlxttaufwnz535@aol.com</span>&lt;/email&gt;
+            &lt;passport&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">83ZI40454</span>&lt;/passport&gt;
+            &lt;country&gt;<span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">France</span>&lt;/country&gt;
+            &lt;address&gt;
+                &lt;building&gt;<span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">768</span>&lt;/building&gt;
+                &lt;street&gt;<span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Montée du Col du Frêne</span>&lt;/street&gt;
+                &lt;city&gt;<span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Saint-Pierre-d&#x27;Albigny</span>&lt;/city&gt;
+                &lt;state&gt;<span class="d" title="dropped · oos:State  (ai4privacy: STATE)">Auvergne-Rhône-Alpes</span>&lt;/state&gt;
+                &lt;postcode&gt;<span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">73250</span>&lt;/postcode&gt;
+                &lt;additional_info&gt;aac4:a77f:51</div></div><div class="card"><div class="cardhead">German · <span class="id">13913A</span></div><div class="body">&#x27;&lt;Student&gt;&lt;PersonalData&gt;&lt;Gender&gt;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Weiblich</span>&lt;/Gender&gt;&lt;DateOfBirth&gt;<span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">März/42</span>&lt;/DateOfBirth&gt;&lt;SocialSecurityNumber&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">25-26-03-42-H92-9</span>&lt;/SocialSecurityNumber&gt;&lt;IPAddress&gt;<span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">245.100.145.224</span>&lt;/IPAddress&gt;&lt;TimeLogged&gt;<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">3h</span>&lt;/TimeLogged&gt;&lt;FirstName&gt;<span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Juby</span>&lt;/FirstName&gt;&lt;SecondName&gt;<span class="k Identity" title="Identity · Middle Name  (ai4privacy: GIVENNAME2)">Velichka</span>&lt;/SecondName&gt;&lt;/PersonalData&gt;&lt;/Student&gt;&lt;Student&gt;&lt;PersonalData&gt;&lt;Gender&gt;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Weiblich</span>&lt;/Gender&gt;&lt;DateOfBirth&gt;<span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">16. Mai 1991</span>&lt;/DateOfBirth&gt;&lt;SocialSecurityNumber&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">28.16.05.91.L89.0</span>&lt;/SocialS</div></div><div class="card"><div class="cardhead">German · <span class="id">13913B</span></div><div class="body">ecurityNumber&gt;&lt;IPAddress&gt;<span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">252.81.255.61</span>&lt;/IPAddress&gt;&lt;TimeLogged&gt;<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">07:48</span>&lt;/TimeLogged&gt;&lt;FirstName&gt;<span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Iyana</span>&lt;/FirstName&gt;&lt;/PersonalData&gt;&lt;/Student&gt;&lt;Student&gt;&lt;PersonalData&gt;&lt;Gender&gt;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Männlich</span>&lt;/Gender&gt;&lt;DateOfBirth&gt;<span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">Februar 18., 1996</span>&lt;/DateOfBirth&gt;&lt;SocialSecurityNumber&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">43 18 02 96 M25 2</span>&lt;/SocialSecurityNumber&gt;&lt;IPAddress&gt;<span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">37a9:2ef:d552:f1b1:82b2:2489:97db:cb76</span>&lt;/IPAddress&gt;&lt;TimeLogged&gt;<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">2h</span>&lt;/TimeLogged&gt;&lt;FirstName&gt;<span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Muhsen</span>&lt;/FirstName&gt;&lt;/PersonalData&gt;&lt;/Student&gt;&#x27;</div></div><div class="card"><div class="cardhead">German · <span class="id">13918B</span></div><div class="body">
+Datum: <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">28. Dezember 2054</span>  
+
+**Details der Teilnehmer:**
+
+Teilnehmer A:
+- Titel: <span class="d" title="dropped · oos:Title/honorific  (ai4privacy: TITLE)">Br</span>  
+- E-Mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">shahkortlep@yahoo.com</span>  
+- Ausweisnummer: <span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">U43573535</span>  
+- Führerschein: <span class="d" title="dropped · N/A:ID  (ai4privacy: DRIVERLICENSE)">P7-37-CVTAGR3-2</span>  
+- Reisepass: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">U70K1127H</span>  
+- Land: <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">DE</span>  
+- Gebäude: <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">120</span>  
+- Straße: <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Brunner Straße</span>  
+- Stadt: <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Fehrbellin</span>  
+- Bundesland: <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">Brandenburg</span>  
+- Postleitzahl: <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">16833</span>  
+- IP-Adresse: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">9.141.61.157</span>  
+- Zeit: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">10:16</span>  
+
+Teilnehmer B:
+- Titel: <span class="d" title="dropped · oos:Title/honorific  (ai4privacy: TITLE)">Mutt</span>  
+- E-Mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">1980AHM1980@hotmail.com</span>  
+- Ausweisnummer: D73968</div></div><div class="card"><div class="cardhead">German · <span class="id">13918C</span></div><div class="body">185  
+- Führerschein: <span class="d" title="dropped · N/A:ID  (ai4privacy: DRIVERLICENSE)">G4 92 DOC86ID 8</span>  
+- Reisepass: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">Z69M8370F</span>  
+- Land: <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">Deutschland</span>  
+- Gebäude: <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">359</span>  
+- Straße: <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Roetgener Straße</span>  
+- Stadt: <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Roetgen</span>  
+- Bundesland: <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">NW</span>  
+- Postleitzahl: <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">52159</span>  
+- Nebenadresse: <span class="k Street" title="Street · Street Address  (ai4privacy: SECADDRESS)">Attic 797</span>  
+- IP-Adresse: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">3e83:77bf:bf28:a596:2b09:ecea:9cee:3161</span>  
+- Zeit: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">5:30</span>  
+
+Teilnehmer C:
+- Titel: <span class="d" title="dropped · oos:Title/honorific  (ai4privacy: TITLE)">Äbtissin</span>  
+- E-Mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">qxkcrhkausba3355@hotmail.com</span>  
+- Ausweisnummer: <span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">NS6661590</span>  
+- Führerschein: <span class="d" title="dropped · N/A:ID  (ai4privacy: DRIVERLICENSE)">T6.07.FCQBASY.1</span>  
+- Reisepass: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">K41D6732Q</span>  
+- Land: <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">DE</span>  
+- G</div></div><div class="card"><div class="cardhead">German · <span class="id">13918D</span></div><div class="body">ebäude: <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">745</span>  
+- Straße: <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Neßlach</span>  
+- Stadt: <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Aindling</span>  
+- Bundesland: <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">Bayern</span>  
+- Postleitzahl: <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">86447</span>  
+- Nebenadresse: <span class="k Street" title="Street · Street Address  (ai4privacy: SECADDRESS)">Ranch 412</span>  
+- IP-Adresse: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">222.232.249.225</span>  
+- Zeit: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">10h</span>  
+
+Wir möchten Sie ermutigen, diese neue Funktion zu nutzen, um Ihre Lernerfahrungen zu verbessern und die Interaktion mit Ihren Mitstudierenden zu intensivieren.
+
+Vielen Dank für Ihre Teilnahme und viel Erfolg in unserem Online-Kurs!
+
+Mit freundlichen Grüßen  
+Das Entwicklungs-Team des Online-Kurses</div></div><div class="card"><div class="cardhead">German · <span class="id">13931B</span></div><div class="body">      &quot;Preferred Time&quot;: &quot;<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">20:12</span>&quot;
+      },
+      &quot;Location&quot;: &quot;Germany&quot;,
+      &quot;Schedule&quot;: {
+        &quot;Start Time&quot;: &quot;<span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">05:50</span>&quot;,
+        &quot;Meeting Street&quot;: &quot;<span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Gerlicherheide</span>&quot;
+      }
+    },
+    {
+      &quot;Course ID&quot;: &quot;654321&quot;,
+      &quot;Course Name&quot;: &quot;Fortgeschrittene Online-Kursentwicklung&quot;,
+      &quot;Instructor&quot;: {
+        &quot;Name&quot;: &quot;<span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Mustermann</span>&quot;,
+        &quot;Sex&quot;: &quot;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">M</span>&quot;,
+</div></div><div class="card"><div class="cardhead">Italian · <span class="id">53619A</span></div><div class="body">&quot;...messaggio di gruppo collaborativo...\n\nBuongiorno a tutti!\n\nSono lieta di annunciare che il nostro team di ammissioni ha completato il processo di valutazione. Ecco i dettagli relativi alla decisione presa oggi, <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">21/02/2021</span>.\n\n**Dettagli del Team:**\n\n1. Membro: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Luini</span>  \n  SESSO: <span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Femmina</span>  \n  Nato/a a: <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">marzo/59</span>  \n  USERNAME: <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">bercem.luini</span>  \n  EMAIL: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">bercem.luini@aol.com</span>  \n  </div></div><div class="card"><div class="cardhead">Italian · <span class="id">53621A</span></div><div class="body">Gentili signori e signore,
+
+Desideriamo informarvi che la vostra domanda di ammissione è stata ricevuta con successo. Di seguito, troverete i dettagli relativi all&#x27;accettazione in base alle informazioni fornite nel vostro profilo:
+
+1. Utente: <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">kottmann1989</span>
+   - Email: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">K14@outlook.com</span>
+   - Passaporto: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">DE5116814</span>
+   - Orario: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">12:28</span>
+   - Cognome: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Kottmann</span>
+
+2. Utente: <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">39léann.odabasioglu</span>
+   - E</div></div><div class="card"><div class="cardhead">Italian · <span class="id">53621B</span></div><div class="body">mail: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">bfgfqhos91@outlook.com</span>
+   - Passaporto: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">ME8869254</span>
+   - Orario: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">18</span>
+   - Cognome: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Matthey-Jonais</span>
+   - Cognome aggiuntivo: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME2)">Odabasioglu</span>
+
+...e così via per tutti i candidati elencati nel profilo.
+
+Vi invitiamo a ulteriori procedure di candidatura e rimaniamo a disposizione per eventuali chiarimenti.
+
+Distinti saluti,
+Ufficio Ammissioni
+Università di Milano
+
+[Orario: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">10:03</span>, Edificio: <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">904</span>]</div></div><div class="card"><div class="cardhead">Italian · <span class="id">53627B</span></div><div class="body">:822:e485
+      - Password: <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">,}o&gt;HiA6h}M</span>
+      - Nome: <span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Hersh</span>
+      - Cognome: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Mcroberts</span>
+      - CAP: <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">47835</span>
+      - Orario: <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">3:20</span>
+      - Data: <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">settembre/49</span>
+
+- ADMISSION002:
+    Descrizione_regola: &quot;Verificare l&#x27;autenticità dei documenti di ammissione prima di procedere con il processo.&quot;
+    Obbligatori: 
+      - Password: <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">6KM~Ic</span>
+      - Password: ;</div></div><div class="card"><div class="cardhead">Italian · <span class="id">53636A</span></div><div class="body">Trascrizione della lezione di oggi: 02 novembre 2025
+
+Insegnante: **Buongiorno studiando! Siamo qui per continuare il nostro corso online.**
+
+-E&#x27; interessante notare che ciascun riga di codice è un&#x27;istruzione specifica per il computer.
+-La teoria ci aiuta a comprendere il perché dietro a ogni algoritmo.
+-Gli esempi pratici ci permettono di verificare le nostri conoscenze e capacità di programmazione.
+
+**Partecipanti:**
+1. <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">43TK</span>
+    - <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">TK@protonmail.com</span>
+    - <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">TinKei16C127KNE</span>
+    - </div></div><div class="card"><div class="cardhead">Italian · <span class="id">53663A</span></div><div class="body">Gentile [<span class="d" title="dropped · oos:Title/honorific  (ai4privacy: TITLE)">Re</span>],
+
+Benvenuto nella comunità scolastica! Siamo lieti di darti il benvenuto nella nostra istituzione educativa che valorizza l&#x27;innovazione e l&#x27;inclusione. La tua partecipazione arricchirà sicuramente il nostro ambiente di apprendimento.
+
+Ecco alcune informazioni utili per iniziare il tuo percorso con noi:
+- Email: <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">suldan@yahoo.com</span>
+- Numero di carta d&#x27;identità: <span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">64570298Y</span>
+- Data di nascita: <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">26/05/1969</span>
+- Numero di patente: <span class="d" title="dropped · N/A:ID  (ai4privacy: DRIVERLICENSE)">N69819457</span>
+- Indirizzo: <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Ruta de Los Descubridores</span>, 240</div></div><div class="card"><div class="cardhead">Spanish · <span class="id">27667A</span></div><div class="body">Foro Estrategia Gamer - Discusión de Admisión
+
+¡Buenas noticias, comunidad gamer de España! Hoy nos complace anunciar los resultados de admisión a nuestro prestigioso foro estratégico. A continuación, detallaremos la información relevante para cada uno de los participantes seleccionados:
+
+- Participante: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Sikandar</span> 
+  - Número de Licencia de Conducir: <span class="d" title="dropped · N/A:ID  (ai4privacy: DRIVERLICENSE)">4898901984</span>
+  
+- Participante: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Baur</span> 
+  - Número de Licencia de C</div></div><div class="card"><div class="cardhead">Spanish · <span class="id">27673</span></div><div class="body">&quot;<span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">28/08/1970</span>, <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">B@outlook.com</span>, <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">002952375</span>, <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">Nederland</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">7</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Drosteweg</span>, <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Putten</span>, <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">Gelderland</span>, <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">3881 PE</span>, <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">10:14</span>, <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">AN</span>...
+
+<span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">21/05/1980</span>, <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">zumpe@aol.com</span>, <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">972269748</span>, <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">NL</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">389</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Diependaalselaan</span>, <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Hilversum Hilversum-Zuidoost</span>, <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">NH</span>, <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">1213</span>, <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">7:20</span>, <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">AN</span>...
+
+<span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: BOD)">marzo 1º, 1977</span>, <span class="k Identity" title="Identity · Email Address  (ai4privacy: EMAIL)">M75@hotmail.com</span>, <span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">136797349202</span>, <span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">ES</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">8</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Lugar A Chan</span>, <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Moraña</span>, <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">GA</span>, <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">36669</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: SECADDRESS)">PO 223</span>, <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">13:30</span>, <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">AN</span>...&quot;</div></div><div class="card"><div class="cardhead">Spanish · <span class="id">27681A</span></div><div class="body">Estimado(a) <span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">odoupuj873743</span>,
+
+Nos complace informarle que se ha creado una plataforma temporal para el intercambio de fotos y videos como parte del desarrollo de cursos en línea en nuestra institución educativa. A continuación, encontrará los detalles pertinentes para acceder y participar en esta plataforma:
+
+- **Fecha y hora de inicio:** <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">10/03/2005</span> a las <span class="d" title="dropped · oos:Time  (ai4privacy: TIME)">14:37</span>
+- **Dirección de la plataforma:** <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Camino de la Cerezosa</span>, Número de edificio <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">615</span>, Piso <span class="k Street" title="Street · Street Address  (ai4privacy: SECADDRESS)">Tower 563</span>,</div></div><div class="card"><div class="cardhead">Spanish · <span class="id">27687B</span></div><div class="body">n\n**Información del Estudiante:**\n\n- Nombre: <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Lenga</span>\n- Número de Identificación: <span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">48254318K</span>\n- Pasaporte: <span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">RVQ455557</span>\n- Dirección IP: <span class="d" title="dropped · N/A:IP Address  (ai4privacy: IP)">c32f:9bbb:9dee:666d:5d79:a1c0:e8d2:93b</span>\n- Contraseña: <span class="d" title="dropped · N/A:ID(password)  (ai4privacy: PASS)">tg(0F</span>\n- Ubicación de la Dirección: <span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">651</span>\n- Fecha de Acceso: <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">17/02/2036</span>\n\n**Desempeño Académico:**\n\n- Módulo: 1 Completado\n- Notas: 95%\n- Actividades P</div></div><div class="card"><div class="cardhead">Spanish · <span class="id">27688A</span></div><div class="body">&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;online_course&gt;
+	&lt;student&gt;
+		&lt;name&gt;<span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Anthea</span> <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Ikiladious</span>&lt;/name&gt;
+		&lt;username&gt;<span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">rnuwndomhunbagi434</span>&lt;/username&gt;
+		&lt;personal_info&gt;
+			&lt;sex&gt;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Prefiero no revelar</span>&lt;/sex&gt;
+			&lt;social_number&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">400037083968</span>&lt;/social_number&gt;
+			&lt;id_card&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">I1429280E</span>&lt;/id_card&gt;
+			&lt;passport&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">FYF547670</span>&lt;/passport&gt;
+			&lt;country&gt;<span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">España</span>&lt;/country&gt;
+		&lt;/personal_info&gt;
+	&lt;/student&gt;
+	&lt;student&gt;
+		&lt;name&gt;<span class="k Identity" title="Identity · First Name  (ai4privacy: GIVENNAME1)">Binahi</span> <span class="k Identity" title="Identity · Last Name  (ai4privacy: LASTNAME1)">Cucca</span>&lt;/name&gt;
+		&lt;username&gt;<span class="k Identity" title="Identity · Username  (ai4privacy: USERNAME)">cucca</span>&lt;/username&gt;
+		&lt;persona</div></div><div class="card"><div class="cardhead">Spanish · <span class="id">27688B</span></div><div class="body">l_info&gt;
+			&lt;sex&gt;<span class="d" title="dropped · oos:Sex  (ai4privacy: SEX)">Femenino</span>&lt;/sex&gt;
+			&lt;social_number&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: SOCIALNUMBER)">392098015907</span>&lt;/social_number&gt;
+			&lt;id_card&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: IDCARD)">B5003117X</span>&lt;/id_card&gt;
+			&lt;passport&gt;<span class="d" title="dropped · N/A:ID  (ai4privacy: PASSPORT)">TLU076081</span>&lt;/passport&gt;
+			&lt;country&gt;<span class="d" title="dropped · oos:Country  (ai4privacy: COUNTRY)">ES</span>&lt;/country&gt;
+		&lt;/personal_info&gt;
+	&lt;/student&gt;
+&lt;/online_course&gt;
+&lt;data_background&gt;
+	&lt;location&gt;
+		&lt;street&gt;<span class="k Street" title="Street · Street Address  (ai4privacy: BUILDING)">458</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Colada de los Toroteros</span>, <span class="d" title="dropped · oos:City  (ai4privacy: CITY)">Daganzo de Arriba</span>, <span class="d" title="dropped · oos:State  (ai4privacy: STATE)">Comunidad de Madrid</span>, <span class="d" title="dropped · oos:Postal Code  (ai4privacy: POSTCODE)">28814</span>, <span class="k Street" title="Street · Street Address  (ai4privacy: SECADDRESS)">Fort 267</span>&lt;/street&gt;
+	&lt;/location&gt;
+	&lt;time&gt;<span class="k Street" title="Street · Street Address  (ai4privacy: STREET)">Autopista del Sur</span>, <span class="d" title="dropped · N/A:Date of Birth  (ai4privacy: DATE)">febrero/63</span>&lt;/time&gt;
+&lt;/data_background&gt;</div></div>
+</div><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
