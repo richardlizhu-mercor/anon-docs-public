@@ -1,0 +1,84 @@
+<!doctype html><html><head><meta charset="utf-8"><title>OpenAI Privacy Filter — Benchmark</title><style>
+body{font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;margin:0;background:#f4f5f7;color:#0f172a}
+.wrap{max-width:920px;margin:0 auto;padding:20px 24px 70px}
+h2{font-size:17px;margin:30px 0 8px;color:#1e293b;border-bottom:2px solid #e2e8f0;padding-bottom:5px}
+p{color:#334155;font-size:14px;line-height:1.7;max-width:74ch}
+.verdict{background:#eef2ff;border:1px solid #c7d2fe;border-left:4px solid #4f46e5;border-radius:8px;padding:14px 18px;margin:6px 0 4px}
+.verdict b{color:#3730a3}
+table{border-collapse:collapse;font-size:13px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;margin:8px 0;overflow:hidden}
+th,td{padding:6px 13px;border-bottom:1px solid #eef2f7;text-align:right}
+th{background:#f8fafc;font-weight:600;color:#475569}
+td:first-child,th:first-child{text-align:left}
+td.ours{background:#f5f3ff;font-weight:600}
+td.cardc{color:#64748b}
+td.ind{padding-left:26px;color:#64748b;font-weight:400}
+.sub{color:#94a3b8;font-weight:400;font-size:11.5px}
+table.stat td:last-child{font-weight:600}
+ul{font-size:14px;color:#334155;line-height:1.7;max-width:74ch}
+code{background:#f1f5f9;padding:1px 5px;border-radius:3px;font-size:12px}
+.brow{display:flex;align-items:center;gap:10px;font-size:12.5px;margin:3px 0}
+.blab{width:180px;color:#475569}.btrk{flex:1;background:#f1f5f9;border-radius:4px;height:14px;overflow:hidden;max-width:420px}
+.bfill{display:block;height:100%}.bval{width:36px;color:#334155;font-weight:600}
+.prov{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;font-size:12.5px;color:#475569;line-height:1.8}
+.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body>
+<section style="max-width:920px;margin:0 auto;padding:34px 24px 4px">
+<a href="?page=index" target="_top" style="text-decoration:none;color:#4f46e5;font-size:.85rem;font-weight:600">&larr; Anonymization Docs</a>
+<div style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#4f46e5;font-weight:600;margin-top:18px">Data Acquisition · Anonymization · Detection evals</div>
+<a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1 style="font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.2em 0 .18em">OpenAI Privacy Filter — Benchmark</h1></a>
+<p style="font-size:1.08rem;color:#475569;font-weight:300;max-width:72ch">Reproducing OpenAI's Privacy Filter on <b>ai4privacy/pii-masking-300k</b> with its own <code>opf eval</code> harness, and measuring how it transfers to the unseen <b>Pritesh-2711/pii-bench</b> distribution.</p>
+</section>
+<div class="wrap">
+
+<div class="verdict"><b>Verdict — replicated.</b> On the full 47,728-row ai4privacy validation split (OpenAI's exact eval set), the released <code>openai/privacy-filter</code> scores <b>token F1 0.954</b> and <b>span F1 0.9199</b> — landing on the model card's <i>baseline</i> (0.960 / 0.926), ~0.6 pt under. The residual is the card's documented dataset FP/FN cleanup (baseline→corrected 0.960→0.974 token, 0.926→0.942 span), which we did not apply. On the unseen pii-bench distribution the same model drops to <b>span F1 0.388</b>.</div>
+
+<h2>The model</h2>
+<ul>
+<li>Bidirectional token classifier, gpt-oss-like: 8 pre-norm blocks, d_model 640, GQA + RoPE, sparse MoE (128 experts, top-4). <b>1.5B params / 50M active.</b> 128k context.</li>
+<li>8 categories → 33 BIOES token classes; constrained Viterbi decode into coherent spans.</li>
+<li>Run here as the released checkpoint via <code>opf eval</code>, dense-MoE path on Apple <b>MPS</b>.</li>
+</ul>
+
+<h2>Method</h2>
+<p><b>ai4privacy</b> — the <code>validation</code> split (47,728 rows, 6 languages; per-language counts match the card's Table 6 exactly). Each row's <code>privacy_mask</code> char-spans are mapped to PF's 8 categories via the model card's §7.2.1 crosswalk, excluding categories with no PF definition (TIME/SEX/STATE/COUNTRY/CARDISSUER). Scored <code>--eval-mode typed</code>. <b>pii-bench</b> — the repo leaderboard fixtures, scored <code>--eval-mode untyped</code> (span detection ignoring the differing taxonomy, plus per-type recall).</p>
+<p><b>Metrics</b> (model card §7.3): <i>token</i> detection = PII-or-not per token; <i>span</i> detection = char-level containment match, whitespace-trimmed. recall=TP/(TP+FN), precision=TP/(TP+FP), F1=2PR/(P+R). Our numbers are <b>as-provided</b> — only the category crosswalk, no dataset cleanup — so they sit at/just below the card's baseline by construction.</p>
+
+<h2>ai4privacy — headline (full 47,728)</h2>
+<table class="cmp"><tr><th>Metric</th><th>Our run<br><span class="sub">as-provided, 47,728</span></th><th>Card<br>baseline</th><th>Card<br>corrected</th></tr>
+<tr><td>Token detection F1</td><td class="ours">0.954</td><td>0.960</td><td>0.974</td></tr>
+<tr><td class="ind">token precision</td><td class="ours">0.929</td><td>0.940</td><td>0.968</td></tr>
+<tr><td class="ind">token recall</td><td class="ours">0.980</td><td>0.980</td><td>0.981</td></tr>
+<tr><td>Span detection F1 <span class="sub">(char)</span></td><td class="ours"><b>0.9199</b></td><td>0.926</td><td>0.942</td></tr>
+<tr><td class="ind">span precision</td><td class="ours">0.888</td><td>—</td><td>—</td></tr>
+<tr><td class="ind">span recall</td><td class="ours">0.954</td><td>—</td><td>—</td></tr></table>
+
+<h2>ai4privacy — per language (span-level vs card Table 6)</h2>
+<table class="cmp"><tr><th rowspan="2">Language</th><th colspan="3">Our run (span)</th><th colspan="3">Card Table 6 (span)</th><th rowspan="2">ΔF1</th></tr>
+<tr><th>P</th><th>R</th><th>F1</th><th>P</th><th>R</th><th>F1</th></tr><tr><td>Dutch</td><td>0.873</td><td>0.929</td><td class='ours'><b>0.900</b></td><td class='cardc'>0.892</td><td class='cardc'>0.937</td><td class='cardc'>0.914</td><td>-0.014</td></tr><tr><td>English</td><td>0.890</td><td>0.964</td><td class='ours'><b>0.926</b></td><td class='cardc'>0.905</td><td class='cardc'>0.965</td><td class='cardc'>0.934</td><td>-0.008</td></tr><tr><td>French</td><td>0.884</td><td>0.964</td><td class='ours'><b>0.922</b></td><td class='cardc'>0.889</td><td class='cardc'>0.969</td><td class='cardc'>0.927</td><td>-0.005</td></tr><tr><td>German</td><td>0.890</td><td>0.962</td><td class='ours'><b>0.925</b></td><td class='cardc'>0.890</td><td class='cardc'>0.965</td><td class='cardc'>0.926</td><td>-0.001</td></tr><tr><td>Italian</td><td>0.889</td><td>0.959</td><td class='ours'><b>0.923</b></td><td class='cardc'>0.886</td><td class='cardc'>0.959</td><td class='cardc'>0.921</td><td>0.002</td></tr><tr><td>Spanish</td><td>0.897</td><td>0.969</td><td class='ours'><b>0.932</b></td><td class='cardc'>0.901</td><td class='cardc'>0.968</td><td class='cardc'>0.933</td><td>-0.001</td></tr></table>
+<p class="sub">Recall matches the card to ~0.001–0.008; German and Italian are essentially exact.</p>
+
+<h2>ai4privacy — per category (our full run, span F1)</h2>
+<table class="stat"><tr><th>PF category</th><th>span F1</th></tr><tr><td>private_email</td><td class='ours'>0.960</td></tr><tr><td>account_number</td><td class='ours'>0.949</td></tr><tr><td>private_phone</td><td class='ours'>0.949</td></tr><tr><td>private_url</td><td class='ours'>0.944</td></tr><tr><td>private_address</td><td class='ours'>0.927</td></tr><tr><td>private_date</td><td class='ours'>0.920</td></tr><tr><td>secret</td><td class='ours'>0.909</td></tr><tr><td>private_person</td><td class='ours'>0.862</td></tr></table>
+<p class="sub">Same shape as card Table 5: email/account#/phone highest, <code>private_person</code> lowest — the card explicitly flags name under-detection.</p>
+
+<h2>pii-bench — cross-distribution (untyped span detection)</h2>
+<table class="cmp"><tr><th>Fixture</th><th>token F1</th><th>span F1</th><th>span P</th><th>span R</th></tr><tr><td>piibench_1500 <span class='sub'>(1500 docs)</span></td><td class='ours'>0.524</td><td class='ours'><b>0.385</b></td><td>0.396</td><td>0.374</td></tr><tr><td>piibench_5000 <span class='sub'>(5000 docs)</span></td><td class='ours'>0.536</td><td class='ours'><b>0.388</b></td><td>0.420</td><td>0.361</td></tr></table>
+<p>Per-type recall (piibench_5000) shows <i>why</i> it drops — PF has no organization/product/URL category by design:</p>
+<div class="brow"><span class="blab">Date of Birth</span><span class="btrk"><span class="bfill" style="width:89%;background:#22c55e"></span></span><span class="bval">0.89</span></div><div class="brow"><span class="blab">Last Name</span><span class="btrk"><span class="bfill" style="width:83%;background:#22c55e"></span></span><span class="bval">0.83</span></div><div class="brow"><span class="blab">First Name</span><span class="btrk"><span class="bfill" style="width:77%;background:#22c55e"></span></span><span class="bval">0.77</span></div><div class="brow"><span class="blab">Email Address</span><span class="btrk"><span class="bfill" style="width:74%;background:#22c55e"></span></span><span class="bval">0.74</span></div><div class="brow"><span class="blab">ID</span><span class="btrk"><span class="bfill" style="width:74%;background:#22c55e"></span></span><span class="bval">0.74</span></div><div class="brow"><span class="blab">Phone Number</span><span class="btrk"><span class="bfill" style="width:73%;background:#22c55e"></span></span><span class="bval">0.73</span></div><div class="brow"><span class="blab">Street Address</span><span class="btrk"><span class="bfill" style="width:60%;background:#f59e0b"></span></span><span class="bval">0.60</span></div><div class="brow"><span class="blab">Full Name</span><span class="btrk"><span class="bfill" style="width:49%;background:#f59e0b"></span></span><span class="bval">0.49</span></div><div class="brow"><span class="blab">GPS Coordinates</span><span class="btrk"><span class="bfill" style="width:48%;background:#f59e0b"></span></span><span class="bval">0.48</span></div><div class="brow"><span class="blab">Username</span><span class="btrk"><span class="bfill" style="width:43%;background:#f59e0b"></span></span><span class="bval">0.43</span></div><div class="brow"><span class="blab">URL/Domain/Subdomain</span><span class="btrk"><span class="bfill" style="width:18%;background:#ef4444"></span></span><span class="bval">0.18</span></div><div class="brow"><span class="blab">Organization Name</span><span class="btrk"><span class="bfill" style="width:4%;background:#ef4444"></span></span><span class="bval">0.04</span></div>
+<p class="sub">For continuity: the repo's 16-type leaderboard already ranks <code>openai_pf</code> at det F1 0.485 (piibench_5000) / 0.480 (piibench_1500), clean-source det F1 0.576.</p>
+
+<h2>Why the gap</h2>
+<ul>
+<li><b>Taxonomy mismatch.</b> pii-bench counts Organization (recall 0.04) and URL/Domain (0.18) as PII; PF doesn't model them. These alone cap achievable recall.</li>
+<li><b>Distribution shift.</b> ai4privacy is PF's training-style distribution (synthetic letters/forms); pii-bench aggregates 10 heterogeneous sources (finance NER, nemotron, isotonic, …).</li>
+<li><b>Boundaries.</b> Containment matching penalizes fragmented/partial spans that token-level scoring forgives (span F1 &lt; token F1 on both datasets).</li>
+</ul>
+
+<h2>Provenance &amp; reproduction</h2>
+<div class="prov">
+model <code>openai/privacy-filter</code> (HF, cached) · harness <code>opf eval</code> (viterbi decode, char span-metrics, MPS dense MoE) · device Apple Silicon MPS<br>
+full ai4privacy run: 47,728 rows in 11.4 h (142 tok/s) · per-language 1,000 rows each · pii-bench fixtures piibench_1500 / piibench_5000<br>
+datasets: <code>ai4privacy/pii-masking-300k</code> (validation) · <code>Pritesh-2711/pii-bench</code> (repo fixtures) · run 2026-07-31 → 08-01<br>
+metric keys: <code>detection.f1</code> (token) · <code>detection.span.f1</code> (char) · exact span F1 = 0.9199389336916666
+</div>
+</div><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
