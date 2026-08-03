@@ -1,0 +1,226 @@
+<!doctype html><html><head><meta charset="utf-8"><title>pii-bench-v4 — garbled spans</title>
+<style>
+ body { font-family:-apple-system,Segoe UI,Roboto,sans-serif; margin:0; background:#f5f6f9; color:#1a1a2e; }
+ .wrap { max-width:1500px; margin:0 auto; padding:26px 22px 80px; }
+ h1 { font-size:22px; margin:0 0 3px; } h2 { font-size:15px; margin:26px 0 10px; }
+ .sub { color:#8a8aa0; font-size:13px; margin-bottom:8px; }
+ .legend { background:#fff; border:1px solid #e4e4ee; border-radius:10px; padding:10px 14px; font-size:12.5px; margin:10px 0 18px; }
+ .legend mark { padding:1px 5px; border-radius:3px; margin-right:6px; }
+ .card { background:#fff; border:1px solid #e4e4ee; border-radius:11px; padding:12px 14px; margin:12px 0; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+ .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+ @media (max-width:1000px) { .grid2 { grid-template-columns:1fr; } }
+ .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; margin-bottom:6px; }
+ .lbl.bad { color:#d9534f; } .lbl.good { color:#2f9e57; }
+ .txt { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; line-height:1.7; white-space:pre-wrap; word-break:break-word; background:#fbfbfd; border:1px solid #eee; border-radius:8px; padding:9px 11px; }
+ mark { border-radius:3px; padding:0 1px; }
+ mark.c-Identity { background:#ffd7a8; } mark.c-Street { background:#cbbdff; }
+ mark.c-Institution { background:#ffbcd4; } mark.c-NA { background:#e6e6ec; }
+ mark.g { outline:2px solid #d9534f; outline-offset:1px; background:#ffd9d9 !important; }
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><div class="wrap">
+<a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>pii-bench-v4 — garbled spans, before &amp; after</h1></a>
+<div class="sub">generated 2026-08-03 12:01 PDT · test split · spans highlighted by cluster; <b style="color:#d9534f">red outline = a real garble</b> (span crosses a JSON/CSV field boundary)</div>
+<div class="legend">
+ <mark class="c-Identity">Identity</mark><mark class="c-Street">Street</mark>
+ <mark class="c-Institution">Institution</mark><mark class="c-NA">N/A</mark>
+ <mark class="g">garbled — crosses a field boundary</mark>
+</div>
+
+<h2>ai4privacy — the fix (pii-bench BIO ➜ ai4privacy upstream)</h2>
+<div class="sub">Same text, two annotations. Left = pii-bench's shifted spans; right = the clean upstream
+privacy_mask now shipped in v4. Garbling on ai4privacy_300k drops ~48% ➜ 0.3%.</div>
+<div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">{
+  &quot;Application_Form&quot;: {
+    &quot;Applicants&quot;: [
+      {
+        &quot;Email&quot;: &quot;T@gmail.<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">com&quot;,
+        &quot;Driver</mark>_License&quot;: &quot;V82569318&quot;,
+        &quot;Country&quot;: &quot;ES&quot;,
+        &quot;Building&quot;: &quot;295&quot;,
+        &quot;Street&quot;: &quot;…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">{
+  &quot;Application_Form&quot;: {
+    &quot;Applicants&quot;: [
+      {
+        &quot;Email&quot;: &quot;<mark class="c-Identity" title="Email Address">T@gmail.com</mark>&quot;,
+        &quot;Driver_License&quot;: &quot;<mark class="c-NA" title="Driver&#x27;s License Number">V82569318</mark>&quot;,
+        &quot;Country&quot;: &quot;ES&quot;,
+        &quot;Building&quot;: &quot;<mark class="c-Street" title="Street Address">295</mark>&quot;,
+        &quot;Street&quot;: &quot;…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">…<mark class="c-Identity" title="Username">h</mark>&quot;,&quot;Z7698578&quot;,&quot;nH\\6&gt;W~uUW&quot;,&quot;Normal results, no further action needed at this time.&quot;
+4,&quot;1957nun<mark class="c-Identity g" title="Username  ·  GARBLED (crosses field boundary)">ioiulio&quot;,&quot;957726</mark>795&quot;,&quot;|C{q0;%d,\&quot;q,&quot;,&quot;Abnormal Thyroid function, consult with an endocrinologist for further ev…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">…<mark class="c-Identity" title="Username">h</mark>&quot;,&quot;<mark class="c-NA" title="Driver&#x27;s License Number">Z7698578</mark>&quot;,&quot;<mark class="c-NA" title="Password (Plaintext)">nH\\6&gt;W~uUW</mark>&quot;,&quot;Normal results, no further action needed at this time.&quot;
+4,&quot;<mark class="c-Identity" title="Username">1957nunioiulio</mark>&quot;,&quot;<mark class="c-NA" title="Driver&#x27;s License Number">957726795</mark>&quot;,&quot;<mark class="c-NA" title="Password (Plaintext)">|C{q0;%d,\&quot;q,</mark>&quot;,&quot;Abnormal Thyroid function, consult with an endocrinologist for further ev…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">…uo 1**
+  - **Nome**: Mae
+  - **Data di Nascita**: 10º gennaio 1984
+  - **Email**: L@protonmail.<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">com
+  - **Numero di Sicure</mark>zza Sociale**: YaaLib10F274TNV
+  - **Indirizzo IP**: 157.172.220.175
+  - **<mark class="c-NA" title="IP Address">Password**: m:KY9qz</mark>G…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">…uo 1**
+  - **Nome**: Mae
+  - **Data di Nascita**: <mark class="c-NA" title="Date of Birth">10º gennaio 1984</mark>
+  - **Email**: <mark class="c-Identity" title="Email Address">L@protonmail.com</mark>
+  - **Numero di Sicurezza Sociale**: <mark class="c-NA" title="Social Security Number (SSN)">YaaLib10F274TNV</mark>
+  - **Indirizzo IP**: <mark class="c-NA" title="IP Address">157.172.220.175</mark>
+  - **Password**: <mark class="c-NA" title="Password (Plaintext)">m:KY9qzG</mark>…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">BACKGROUND_BUILDING&quot;:&quot;417&quot;
+      },
+      {
+         &quot;TITLE&quot;:&quot;Rey&quot;,
+         &quot;USERNAME&quot;:&quot;she<mark class="c-Identity g" title="Username  ·  GARBLED (crosses field boundary)">licuddy&quot;,
+         &quot;SO</mark>CIALNUMBER&quot;:&quot;756.3827.5772.20&quot;,
+         &quot;IDCARD&quot;:&quot;K4488841&quot;,
+         &quot;PASSPORT&quot;:&quot;A3891439&quot;,
+ …</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">BACKGROUND_BUILDING&quot;:&quot;<mark class="c-Street" title="Street Address">417</mark>&quot;
+      },
+      {
+         &quot;TITLE&quot;:&quot;Rey&quot;,
+         &quot;USERNAME&quot;:&quot;<mark class="c-Identity" title="Username">shelicuddy</mark>&quot;,
+         &quot;SOCIALNUMBER&quot;:&quot;<mark class="c-NA" title="Social Security Number (SSN)">756.3827.5772.20</mark>&quot;,
+         &quot;IDCARD&quot;:&quot;<mark class="c-NA" title="National ID Number">K4488841</mark>&quot;,
+         &quot;PASSPORT&quot;:&quot;<mark class="c-NA" title="Passport Number">A3891439</mark>&quot;,
+ …</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">…},
+            {
+                &quot;Patient_Name&quot;: &quot;Gabriel&quot;,
+                &quot;Email&quot;: &quot;19771977H<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">GLS@outlook.com&quot;,
+                &quot;Password</mark>&quot;: &quot;5Ly=!&quot;
+            },
+            {
+                &quot;Patient_Name&quot;: &quot;Sophie&quot;,
+             …</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">…},
+            {
+                &quot;Patient_Name&quot;: &quot;<mark class="c-Identity" title="First Name">Gabriel</mark>&quot;,
+                &quot;Email&quot;: &quot;<mark class="c-Identity" title="Email Address">19771977HGLS@outlook.com</mark>&quot;,
+                &quot;Password&quot;: &quot;<mark class="c-NA" title="Password (Plaintext)">5Ly=!</mark>&quot;
+            },
+            {
+                &quot;Patient_Name&quot;: &quot;<mark class="c-Identity" title="First Name">Sophie</mark>&quot;,
+             …</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">{
+   &quot;Education_Policy_Reform_Waiver&quot;:{
+      &quot;Individual_A&quot;:{
+         &quot;Email&quot;:&quot;R1957@<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">protonmail.com&quot;,
+         &quot;ID_Card</mark>&quot;:&quot;544314518&quot;,
+         &quot;Driver_License&quot;:&quot;L884818677856&quot;,
+         &quot;IP_Address&quot;:&quot;2367:1f2f:b0da…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">{
+   &quot;Education_Policy_Reform_Waiver&quot;:{
+      &quot;Individual_A&quot;:{
+         &quot;Email&quot;:&quot;<mark class="c-Identity" title="Email Address">R1957@protonmail.com</mark>&quot;,
+         &quot;ID_Card&quot;:&quot;<mark class="c-NA" title="National ID Number">544314518</mark>&quot;,
+         &quot;Driver_License&quot;:&quot;<mark class="c-NA" title="Driver&#x27;s License Number">L884818677856</mark>&quot;,
+         &quot;IP_Address&quot;:&quot;<mark class="c-NA" title="IP Address">2367:1f2f:b0da</mark>…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">…strong&gt;, ID Carta d&#x27;Identità: &lt;strong&gt;KQI453508B&lt;/strong&gt;&lt;/li&gt;
+    &lt;li&gt;Nome Utente: &lt;strong&gt;mab<mark class="c-Identity g" title="Username  ·  GARBLED (crosses field boundary)">spz63&lt;/strong</mark>&gt;, ID Carta d&#x27;Identità: &lt;strong&gt;FQJ071456S&lt;/strong&gt;&lt;/li&gt;
+    &lt;li&gt;Nome Utente: &lt;strong&gt;bbassoum<mark class="c-Identity g" title="Username  ·  GARBLED (crosses field boundary)">1</mark>…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">…strong&gt;, ID Carta d&#x27;Identità: &lt;strong&gt;<mark class="c-NA" title="National ID Number">KQI453508B</mark>&lt;/strong&gt;&lt;/li&gt;
+    &lt;li&gt;Nome Utente: &lt;strong&gt;<mark class="c-Identity" title="Username">mabspz63</mark>&lt;/strong&gt;, ID Carta d&#x27;Identità: &lt;strong&gt;<mark class="c-NA" title="National ID Number">FQJ071456S</mark>&lt;/strong&gt;&lt;/li&gt;
+    &lt;li&gt;Nome Utente: &lt;strong&gt;<mark class="c-Identity" title="Username">bbassoum1</mark>…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">…eboortedatum:&lt;/strong&gt; 1981-11-04T00:00:00&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Gebruikersnaam:&lt;/strong&gt; 04<mark class="c-Identity g" title="Username  ·  GARBLED (crosses field boundary)">emsal.bergerot&lt;/li</mark>&gt;
+        &lt;li&gt;&lt;strong&gt;E-mail:&lt;/strong&gt; B@g<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">mail.com&lt;/li&gt;
+        &lt;</mark>li&gt;&lt;strong&gt;Burgerservicenummer…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">…eboortedatum:&lt;/strong&gt; <mark class="c-NA" title="Date of Birth">1981-11-04T00:00:00</mark>&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Gebruikersnaam:&lt;/strong&gt; <mark class="c-Identity" title="Username">04emsal.bergerot</mark>&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;E-mail:&lt;/strong&gt; <mark class="c-Identity" title="Email Address">B@gmail.com</mark>&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Burgerservicenummer…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt"> La vostra strada di residenza: Via Bil<mark class="c-Street g" title="Street Address  ·  GARBLED (crosses field boundary)">vecchio
+- Contatt</mark>i:
+   - Utente A:
+      - Sesso: Preferisco <mark class="c-Identity g" title="Full Name  ·  GARBLED (crosses field boundary)">non divulgare
+      - Telefono: +39</mark>-504-556-7668
+  …</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt"> La vostra strada di residenza: <mark class="c-Street" title="Street Address">Via Bilvecchio</mark>
+- Contatti:
+   - Utente A:
+      - Sesso: Preferisco non divulgare
+      - Telefono: <mark class="c-NA" title="Phone Number">+39-504-556-7668</mark>
+  …</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">r: 10
+   - Street: <mark class="c-Street g" title="Street Address  ·  GARBLED (crosses field boundary)">Colliers Lane
+   - City</mark>: Cambridge Stow cum Quy
+   - State: ENG
+   - Postcode: CB25
+   - Secondary Address: Penthouse …</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">r: <mark class="c-Street" title="Street Address">10</mark>
+   - Street: <mark class="c-Street" title="Street Address">Colliers Lane</mark>
+   - City: Cambridge Stow cum Quy
+   - State: ENG
+   - Postcode: CB25
+   - Secondary Address: <mark class="c-Street" title="Street Address">Penthouse </mark>…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">…Westfalen
+- Postleitzahl: 53902
+- Alternative Adresse: Castle 532
+- IP-Adresse: 74f6:f4e:97c5:2<mark class="c-NA g" title="IP Address  ·  GARBLED (crosses field boundary)">d0f:5100:a1e5:9c77:295b
+- Passwort: 5M{8it</mark>RI
+- Zeit: 9h
+
+Wir laden Sie herzlich ein, die digitale Fanzone zu erkunden und von den zahlrei…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">…Westfalen
+- Postleitzahl: 53902
+- Alternative Adresse: <mark class="c-Street" title="Street Address">Castle 532</mark>
+- IP-Adresse: <mark class="c-NA" title="IP Address">74f6:f4e:97c5:2d0f:5100:a1e5:9c77:295b</mark>
+- Passwort: <mark class="c-NA" title="Password (Plaintext)">5M{8itRI</mark>
+- Zeit: 9h
+
+Wir laden Sie herzlich ein, die digitale Fanzone zu erkunden und von den zahlrei…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">&quot;Registro de Prescripciones Digitales - Notas
+Paciente: 
+- Correo Electrónico: (wa<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">faa.schwotzer@yahoo.com)
+- Número</mark> de Seguro Social: (025693637331)
+- DNI: (T6949439E)
+- Licencia de Conducir: (N52545095)
+- País…</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">&quot;Registro de Prescripciones Digitales - Notas
+Paciente: 
+- Correo Electrónico: (<mark class="c-Identity" title="Email Address">wafaa.schwotzer@yahoo.com</mark>)
+- Número de Seguro Social: (<mark class="c-NA" title="Social Security Number (SSN)">025693637331</mark>)
+- DNI: (<mark class="c-NA" title="National ID Number">T6949439E</mark>)
+- Licencia de Conducir: (<mark class="c-NA" title="Driver&#x27;s License Number">N52545095</mark>)
+- País…</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">…hahmir.streb21&lt;/username&gt;
+            &lt;<mark class="c-Identity" title="Username">email&gt;kouri@gmail.com</mark>&lt;/email&gt;
+            &lt;socialNumber&gt;<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">070609636779&lt;/social</mark>Nu</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">…<mark class="c-Identity" title="Username">hahmir.streb21</mark>&lt;/username&gt;
+            &lt;email&gt;<mark class="c-Identity" title="Email Address">kouri@gmail.com</mark>&lt;/email&gt;
+            &lt;socialNumber&gt;<mark class="c-NA" title="Social Security Number (SSN)">070609636779</mark>&lt;/socialNu</div></div></div></div><div class="card"><div class="grid2"><div class="pan"><div class="lbl bad">pii-bench BIO — garbled</div><div class="txt">cipant E :**  
+   - Date de naissance: août/03  
+   - Email: smahane.<mark class="c-Identity g" title="Email Address  ·  GARBLED (crosses field boundary)">moenne-loccoz@outlook.com  
+   - Adresse</mark> IP: 7bd6:6467:5<mark class="c-NA" title="IP Address">d45:840f:fc92:e97f:d322:5362  
+
+Nous vous pri</mark>ons de confirmer votre présence à …</div></div><div class="pan"><div class="lbl good">ai4privacy upstream — clean</div><div class="txt">cipant E :**  
+   - Date de naissance: <mark class="c-NA" title="Date of Birth">août/03</mark>  
+   - Email: <mark class="c-Identity" title="Email Address">smahane.moenne-loccoz@outlook.com</mark>  
+   - Adresse IP: <mark class="c-NA" title="IP Address">7bd6:6467:5d45:840f:fc92:e97f:d322:5362</mark>  
+
+Nous vous prions de confirmer votre présence à …</div></div></div></div>
+
+<h2>gretel_finance — still garbled (open item)</h2>
+<div class="sub">gretel is outside the ai4privacy re-derivation, so its ~3.8% CSV-table shift remains.
+Same shift pattern: a span grabs one field's tail + the next field.</div>
+<div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">…emperature&quot;,&quot;first\_name&quot;,&quot;phone\_number&quot;,&quot;name&quot;,&quot;street\_address&quot;
+&quot;<mark class="c-Identity" title="First Name">2022-01-01&quot;,32,&quot;Rebecca</mark>&quot;, &quot;<mark class="c-Identity g" title="Full Name  ·  GARBLED (crosses field boundary)">205.225.6969x6713&quot;,&quot;Marie-Theres</mark> <mark class="c-Street g" title="Street Address  ·  GARBLED (crosses field boundary)">Kobelt-Adolph&quot;,&quot;9744 Antonio Junctions, Suite 386</mark>&quot;
+&quot;<mark class="c-Identity" title="First Name">2022-01-02&quot;,34,&quot;Rebecca</mark>&quot;, &quot;<mark class="c-Identity g" title="Full Name  ·  GARBLED (crosses field boundary)">205.225.6969x67</mark>…</div></div></div><div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">…-3 http://www.fpml.org/schema/fpml-5-3-5.xsd&quot;&gt;
+   &lt;header&gt;
+      &lt;party id=&quot;party1&quot;&gt;
+         &lt;<mark class="c-Identity g" title="Full Name  ·  GARBLED (crosses field boundary)">name&gt;Lina Korsman-Schuurmans&lt;/name</mark>&gt;
+      &lt;/party&gt;
+      &lt;party id=&quot;party2&quot;&gt;
+         &lt;<mark class="c-NA g" title="SWIFT/BIC Code  ·  GARBLED (crosses field boundary)">name&gt;PTMTDEYX243&lt;/name</mark>&gt;
+      &lt;/party&gt;
+   …</div></div></div><div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">&quot;name&quot;,&quot;phone_number&quot;,&quot;street_address&quot;,&quot;latitude&quot;,&quot;longitude&quot;
+&quot;<mark class="c-Identity" title="Full Name">Silvestro S.</mark> <mark class="c-Street g" title="Street Address  ·  GARBLED (crosses field boundary)">Cignaroli&quot;,&quot;365.734.4422&quot;,&quot;5310 Calhoun Fields, Cookhaven&quot;,&quot;40.7128&quot;,&quot;-74.0060</mark>&quot;</div></div></div><div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">…geId&gt;1234567890&lt;/messageId&gt;
+      &lt;sender&gt;
+         &lt;partyId&gt;
+            &lt;partyIdentification <mark class="c-Institution g" title="Organization Name  ·  GARBLED (crosses field boundary)">schemeName=&quot;ISO_10383_BCRS&quot;&gt;DEUTSCHE_BANK&lt;/partyIdentification</mark>&gt;
+         &lt;/partyId&gt;
+      &lt;/sender&gt;
+      &lt;receiver&gt;
+         &lt;partyId&gt;
+            &lt;partyIde…</div></div></div><div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">…w.w3.org/1999/xlink&quot;&gt;
+  &lt;xbrli:context id=&quot;fr-ctx&quot;&gt;
+    &lt;xbrli:entity&gt;
+      &lt;xbrli:identifier <mark class="c-Identity g" title="Full Name  ·  GARBLED (crosses field boundary)">scheme=&quot;http://www.dei.org/dei/entity-identifier&quot;&gt;Elisa Turati&lt;/xbrli:identifier</mark>&gt;
+    &lt;/xbrli:entity&gt;
+    &lt;xbrli:period&gt;
+      &lt;xbrli:instant&gt;2022-03-15&lt;/xbrli:instant&gt;
+    &lt;/…</div></div></div><div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">…artyId&gt;
+            &lt;partyIdentification&gt;
+               &lt;id&gt;SE0000123456&lt;/id&gt;
+               &lt;<mark class="c-Institution g" title="Organization Name  ·  GARBLED (crosses field boundary)">issuer&gt;SEB&lt;/issuer</mark>&gt;
+            &lt;/partyIdentification&gt;
+         &lt;/partyId&gt;
+      &lt;/sender&gt;
+      &lt;receiver&gt;
+     …</div></div></div><div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">&quot;id&quot;,&quot;date_time&quot;,&quot;name&quot;,&quot;street_address&quot;
+1,&quot;04 Sep 1974 <mark class="c-Identity g" title="Full Name  ·  GARBLED (crosses field boundary)">03:04:12&quot;,&quot;Brunilda</mark> <mark class="c-Street g" title="Street Address  ·  GARBLED (crosses field boundary)">Guzmán-Cervantes&quot;,&quot;3662 Anita Lock</mark>&quot;</div></div></div><div class="card"><div class="pan"><div class="lbl bad">gretel_finance — garbled (no upstream fix yet)</div><div class="txt">…&gt;832323.R1.01.01&lt;/n1:RID&gt;
+      &lt;n1:TSP&gt;20230323&lt;/n1:TSP&gt;
+      &lt;n1:TSA&gt;232323&lt;/n1:TSA&gt;
+      &lt;<mark class="c-NA g" title="IP Address  ·  GARBLED (crosses field boundary)">n1:TSE&gt;154.89.121.43&lt;/n1:TSE</mark>&gt;
+   &lt;/n1:HDR&gt;
+   &lt;n1:BIG&gt;
+      &lt;n1:BIG.1&gt;
+         &lt;n1:TIN&gt;123456789&lt;/n1:TIN&gt;
+         &lt;n1:RT…</div></div></div>
+
+<div style="margin-top:22px;font-size:12px"><a href="index.html" target="_top" style="color:#6b6be0;text-decoration:none">‹ Anonymization Docs</a></div>
+</div><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
