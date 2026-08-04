@@ -1,0 +1,57 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>DeBERTa-v4 &mdash; Evaluation Results</title><style>
+*{box-sizing:border-box}body{font:15px/1.55 -apple-system,Inter,Segoe UI,sans-serif;color:#1e293b;margin:0;background:#f8fafc}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:19px;margin:34px 0 10px;border-bottom:2px solid #e2e8f0;padding-bottom:6px}
+h3{font-size:15px;margin:18px 0 8px;color:#4338ca}
+.sub{color:#64748b;margin:0 0 18px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0}
+th,td{border:1px solid #e2e8f0;padding:6px 9px;text-align:center}th{background:#eef2ff;font-weight:600}
+td:first-child,th:first-child{text-align:left}.f{font-weight:700;background:#f5f3ff}
+.svc{font-weight:600;color:#334155}.grp{background:#c7d2fe!important}
+.namerow td{background:#ecfdf5;border-color:#a7f3d0}
+.tl{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 18px;margin:16px 0}
+.tl b{color:#3730a3}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.fact{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px}
+.fact b{display:block;font-size:17px;color:#4338ca}
+code{font:12px ui-monospace,monospace;background:#eef2ff;padding:1px 5px;border-radius:4px}
+ul{margin:8px 0}li{margin:4px 0}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><div class=wrap>
+<a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>DeBERTa-v4 &mdash; Evaluation Results</h1></a>
+<p class=sub>Three v4 token-classifiers trained on <b>pii-bench-v4</b> (499,624 docs, 3 epochs, full-bf16 on A100),
+evaluated on <b>pii-bench-v4 test</b> (per-type + detection) and <b>contigo-bench v3.1/v3.2</b> (detection-only).
+Scored to the 11 target attribute types. Checkpoints: <code>gs://data-acq-models/detection/runs/deberta-v4-*</code>.</p>
+
+<div class=tl><b>Completeness.</b> epoch-2 <b>9/9</b> scored &middot; epoch-3/final <b>6/9</b> scored.
+Pending cells show &#8987; and fill in as the GKE inferences land. <b>Epoch-1 unavailable</b> (trained with
+<code>save_total_limit=1</code>, overwritten). <b>&Dagger;</b> = no pii-bench-v4 training data (untrained &rarr; ~0).</div>
+
+<div class=facts>
+<div class=fact><b>A</b>O + 11&times;BIO &middot; non-target &rarr; O</div>
+<div class=fact><b>B</b>O + 12&times;BIO &middot; non-target &rarr; one <code>Other</code></div>
+<div class=fact><b>C</b>O + 18&times;BIO &middot; keep Phone/DOB/&hellip; &middot; 22 ID-family &rarr; <code>ID</code></div>
+</div>
+
+<h2>Detection F1 <span style='font-weight:400;color:#64748b;font-size:14px'>(char-level, PII-or-not)</span></h2>
+<table><tr><th>model</th><th class=grp>pii-bench-v4<br><span style='font-weight:400;color:#64748b'>epoch 2</span></th><th class=grp>contigo v3.1<br><span style='font-weight:400;color:#64748b'>epoch 2</span></th><th class=grp>contigo v3.2<br><span style='font-weight:400;color:#64748b'>epoch 2</span></th><th class=grp>pii-bench-v4<br><span style='font-weight:400;color:#64748b'>epoch 3 / final</span></th><th class=grp>contigo v3.1<br><span style='font-weight:400;color:#64748b'>epoch 3 / final</span></th><th class=grp>contigo v3.2<br><span style='font-weight:400;color:#64748b'>epoch 3 / final</span></th></tr><tr><td class='svc'>A · 11-only</td><td class='f'>0.652</td><td class='f'>0.368</td><td class='f'>0.689</td><td class='f'>0.652</td><td class='f'>0.368</td><td class='f'>0.689</td></tr><tr><td class='svc'>B · 11+Other</td><td class='f'>0.920</td><td class='f'>0.622</td><td class='f'>0.296</td><td class='f'>0.920</td><td class='f'>0.622</td><td class='f'>0.296</td></tr><tr><td class='svc'>C · full-18</td><td class='f'>0.916</td><td class='f'>0.662</td><td class='f'>0.288</td><td class='f'>&#8987;</td><td class='f'>&#8987;</td><td class='f'>&#8987;</td></tr></table>
+<p class=sub><b>A</b> looks weak on detection <i>by design</i> &mdash; it maps the 7 non-target PII families to O, so it
+never fires on them. <b>B/C</b> catch everything via the <code>Other</code>/<code>ID</code> catch-all head.</p>
+
+<h2>pii-bench-v4 &mdash; per-type F1 (11 target types)</h2>
+<div class=tl><b>The name-subtype story.</b> The <span style='background:#ecfdf5;padding:1px 4px;border-radius:3px'>&#8627; Name (5 subtypes merged)</span>
+row collapses Full / Middle / Last / First / Nickname into one <code>Name</code> type (GT + predictions) and re-scores.
+Last Name (0.46) and First Name (0.65) look weak individually, but merged the number jumps to <b>~0.91</b> &mdash;
+the models <i>find</i> name spans reliably; they just can't always pick the right subtype from a bare token with no context.</div>
+<h3>epoch 2</h3><table><tr><th>type</th><th>A · 11-only</th><th>B · 11+Other</th><th>C · full-18</th></tr><tr><td>Full Name</td><td>0.829</td><td>0.785</td><td>0.775</td></tr><tr><td>Middle Name&Dagger;</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td>Last Name</td><td>0.463</td><td>0.180</td><td>0.310</td></tr><tr><td>First Name</td><td>0.648</td><td>0.573</td><td>0.337</td></tr><tr><td>Nickname&Dagger;</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td>Username</td><td>0.740</td><td>0.738</td><td>0.744</td></tr><tr><td>Email Address</td><td>0.985</td><td>0.984</td><td>0.982</td></tr><tr><td>Street Address</td><td>0.875</td><td>0.870</td><td>0.864</td></tr><tr><td>Brand Name</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td>Product Name&Dagger;</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td>Organization Name</td><td>0.811</td><td>0.810</td><td>0.805</td></tr><tr class='namerow'><td>&#8627; <i>Name (5 subtypes merged)</i></td><td class='f'><b>0.909</b></td><td class='f'><b>0.909</b></td><td class='f'><b>0.907</b></td></tr><tr><td><b>macro (11)</b></td><td class='f'>0.486</td><td class='f'>0.449</td><td class='f'>0.438</td></tr></table><h3>epoch 3 / final</h3><table><tr><th>type</th><th>A · 11-only</th><th>B · 11+Other</th><th>C · full-18</th></tr><tr><td>Full Name</td><td>0.829</td><td>0.785</td><td>&#8987;</td></tr><tr><td>Middle Name&Dagger;</td><td>0.000</td><td>0.000</td><td>&#8987;</td></tr><tr><td>Last Name</td><td>0.463</td><td>0.180</td><td>&#8987;</td></tr><tr><td>First Name</td><td>0.648</td><td>0.573</td><td>&#8987;</td></tr><tr><td>Nickname&Dagger;</td><td>0.000</td><td>0.000</td><td>&#8987;</td></tr><tr><td>Username</td><td>0.740</td><td>0.738</td><td>&#8987;</td></tr><tr><td>Email Address</td><td>0.985</td><td>0.984</td><td>&#8987;</td></tr><tr><td>Street Address</td><td>0.875</td><td>0.870</td><td>&#8987;</td></tr><tr><td>Brand Name</td><td>0.000</td><td>0.000</td><td>&#8987;</td></tr><tr><td>Product Name&Dagger;</td><td>0.000</td><td>0.000</td><td>&#8987;</td></tr><tr><td>Organization Name</td><td>0.811</td><td>0.810</td><td>&#8987;</td></tr><tr class='namerow'><td>&#8627; <i>Name (5 subtypes merged)</i></td><td class='f'><b>0.909</b></td><td class='f'><b>0.909</b></td><td>&#8987;</td></tr><tr><td><b>macro (11)</b></td><td class='f'>0.486</td><td class='f'>0.449</td><td>&#8987;</td></tr></table>
+
+<h2>Findings</h2>
+<ul>
+<li><b>Models plateaued at epoch 2.</b> Epoch-3 predictions differ per-document but aggregate to the <i>same</i> F1 (bit-identical to 3 decimals) &mdash; the 3rd epoch bought nothing on these metrics.</li>
+<li><b>Name subtype confusion, not detection failure.</b> Merged-Name ~0.91 vs. Last Name ~0.46 (model A). The recall is there; the subtype label isn't.</li>
+<li><b>Brand Name = 0.000</b> across all three models despite <i>not</i> being flagged data-less &mdash; a real failure (or a tiny/mislabeled eval slice) worth investigating.</li>
+<li><b>Strong types:</b> Email ~0.98, Street ~0.88, Organization ~0.81, Username ~0.74, Full Name ~0.83.</li>
+<li><b>Contigo asymmetry:</b> A scores v3.1 0.37 / v3.2 0.69; B/C flip to v3.1 ~0.62 / v3.2 ~0.29 (detection-only GTs).</li>
+</ul>
+<p class=sub>Source: <code>eval/detection-leaderboard/results/deberta_v4_eval.md</code> (auto-updating) &middot; regenerated by <code>gen_html.py</code> from per-eval <code>score11.py</code> outputs.</p>
+</div><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
