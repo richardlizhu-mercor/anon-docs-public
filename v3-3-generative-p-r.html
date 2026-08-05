@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>v3.3 — Generative P/R</title><style>
+*{box-sizing:border-box}body{font:15px/1.55 -apple-system,Inter,Segoe UI,sans-serif;color:#1e293b;margin:0;background:#f8fafc}
+.wrap{max-width:900px;margin:0 auto;padding:32px 24px 80px}h1{font-size:25px;margin:0 0 4px}h2{font-size:19px;margin:32px 0 10px;border-bottom:2px solid #e2e8f0;padding-bottom:6px}
+.sub{color:#64748b;margin:0 0 18px}table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid #e2e8f0;padding:7px 10px;text-align:center}th{background:#eef2ff;font-weight:600}td:first-child,th:first-child{text-align:left}.f{background:#f8fafc}.win{font-weight:700;background:#dcfce7;color:#166534}.svc{font-weight:600;color:#334155}
+.tl{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 18px;margin:16px 0}.tl b{color:#3730a3}code{font:12px ui-monospace,monospace;background:#eef2ff;padding:1px 5px;border-radius:4px}ul{margin:8px 0}li{margin:5px 0}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><div class=wrap>
+<a class="hub-home-block" href="index.html" target="_top" title="Back to all docs"><h1>contigo v3.3 &mdash; Generative (LLM-adjudicated) P/R</h1></a>
+<p class=sub>The v3.3 GT is imprecise on boundaries (clips <code>Nikhil M</code>&rarr;<code>Nikhil</code>). This estimates
+P/R by having <b>25 LLM judges</b> score every label the 4 detectors produced on a <b>500-doc sample</b>
+semantically &mdash; crediting near-misses, flagging genuine junk.</p>
+<div class=tl><b>The GT's recall is fine.</b> Of <b>437</b> real PII entities, the strict GT missed only <b>15
+(3.4%)</b>. The imprecision is a boundary effect, not missing entities. So the real story is precision:
+<b>Gemini has 5 false positives across 500 docs</b>; <b>A/C have
+66/62</b> (the <code>_</code>&rarr;Street kind).</div>
+<h2>Generative P / R / F1 <span style='font-weight:400;color:#64748b'>(per label, semantic; green=best F1)</span></h2>
+<table><tr><th>detector</th><th>precision</th><th>recall</th><th>F1</th><th>FPs / 500</th></tr><tr><td class='svc'>Gemini 2.5 Flash</td><td>0.987</td><td>0.863</td><td class='win'>0.921</td><td>5</td></tr><tr><td class='svc'>A·11-only</td><td>0.816</td><td>0.668</td><td class='f'>0.735</td><td>66</td></tr><tr><td class='svc'>B·11+Other</td><td>0.934</td><td>0.680</td><td class='f'>0.787</td><td>21</td></tr><tr><td class='svc'>C·full-18</td><td>0.821</td><td>0.652</td><td class='f'>0.727</td><td>62</td></tr></table>
+<h2>What it reveals</h2><ul>
+<li><b>Gemini is dramatically the most precise</b> (5 FPs, P 0.987) and keeps top recall &rarr; best detector (F1 0.921).</li>
+<li><b>A and C over-fire</b> (66/62 genuine FPs) &mdash; spurious labels on junk tokens. Their true precision (~0.82) is lower than the strict GT flattered it (~0.91&ndash;0.97).</li>
+<li><b>B</b> is precise (0.934) but lower recall (0.680).</li>
+<li>Near-misses (<code>Nikhil M</code>, <code>Asad K</code>) <b>are</b> now credited &mdash; but judging semantically mostly exposes A/C's real over-firing that the strict GT masked.</li>
+</ul>
+<h2>Method</h2><p class=sub>500 random v3.3 cells (460 w/ PII + 40 negatives) &middot; 25 LLM judges, ~20 cells each &middot;
+each true PII marked with which models caught it + each model's genuine FPs &middot; P = caught/(caught+FP), R = caught/total-PII.</p>
+</div><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
