@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PII Detection System — Overview</title>
+<style>
+:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--indigo-100:#e0e7ff;--indigo-50:#eef2ff;
+--slate-900:#0f172a;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
+--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--white:#fff;--green:#16a34a;--amber:#b45309;
+--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.6;-webkit-font-smoothing:antialiased}
+main{max-width:900px;margin:0 auto;padding:48px 28px 120px}
+.eyebrow{font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2.2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .2em}
+.sub{font-size:1.08rem;color:var(--slate-600);font-weight:300;max-width:70ch}
+h2{font-size:1.15rem;font-weight:600;margin:2.1em 0 .5em;padding-top:.4em;border-top:1px solid var(--slate-200)}
+h3{font-size:.98rem;font-weight:600;margin:1.3em 0 .3em;color:var(--slate-700)}
+p{margin:.5em 0;color:var(--slate-700)}
+a{color:var(--indigo-600);text-decoration:none}a:hover{text-decoration:underline}
+code{font-family:var(--mono);font-size:.85em;background:var(--slate-100);padding:1px 5px;border-radius:5px;color:var(--slate-900)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+.toc a{font-size:.8rem;font-weight:500;background:var(--white);border:1px solid var(--slate-200);border-radius:999px;padding:4px 12px;color:var(--slate-600)}
+.toc a:hover{border-color:var(--indigo-100);background:var(--indigo-50);text-decoration:none}
+table{border-collapse:collapse;font-size:.86rem;width:100%;margin:12px 0;background:var(--white);border:1px solid var(--slate-200);border-radius:10px;overflow:hidden}
+th{background:var(--slate-100);color:var(--slate-600);font-weight:600;text-align:left;padding:8px 13px;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}
+td{padding:8px 13px;border-top:1px solid var(--slate-100);vertical-align:top}
+td.k{font-weight:600;color:var(--slate-900);white-space:nowrap}
+.callout{background:var(--indigo-50);border:1px solid var(--indigo-100);border-radius:12px;padding:14px 18px;margin:16px 0}
+.callout.warn{background:#fffbeb;border-color:#fde68a}
+.callout b{color:var(--slate-900)}
+.flow{font-family:var(--mono);font-size:.8rem;background:var(--slate-900);color:#e2e8f0;border-radius:12px;padding:16px 18px;overflow-x:auto;line-height:1.7;white-space:pre}
+.pill{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border-radius:999px;padding:1px 8px;vertical-align:middle}
+.pill.champ{background:#dcfce7;color:#166534}.pill.chal{background:#fef3c7;color:#92400e}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--white);border:1px solid var(--slate-200);border-radius:12px;padding:14px 16px}
+.card h3{margin-top:0}
+ul.links{list-style:none;padding:0;margin:8px 0}
+ul.links li{padding:3px 0;font-size:.9rem}
+ul.links .d{color:var(--slate-500);font-size:.85rem}
+.metric{font-variant-numeric:tabular-nums;font-weight:600;color:var(--slate-900)}
+footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--slate-200);font-size:.8rem;color:var(--slate-500)}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><main>
+
+<a class="hub-home" href="index.html" target="_top" title="Back to all docs"><span class="eyebrow">Mercor · Data Acquisition · Anonymization</span></a>
+<h1>PII Detection System</h1>
+<p class="sub">How Mercor detects PII in customer corpora — the shipped detectors, how they run at fleet
+scale, the data and recipe they're trained on, what they score on our benchmarks, and where the models
+live. Detection is stage one of the anonymization pipeline (detect → mask → identity resolution → rewrite).</p>
+
+<div class="toc">
+<a href="#glance">At a glance</a><a href="#how">How it works</a><a href="#training">Training data &amp; recipe</a>
+<a href="#results">Results</a><a href="#models">Model locations</a><a href="#perf">Performance &amp; cost</a>
+<a href="#docs">Related documents</a></div>
+
+<h2 id="glance">At a glance</h2>
+<table>
+<tr><td class="k">Production detector</td><td><code>scan_deberta</code> — a DeBERTa-v3 token-classifier, reimplemented in Rust on <a href="https://github.com/huggingface/candle">Candle</a> (one binary; CPU / Apple Metal / NVIDIA CUDA at compile time).</td></tr>
+<tr><td class="k">Champion <span class="pill champ">masks</span></td><td><code>deberta-pii-v5.1-3ep</code> — 5 coarse types (Name / Org / Address / Email / Other, 11 BIO labels). Best on <b>contigo-bench v3.4</b>. Its output feeds masking + identity resolution.</td></tr>
+<tr><td class="k">Challenger <span class="pill chal">shadow</span></td><td><code>deberta-pii-v4.1-e</code> — runs in shadow every default run, stored under <code>detect/challenger/</code> for comparison only, <b>never masked</b>. Champion &amp; challenger need not share a taxonomy.</td></tr>
+<tr><td class="k">Alternate lane</td><td><code>scan_modernbert</code> — HiveTrace <b>GLiNER-Guard</b> mmBERT uniencoder (~147M, 8192-ctx), 4 canonical types (person / email / phone / SSN). Set <code>detector: "gliner"</code> (the config default) vs <code>"deberta"</code>.</td></tr>
+<tr><td class="k">Detection contract</td><td><code>{email, type, value, score, start, end, model}</code> JSONL — byte offsets into the source cell; <code>model ∈ {gliner, deberta}</code>. The detector-agnostic handoff to masking + IR.</td></tr>
+<tr><td class="k">Runtime</td><td>GKE detect stage (A100 / L4), one Indexed-Job pod per shard. Pure-Candle inference; ORT only in the offline validation lane.</td></tr>
+<tr><td class="k">Throughput</td><td><span class="metric">~35,435 tok/s</span> per A100 (fp16, drop-free); ~860K tok/s across 16. A 68.5&nbsp;GB run ≈ 36&nbsp;min, ≈ <span class="metric">$17</span>.</td></tr>
+</table>
+
+<h2 id="how">How it works</h2>
+<p>The corpus is de-duplicated, only unique chunks are scanned across N GPUs, results are cached in a
+content-addressed PII table, and detections are re-joined to every occurrence — so repeat runs approach
+zero GPU cost. Dedup is the cost lever: word-snapped FastCDC@128 removes ~50% of GPU tokens (71–79%
+chunk-level duplication on real 20–89&nbsp;GB corpora).</p>
+
+<div class="flow">corpus.parquet
+  └─ prepare ─▶ dedup (word-snapped FastCDC) ─▶ unique chunks + occ back-refs
+       └─ piistore filter ─▶ drop chunks already scanned (content-addressed cache)
+            └─ detect ─▶ scan_deberta (champion) + scan_deberta (challenger, shadow) on N × A100
+                 └─ canonical detection JSONL  {email,type,value,score,start,end,model}
+                      └─ resolve ─▶ map eid → global gid, validate types vs the model's taxonomy
+                           └─ mask ─▶ {{uuid}} tokens + per-column mapping.json
+                                └─ identity resolution ─▶ clusters.json (detect → IR handoff)</div>
+
+<p>New full-corpus runs use the <b>GKE controller</b> (<code>orchestration/</code>) that chains
+detect → mask → IR behind one digest-pinned image; the legacy manually-driven GCE fleet
+(<code>fleet.sh</code>) is retained for benchmarking. Every asset — scanner binary, model weights,
+tokenizer, config — is pinned by an exact GCS <em>generation</em>, so a run is fully reproducible.</p>
+
+<h3>Detector lanes</h3>
+<p>Five execution lanes exist; two are production-relevant. The <b>DeBERTa token-classifier</b>
+(<code>scan_deberta</code>, Candle, 256-ctx, BIO decode) is the shipped champion/challenger path. The
+<b>GLiNER-Guard uniencoder</b> (<code>scan_modernbert</code>, Candle fp16 + optional flash-attn, 8192-ctx)
+is the all-GPU fleet lane with clean whole-entity spans. The Candle DeBERTa encoder is validated
+<b>bit-faithful</b> against an ONNX-Runtime oracle (cosine 1.00000000, max |diff| 1.1e-4); production
+inference imports no ONNX runtime at all.</p>
+
+<div class="callout warn"><b>Alpha quality.</b> This is a research pipeline extracted from a working
+lab repo — the measured numbers are real, but file formats, flags, and the fleet driver may change, and
+error handling is fail-fast. Test small (N=2) before scaling.</div>
+
+<h2 id="training">Training data &amp; recipe</h2>
+<p>The champion is <code>microsoft/deberta-v3-base</code> fine-tuned into a PII token-classifier
+(<code>train_deberta_v3.py</code>). deberta-v3 is the v2-architecture backbone Candle's <code>DebertaV2</code>
+can execute, so the checkpoint loads straight into the Rust scanner.</p>
+<table>
+<tr><td class="k">Corpus</td><td>~5k docs / ~9k spans, ~40% span-free negatives — <code>{doc_id, text, spans:[{start,end,type}]}</code>.</td></tr>
+<tr><td class="k">Sources</td><td><b>Synthetic (bulk)</b> — synthetic-world slack/gmail/linear docs with the generator's <em>coordinate-exact</em> ground truth. <b>Real-company</b> — real extracted docs labeled by <b>Gemini distillation</b>, remapped to the taxonomy. <em>(Use ground truth where you have it; distill only where you don't.)</em></td></tr>
+<tr><td class="k">Taxonomy</td><td>Trainer targets <b>16 fine types</b> / 33 BIO labels; the shipped v5.1 champion emits <b>5 coarse types</b> (Name / Org / Address / Email / Other). Label set is read from the checkpoint's <code>config.json</code>.</td></tr>
+<tr><td class="k">Recipe gotcha</td><td><b>Full bf16 weights only.</b> fp32 NaNs on Apple; bf16 <em>autocast</em> collapses DeBERTa-v3 to all-<code>O</code> (train loss drops, eval F1 stays 0). GPUs train full bf16; checkpoint cast back to fp32 before saving.</td></tr>
+<tr><td class="k">Cost</td><td>5 epochs, ~23 min on a T4 (or Modal). Held-out <b>fine-F1 ≈ 0.87</b>, <b>detection-F1 ≈ 0.89–0.92</b>.</td></tr>
+<tr><td class="k">Extending</td><td><b>Continued fine-tune</b> (expand label head + replay) teaches a new type without forgetting the existing ones — no customer strings committed. A generative <b>Qwen2.5-7B QLoRA</b> extractor is an alternate detector shape.</td></tr>
+</table>
+
+<h2 id="results">Results</h2>
+<p>Detector bake-off on identical input, all through the real GKE detect stage
+(<a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/detection/DETECTOR_COMPARISON.md">DETECTOR_COMPARISON</a>):</p>
+<table>
+<tr><th>Detector</th><th>Types</th><th>Character</th></tr>
+<tr><td class="k">GLiNER-Guard (prod)</td><td>4</td><td>Fewest, highest-confidence (0.93–1.00), clean whole-entity spans; narrow taxonomy.</td></tr>
+<tr><td class="k">Gemini (data-acq)</td><td>14</td><td>Broadest coverage — only detector catching org / brand / product / username / city-state-zip / DOB. Slowest, most expensive.</td></tr>
+<tr><td class="k">DeBERTa-v3</td><td>5</td><td>Detects the right regions (recall on canonical PII is sound); weakness is <b>span boundaries</b> — the window / BIO-decode + merge step fragments entities, not the weights.</td></tr>
+</table>
+<p>Detectors <b>converge on the real entities</b> (17 spans flagged by all four detectors, 33 by three of
+four); disagreement concentrates in span boundaries and the long tail of single-detector types. The
+champion was selected on <b>contigo-bench v3.4</b>. Living, drill-down results — full-corpus F1 by model,
+by PII type, and exact-span vs character-span — are in the hosted leaderboards below. Recurring finding
+across benchmarks: overall F1 <em>falls</em> with model size on out-of-distribution data (encoder base 0.70 →
+7.6B qwen 0.31), and exact-span scoring collapses the encoders (~0) while the generative qwen leads (~0.79).</p>
+
+<h2 id="models">Model locations</h2>
+<table>
+<tr><td class="k">Champion (GCS)</td><td><code>data-acq-models/detection/runs/deberta-pii-v5.1-3ep/best/</code> — <code>{model.safetensors, tokenizer.json, config.json}</code>, each generation-pinned in the run config.</td></tr>
+<tr><td class="k">Challenger (GCS)</td><td><code>data-acq-models/detection/runs/deberta-pii-v4.1-e/best/</code>.</td></tr>
+<tr><td class="k">Training artifacts (S3)</td><td><code>_models/tokenization/deberta_ft_v3base_&lt;UTC&gt;Z/best/</code>.</td></tr>
+<tr><td class="k">GLiNER-Guard weights</td><td>Hugging Face — <code>hivetrace/gliner-guard-{omni,uniencoder,uniencoder-onnx}</code>, fetched by <code>tools/fetchweights</code> (staged once to same-region GCS for the fleet).</td></tr>
+<tr><td class="k">Identity-resolution model</td><td>S3 <code>_models/identity-resolution/</code> (the downstream stage that consumes detections).</td></tr>
+</table>
+<p>Select the detector with <code>detector: "gliner" | "deberta"</code>; the champion/challenger pair,
+per-detector thresholds, embedding emission, and <code>head_scores</code> are all run-config knobs
+(<a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/orchestration/README.md">orchestration/README</a>).</p>
+
+<h2 id="perf">Performance &amp; cost (measured)</h2>
+<table>
+<tr><td class="k">GPU throughput</td><td><span class="metric">~35,435 tok/s</span> per A100 (fp16, all-GPU, drop-free); <span class="metric">~860K tok/s</span> across 16.</td></tr>
+<tr><td class="k">Reference run</td><td>16 flex-start A100, 68.5&nbsp;GB: 12.98M unique chunks, 28.7% cache hit, ~36 min wall, 6.09M PII spans, <span class="metric">≈ $17</span>.</td></tr>
+<tr><td class="k">Full E2E masking</td><td>2.67M rows: ~27 min on 64 A100 / ~24 min on 128 (GPU scan dominates; CPU dedup/mask stages parallelize ~3.6–5.8×).</td></tr>
+<tr><td class="k">Cache lever</td><td>Dedup removes ~50% of GPU tokens; the content-addressed table skips ~29% more on fresh similar data, ~100% on re-runs.</td></tr>
+</table>
+
+<h2 id="docs">Related documents</h2>
+<div class="grid2">
+<div class="card"><h3>Leaderboards &amp; results</h3><ul class="links">
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycby-lVVEYygL7m45HprPXHT02Eh9fhDHn9Jmfd-y0n6Lf4YWj3Id6PZ4lJQnM0BZ4jr5XQ/exec">PII Detection Leaderboard</a> <span class="d">— living, GKE L4 runs</span></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwpdFleNROANs9DU_WG0oAIx_LxIcGtVolu68gen__EbRtWj1yYAwYlwaroP47u7HrE/exec">pii-bench 100k — Exact-Span Leaderboard</a></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbx3z9Znxy3JOJvqEVg2_mVLyc8iioE57i2ogoAoAh50lxWnYf6tBW1wbxr8VSOuBgjriA/exec">qwen — Exact-Span by PII Type</a> <span class="d">— per-type F1</span></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwwX88MSXYqIYRxUb_f_mmZGvefB8LuOh7xX5ujX1U6GOxUhu-j4QH_TQMyhym0nzw-/exec">Contigo Detection Leaderboard</a></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbylX187U2rKuTR4SJGcRIMA1b2gvUXD9wkwUztn3vTXXkEu8lUeugfMYcdpAHlp1nS9/exec">Contigo — PII-type prevalence &amp; F1</a></li>
+</ul></div>
+<div class="card"><h3>Model &amp; training reports</h3><ul class="links">
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbw_VrvzizsCm5eWhs-DbnDzx2bkIcUEOVXRnRsYEDdJoCuI9-KUlJ6fHEV3t7cl9XUH/exec">DeBERTa v5 — Train &amp; Eval</a> <span class="d">— the champion</span></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbzu2BjoVLWwvYAHnArqPObjL-TxRsO5MnOYT7YBzHMCpzWChIB-_W2STc9XM1RldsxnTg/exec">DeBERTa v4 — Eval</a></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbyfUrnT1Q3UdfHvtWyUuT55Vx6WITNIsJoXiWKu4a3j0Uxk_olJGP3I4oDuQ3pTK5-N/exec">deberta-v3-base-pb2 — external eval</a></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbxvOb39jSX6tkGd7pPClp5x6iBZyaXsRZS2zf8ePckdWCYQxNDYH88IWQjSKrYb-apf2g/exec">Contigo — Model Comparison</a></li>
+<li><a href="tokenizer-options.html">PII Tokenizer Options</a> <span class="d">— detector bake-off</span></li>
+</ul></div>
+<div class="card"><h3>Ground truth &amp; data</h3><ul class="links">
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbzQRfWwnzSP1Sa_1A1e-IAxF0skOcsmJ1GYouqFU4HCMpqiaKXSF_yeOTx3oJ0VoDxsag/exec">pii-bench-v3 — Ground Truth Viewer</a> <span class="d">— + label-quality audit</span></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycby9wykrDOwwRpF0py4pTYZRME646AyIeIs6eqdL4JEeJsOkBN-sWPbuayBkINGMFD5s/exec">pii-bench — GT vs Model Viewer</a></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbxwhDWrDN4ddEVQK7rVFOgjvPK_BaszTr7S3tjQtNLWSYbljNyxNr4jwo11FYKrl1Z21w/exec">Benchmark Corpus UMAP</a> <span class="d">— detector-embedding view</span></li>
+<li><a href="https://script.google.com/a/macros/mercor.com/s/AKfycbxGg453WGCUwxgNrdohFfP8iDNFN3TkOHkq96kjrsxdPzMq5V1ris9wQWh9PgdnR6k3/exec">PII Detectors — 5-way Comparison</a></li>
+</ul></div>
+<div class="card"><h3>System docs (in-repo)</h3><ul class="links">
+<li><a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/detection/README.md">detection/README</a> <span class="d">— the Rust detector + fleet</span></li>
+<li><a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/training/README.md">training/README</a> <span class="d">— the trainer</span></li>
+<li><a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/orchestration/README.md">orchestration/README</a> <span class="d">— the GKE controller + run config</span></li>
+<li><a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/detection/IR_INPUT_SCHEMA.md">IR_INPUT_SCHEMA</a> <span class="d">— detect → IR contract</span></li>
+<li><a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/detection/masking/README.md">masking/README</a> · <a href="https://github.com/Mercor-io/anonymization/blob/main/anonymization/orchestration/INFRA_CONTRACT.md">INFRA_CONTRACT</a></li>
+</ul></div>
+</div>
+
+<footer>Internal · Mercor Data Acquisition · domain-gated (mercor.com). Detection is stage one of
+detect → mask → identity resolution → rewrite. Production champion <code>deberta-pii-v5.1-3ep</code>,
+selected on contigo-bench v3.4.</footer>
+
+</main><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
