@@ -1,0 +1,191 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Detection Model Versions</title><style>
+:root{--indigo-600:#4f46e5;--indigo-700:#4338ca;--indigo-50:#eef2ff;--slate-900:#0f172a;--slate-700:#334155;
+--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;
+--slate-50:#f8fafc;--white:#fff;--green-50:#f0fdf4;--green-700:#15803d;--amber-100:#fef3c7;--amber-700:#b45309;
+--blue-50:#eff6ff;--blue-700:#1d4ed8;--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--slate-900);background:var(--slate-50);line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:1120px;margin:0 auto;padding:44px 32px 100px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo-600);font-weight:600}
+h1{font-size:2rem;font-weight:600;letter-spacing:-.02em;margin:.3em 0 .3em}
+.sub{font-size:1.02rem;color:var(--slate-600);font-weight:300;max-width:94ch}
+h2{font-size:1.2rem;font-weight:600;margin:1.9em 0 .3em}
+.blurb{font-size:.9rem;color:var(--slate-600);margin:.1em 0 .8em;max-width:100ch}
+table{border-collapse:collapse;width:100%;margin:10px 0 6px;font-size:.82rem;background:var(--white);border-radius:12px;overflow:hidden;border:1px solid var(--slate-200)}
+th{background:var(--slate-100);text-align:left;font-weight:600;color:var(--slate-600);padding:9px 11px;font-size:.72rem;white-space:nowrap;vertical-align:top}
+td{padding:10px 11px;border-top:1px solid var(--slate-200);color:var(--slate-700);vertical-align:top}
+td.v{font-family:var(--mono);font-weight:700;color:var(--slate-900);white-space:nowrap}
+td.d{white-space:nowrap;font-size:.78rem;color:var(--slate-500)}
+tr.current td{background:var(--green-50)}
+tr.chal td{background:var(--blue-50)}
+code{background:var(--slate-100);border-radius:4px;padding:1px 5px;font-size:.85em;font-family:var(--mono)}
+.tag{display:inline-block;font-size:.66rem;font-weight:700;border-radius:999px;padding:1px 8px;vertical-align:middle}
+.tag.cur{background:var(--green-50);color:var(--green-700);border:1px solid #bbf7d0}
+.tag.chl{background:var(--blue-50);color:var(--blue-700);border:1px solid #bfdbfe}
+.tag.exp{background:var(--slate-100);color:var(--slate-600);border:1px solid var(--slate-200)}
+.tag.sup{background:var(--amber-100);color:var(--amber-700)}
+.m{font-family:var(--mono);font-weight:700;color:var(--slate-900)}
+.conv{background:var(--white);border:1px solid var(--slate-200);border-left:3px solid var(--indigo-600);border-radius:8px;padding:14px 18px;margin:14px 0;font-size:.87rem;color:var(--slate-700)}
+.conv b{color:var(--slate-900)}
+.loc{font-family:var(--mono);font-size:.74rem;color:var(--slate-500);word-break:break-all}
+footer{color:var(--slate-500);font-size:.8rem;margin-top:40px;padding-top:18px;border-top:1px solid var(--slate-200)}
+footer a{color:var(--indigo-600);text-decoration:none}
+/*HHC*/.hub-home{text-decoration:none;color:inherit}.hub-home:hover{opacity:.6}.hub-home-block{display:block;text-decoration:none;color:inherit}.hub-home-block:hover h1{color:#4f46e5}/*end HHC*/</style></head><body><main>
+<a class="hub-home" href="index.html" target="_top" title="Back to all docs"><span class="eyebrow">Data Acquisition &middot; Detection models</span></a>
+<h1>Detection Model Versions &amp; Changelog</h1>
+<p class="sub">Every PII-detection model we've trained &mdash; what it is, its label taxonomy, what it was
+trained on, how it scored, and where it lives. Chronological, newest first. The
+<strong>collapsed 5-type <code>deberta-pii-v5.1-3ep</code></strong> is the current production <b>champion</b>
+(merged in <a href="https://github.com/Mercor-io/data-acquisition/pull/295" target="_blank">PR&nbsp;#295</a>,
+ANON-324, 2026-08-10); <strong><code>deberta-pii-v4.1-e</code></strong> rides as the shadow <b>challenger</b>.
+Checkpoints under <code>gs://data-acq-models/detection/runs/</code> (promoted mirror
+<code>s3://data-acq-raw-prod/_models/detection/</code>).</p>
+
+<h2>DeBERTa PII detectors</h2>
+<p class="blurb">DeBERTa-v3-base token classifiers (BIO char-span). The arc runs fine-grained (~14/16-type) &rarr;
+label-scheme experiments on <code>pii-bench-v4</code> (A/B/C) &rarr; NES (Name/Email/Street) + an
+<code>Other</code>-head on <code>pii-bench-v4.1</code> (D/E) &rarr; the shipped collapsed 5-type
+<code>Name/Org/Address/Email/Other</code>. Eval numbers are <b>char-level F1</b> unless noted; contigo
+GTs differ (v3.1 diff / v3.2 mapping / v3.3&ndash;3.4 authoritative typed) &mdash; see Conventions.</p>
+<table>
+<tr><th>Model</th><th>Date</th><th>Taxonomy</th><th>Trained on</th><th>Key eval (char&nbsp;F1)</th><th>Status / location</th></tr>
+
+<tr class="current"><td class="v">deberta-pii-v5.1-3ep <span class="tag cur">champion</span></td>
+<td class="d">2026-08-08<br>merged 08-10</td>
+<td><b>Collapsed 5-type</b> <code>Name / Org / Address / Email / Other</code> (Other-head). BIO 11 labels; head-scores width 6 (O+5).</td>
+<td>v5.1 set &middot; 3 epochs</td>
+<td><b class="m">0.755</b> on contigo&nbsp;v3.4 (32,367-doc sample) &mdash; <b>best of 4</b> candidates; edged Gemini (0.733) on recall. <b>Contigo-parity 0.954</b> &mdash; the real-target agreement that justified promotion over the best in-dist model.</td>
+<td>Production <b>champion</b> (ANON-324 / PR&nbsp;#295). <span class="loc">runs/deberta-pii-v5.1-3ep/best/</span></td></tr>
+
+<tr class="chal"><td class="v">deberta-pii-v4.1-e <span class="tag chl">challenger</span></td>
+<td class="d">2026-08-05<br>shipped 08-10</td>
+<td><b>NES + Other-head</b> <code>Name / Street Address / Email Address / Other</code> (5 name subtypes &rarr; one <code>Name</code>). Same checkpoint as <code>deberta-v5-e-nes-other</code>, server-side copied to the v4.1-e name.</td>
+<td>pii-bench-v4.1 (464,632) &middot; 2 epochs</td>
+<td><b class="m">0.915</b> on contigo&nbsp;v3.3 (authoritative typed GT) &mdash; the headline result. Per-type: Name 0.878, Email 0.855.</td>
+<td>Shadow <b>challenger</b> (PR&nbsp;#295). <span class="loc">runs/deberta-v5-e-nes-other-20260805/ &rarr; runs/deberta-pii-v4.1-e/best/</span></td></tr>
+
+<tr><td class="v">deberta-pii-v5.1-2ep</td>
+<td class="d">2026-08-08</td>
+<td>Collapsed 5-type <code>Name/Org/Address/Email/Other</code> (Other-head).</td>
+<td>v5.1 set &middot; 2 epochs</td>
+<td><b class="m">0.747</b> on contigo&nbsp;v3.4 &mdash; 2nd of 4.</td>
+<td><span class="tag sup">superseded</span> initial challenger pick, later dropped. <span class="loc">runs/deberta-pii-v5.1-2ep/best/</span></td></tr>
+
+<tr><td class="v">deberta-pii-v5.2 &middot; v5.2-3ep</td>
+<td class="d">2026-08-08</td>
+<td>Collapsed 5-type <code>Name/Org/Address/Email/Other</code> (Other-head).</td>
+<td>pii-bench-v5.2 &middot; base &amp; 3-epoch</td>
+<td><b class="m">0.844</b> in-distribution Detect F1 &mdash; <b>best in-dist</b> of the family &mdash; but v5.1-3ep won on contigo (the real target), so v5.1 shipped.</td>
+<td><span class="tag sup">best in-dist, not shipped</span> v5.1 chosen for contigo parity. <span class="loc">_models/detection/deberta-pii-v5.2{,-3ep}/best/</span></td></tr>
+
+<tr><td class="v">deberta-v5-e-nes-other <span class="tag exp">experiment</span></td>
+<td class="d">2026-08-05</td>
+<td>NES + <b>Other-head</b> (all other PII &rarr; one <code>Other</code>).</td>
+<td>pii-bench-v4.1 (464,632) &middot; 2 ep</td>
+<td>contigo v3.3 <b class="m">0.915</b> &middot; v3.1 0.643 &middot; v3.2 0.289. Name 0.878 / Email 0.855.</td>
+<td><b>Winning recipe</b> &rarr; became v4.1-e. Train: A100, 189 min. <span class="loc">runs/deberta-v5-e-nes-other-20260805/</span></td></tr>
+
+<tr><td class="v">deberta-v5-d-nes-neg <span class="tag exp">experiment</span></td>
+<td class="d">2026-08-05</td>
+<td>NES + <b>others&rarr;negative</b> (all other PII dropped to <code>negative</code>).</td>
+<td>pii-bench-v4.1 (464,632) &middot; 2 ep</td>
+<td>contigo v3.3 <b class="m">0.718</b> &middot; v3.1 0.356 &middot; v3.2 0.695. <b>Email collapses to 0.091</b> &mdash; the negative recipe mis-calibrates Email.</td>
+<td>Lost to E (Other-head). Train: A100, 184 min, $11.24. <span class="loc">runs/deberta-v5-d-nes-neg-20260805/</span></td></tr>
+
+<tr><td class="v">v5 D/E &mdash; 3-epoch <span class="tag exp">ablation</span></td>
+<td class="d">2026-08-05</td>
+<td>Same as D / E; resumed 2-ep checkpoint for +1 epoch.</td>
+<td>pii-bench-v4.1 (464,632) &middot; 3 ep</td>
+<td>A 3rd epoch does <b>not</b> help: E v3.3 0.915&rarr;0.907, D v3.3 0.718&rarr;0.704. &ldquo;Two epochs is the right stopping point.&rdquo;</td>
+<td><span class="tag sup">ablation</span> not shipped. <span class="loc">runs/deberta-v5-{d,e}-nes-other-20260805c/</span></td></tr>
+
+<tr><td class="v">deberta-v4-c-full18 <span class="tag exp">experiment</span></td>
+<td class="d">2026-08-04</td>
+<td><b>Full 18 types</b> (O+18 BIO); ID-family collapsed to <code>ID</code>. <b>Only C</b> keeps Phone/DOB/GPS/ID/URL/IP/MAC heads.</td>
+<td>pii-bench-v4 (499,624) &middot; full-bf16 A100</td>
+<td>pii-bench-v4 <b class="m">0.916</b> &middot; contigo v3.1 0.662 / v3.2 0.288. In-scope F1(11) 0.864.</td>
+<td>Label-scheme experiment. Infer 266k docs/L4: 396s, $0.078. <span class="loc">runs/deberta-v4-c-full18-20260804/</span></td></tr>
+
+<tr><td class="v">deberta-v4-b-11other <span class="tag exp">experiment</span></td>
+<td class="d">2026-08-04</td>
+<td>11 target types <b>+ one <code>Other</code> catch-all head</b> (O+12 BIO).</td>
+<td>pii-bench-v4 (499,624) &middot; full-bf16 A100</td>
+<td>pii-bench-v4 <b class="m">0.920</b> (best on pii-bench) &middot; contigo v3.1 0.622 / v3.2 0.296. In-scope F1(11) 0.871.</td>
+<td>The Other-head idea that carried into v5. Infer 266k/L4: 387s, $0.076. <span class="loc">runs/deberta-v4-b-11other-20260804/</span></td></tr>
+
+<tr><td class="v">deberta-v4-a-11only <span class="tag exp">experiment</span></td>
+<td class="d">2026-08-04</td>
+<td>11 target types only; 7 non-target PII families &rarr; <code>O</code> (O+11 BIO).</td>
+<td>pii-bench-v4 (499,624) &middot; full-bf16 A100</td>
+<td>pii-bench-v4 0.652 &middot; contigo v3.1 0.368 / v3.2 <b class="m">0.689</b>. <b>In-scope F1(11) 0.895</b> (P 0.877 / R 0.913) &mdash; sharpest in-scope.</td>
+<td>Label-scheme experiment. Infer 266k/L4: 393s, $0.077. <span class="loc">runs/deberta-v4-a-11only-20260804/</span></td></tr>
+
+<tr><td class="v">deberta-v3-base-pb2-fixdrop</td>
+<td class="d">2026-07-29</td>
+<td><b>16-type fine-grained</b> (adds First&nbsp;Name, Nickname, GPS; symmetric B/I). Cluster view: Identity / Street / Institution / other.</td>
+<td>pii-bench-v2 (pb2, fixdrop)</td>
+<td>contigo <b class="m">0.401</b> (v3.1) / 0.463 (v3.2); exact-span 0.212 / 0.183; IoU@50 0.394 / 0.361. By type (v3.2 recall): email 1.00, name 0.61, brand 0.41.</td>
+<td>Proposed champion in <a href="https://github.com/Mercor-io/data-acquisition/pull/188" target="_blank">PR&nbsp;#188</a> (ANON-212, <b>draft, not merged</b>). Infer 18k docs 15.7&nbsp;min / $0.19 on L4. <span class="loc">runs/deberta-v3-base-pb2-fixdrop_20260729T073616Z/</span></td></tr>
+
+<tr><td class="v">deberta_ft_v3base &middot; deberta_ft_newtax</td>
+<td class="d">2026-07-14/15</td>
+<td>Intermediate fine-tune iterations (new-taxonomy &amp; v3-base variants, 2 each).</td>
+<td>&mdash;</td>
+<td>&mdash; (metrics not separately recorded)</td>
+<td><span class="tag sup">superseded</span> S3-only. <span class="loc">_models/detection/deberta_ft_{newtax,newtax_full,v3base×2}_2026071{4,5}*/</span></td></tr>
+
+<tr><td class="v">deberta_ft_v2</td>
+<td class="d">2026-07-07</td>
+<td><b>Legacy ~14-type</b> fine-grained (Full/Last/Middle/Single Name, Phone, ID, DOB, URL, Username, Brand, Product, Org, Email, Street; asymmetric B/I).</td>
+<td>&mdash;</td>
+<td>&mdash; (used as a shadow baseline)</td>
+<td>First prod fine-tune. Briefly the ANON-324 challenger pick, then dropped (taxonomy too different). <span class="loc">runs/deberta_ft_v2_20260707T112201Z/</span></td></tr>
+</table>
+
+<h2>Qwen (exploratory, generative)</h2>
+<p class="blurb">A generative alternative &mdash; Qwen2.5-7B-Instruct + a PII QLoRA adapter (r16/&alpha;32, nf4, CAUSAL_LM),
+scored on the pii-bench detection leaderboard. Proposed as the challenger in the (unmerged)
+<a href="https://github.com/Mercor-io/data-acquisition/pull/188" target="_blank">PR&nbsp;#188</a>. Both runs are
+undertrained (train_loss ~0.64) &mdash; a convergence retrain or a Rust/candle port of the merged LoRA is the
+open production path.</p>
+<table>
+<tr><th>Model</th><th>Date</th><th>Recipe</th><th>Key eval</th><th>Location / notes</th></tr>
+<tr><td class="v">qwen2.5-7b-qlora <br>191643Z</td><td class="d">2026-07-21</td>
+<td>6000 steps (epoch 0.12); pii-bench train_100k.</td>
+<td>detection-leaderboard clean F1 <b class="m">0.927</b> &mdash; <b>better detector</b> of the two siblings (wins every metric).</td>
+<td>PR&nbsp;#188 challenger (checkpoint-6000). Full fp32 checkpoints 1.16&nbsp;GiB. <span class="loc">archive/qwen2.5-7b-qlora_20260721T191643Z/</span></td></tr>
+<tr><td class="v">qwen2.5-7b-qlora <br>191645Z</td><td class="d">2026-07-21</td>
+<td>1 epoch (3750 steps); 60k examples. ~$9.49.</td>
+<td>clean F1 0.919 &middot; <b>exact-span 0.79 (#1</b> on the exact-span leaderboard). Better-packaged (has <code>best/</code>+metadata).</td>
+<td>Adapter-only serve (77&nbsp;MiB). <span class="loc">pii-eval/qwen/qwen2.5-7b-qlora_20260721T191645Z/</span></td></tr>
+</table>
+
+<div class="conv"><b>Taxonomy evolution.</b> The label set narrowed and re-shaped across five generations:
+<b>(1)</b> <code>deberta_ft_v2</code> (07-07) &mdash; legacy ~14-type fine-grained.
+<b>(2)</b> <code>pb2-fixdrop</code> (07-29) &mdash; broad 16-type fine-grained (adds First&nbsp;Name, Nickname, GPS; symmetric B/I); the Qwen runs reuse this-era 16-type set.
+<b>(3)</b> <b>v4 A/B/C</b> (08-04) &mdash; three parallel label-scheme experiments off <code>pii-bench-v4</code>: <b>A</b> = 11 target types, non-target&rarr;<code>O</code>; <b>B</b> = 11 + a single <code>Other</code> head; <b>C</b> = full 18 + ID-collapse (only C keeps Phone/URL/&hellip;).
+<b>(4)</b> <b>v5 D/E</b> (08-05) &mdash; NES (Name/Email/Street, 5 name subtypes&rarr;one <code>Name</code>); <b>D</b> routes other PII&rarr;<code>negative</code>, <b>E</b> routes other PII&rarr;one <code>Other</code>. <b>E (Other-head) won</b> (v3.3 0.915 vs 0.718; Email 0.855 vs 0.091).
+<b>(5)</b> <b>v5.1 / v5.2</b> (08-08) &mdash; collapsed 5-type <code>Name / Org / Address / Email / Other</code> (Other-head), <code>championDebertaCategories = 5</code>. Pipeline-wide migration: head-scores width 17&rarr;6; champion <code>Other</code> masks as a generic <b>Identifier</b> (format-preserving) but is <b>never clustered / join-keyed</b>.</div>
+
+<div class="conv"><b>Champion / challenger promotion history.</b> Two distinct events:<br><br>
+<b>PR&nbsp;#188 (ANON-212, DRAFT &mdash; never merged, 2026-07-30):</b> proposed champion &rarr; <code>deberta-v3-base-pb2-fixdrop</code> (config-only; the default detector flips gliner&rarr;deberta), challenger &rarr; <code>qwen2.5-7b-qlora</code> (191643Z). Blocked on maintainer sign-off (a 3rd product-path Python scanner, unverified GPU at the time, undefined deploy target).<br><br>
+<b>PR&nbsp;#295 (ANON-324 &mdash; MERGED 2026-08-10T03:48Z, squash <code>f90cf2ee</code>, by wth-lg):</b> final state = champion <code>deberta-pii-v5.1-3ep</code>, challenger <code>deberta-pii-v4.1-e</code>. The challenger changed <b>twice</b> in review: <code>v5.1-2ep</code> (2nd in the ranking) &rarr; <code>deberta_ft_v2</code> (old 14-type; champion/challenger taxonomies made independent) &rarr; <code>v4.1-e</code> (final; detector labels re-synced to the 7-type union). v3.4 ranking (32,367-doc sample) char F1: <b>v5.1-3ep 0.755</b> &gt; v5.1-2ep 0.747 &gt; v5.2; Gemini reference 0.733.<br><br>
+<b>Why v5.1 over v5.2 &mdash; in-distribution vs real target.</b> <code>v5.2</code> is the <b>best in-distribution</b> model (Detect&nbsp;F1 <b>0.844</b> on its own <code>pii-bench-v5.2</code> test), but <code>v5.1-3ep</code> generalizes better to the real anonymization target &mdash; <b>contigo-parity 0.954</b> &mdash; so it was promoted. The lesson from the whole line: rank on the <b>real corpus (contigo)</b>, not in-distribution benchmark F1, which flips the winner.</div>
+
+<div class="conv"><b>Training &amp; inference recipe.</b> DeBERTa-v3-base, <b>full-bf16 weights</b> on an A100 (fp32 &rarr; NaN on this stack; bf16-autocast &rarr; all-<code>O</code> collapse), cast to fp32 before <code>save_model</code>; 256-token windows / stride-64 overflow; overlap span&rarr;BIO; <code>load_best_model_at_end</code> on <code>fine_f1</code>. Typical cost: <b>train</b> ~2 epochs / 464&ndash;500k docs &asymp; 3&ndash;3.1 GPU-hr &asymp; <b>$11&ndash;12</b> (A100 @ $3.67/hr); <b>infer</b> 266k docs &asymp; 0.11 GPU-hr &asymp; <b>$0.08</b>, ~680 docs/s batched on one L4 ($0.71/hr). Checkpoints promote to <code>s3://data-acq-raw-prod/_models/detection/</code>.</div>
+
+<h2>Conventions</h2>
+<div class="conv">
+<b>Metric.</b> Headline numbers are <b>char-level F1</b> (PII-or-not over characters). Span metrics: <b>IoU&ge;50% / &ge;75% / exact (IoU=1.0)</b>. Reported P/R separately where GT bias matters.<br><br>
+<b>Benchmarks &amp; their GT bias</b> (see the <a href="https://script.google.com/a/macros/mercor.com/s/AKfycby594FfFwQ2nbjHBAFZceUC5ztHFnDOWLySHVaoGYvEFih0cz9UVFsS3DHhhr66IMBs/exec" target="_top">Benchmark Versions &amp; Changelog</a>): <b>pii-bench-v4/v4.1</b> = clean typed GT (trust for ranking); <b>contigo v3.1</b> = diff GT (recall-biased); <b>v3.2</b> = mapping GT (precision-biased); <b>v3.3 / v3.4</b> = authoritative exact-mapping + LLM-typed (the ranking GT). Numbers are <b>not comparable across GT variants</b> &mdash; a model's v3.1 and v3.3 F1 measure different things.<br><br>
+<b>"In-scope" F1</b> masks out-of-scope GT so a narrow detector (e.g. NES) isn't penalized for types it never targets.
+</div>
+
+<h2>Companion docs</h2>
+<p class="blurb">
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycby594FfFwQ2nbjHBAFZceUC5ztHFnDOWLySHVaoGYvEFih0cz9UVFsS3DHhhr66IMBs/exec" target="_top">Benchmark Versions &amp; Changelog</a> &middot;
+<a href="https://script.google.com/a/macros/mercor.com/s/AKfycbwwX88MSXYqIYRxUb_f_mmZGvefB8LuOh7xX5ujX1U6GOxUhu-j4QH_TQMyhym0nzw-/exec" target="_top">Contigo detection leaderboard</a>
+</p>
+<footer>Internal &middot; Mercor Data Acquisition &middot; domain-gated (mercor.com). Kept current as detectors ship. Metrics are verbatim from the eval reports; blanks (&mdash;) mean not separately recorded.</footer>
+</main><!--track-beacon--><script>(function(){try{var u='index.html?log=model-versions&src=standalone';if(window.fetch){fetch(u,{mode:'no-cors',credentials:'include'}).catch(function(){});}else{new Image().src=u;}}catch(e){}})();</script><script data-goatcounter="https://richardlizhu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
